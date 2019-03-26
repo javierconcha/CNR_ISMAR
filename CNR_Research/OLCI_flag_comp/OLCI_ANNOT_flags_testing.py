@@ -208,11 +208,11 @@ N: {:,.0f}'\
 """business logic for when running this module as the primary one!"""
 print('Main Code!')
 
-path_in = '/Users/javier/Desktop/Javier/2019_ROMA/CNR_Research/OLCI_flag_comp/DataArchive/'
-#path_in = '/DataArchive/OC/OLCI/daily/'
+#path_in = '/Users/javier/Desktop/Javier/2019_ROMA/CNR_Research/OLCI_flag_comp/DataArchive/'
+path_in = '/DataArchive/OC/OLCI/daily/'
 
-path_out = '/Users/javier/Desktop/Javier/2019_ROMA/CNR_Research/OLCI_flag_comp/data'
-#path_out = '/home/Vittorio.Brando/Javier'
+#path_out = '/Users/javier/Desktop/Javier/2019_ROMA/CNR_Research/OLCI_flag_comp/data'
+path_out = '/home/Vittorio.Brando/Javier/data'
 
 year_start = 2016
 year_end = 2017
