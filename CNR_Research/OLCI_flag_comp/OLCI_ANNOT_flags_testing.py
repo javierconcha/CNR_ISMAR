@@ -18,10 +18,9 @@ def plot_map(var,lat,lon):
     m = Basemap(llcrnrlat=min(lat),urcrnrlat=max(lat),\
     	llcrnrlon=min(lon),urcrnrlon=max(lon), resolution='l')
     x,y=np.meshgrid(lon, lat)
-    m.drawparallels([30, 35, 40, 45],labels=[1,0,0,1])
-    m.drawmeridians([-5, 0, 5, 10, 15, 20, 25, 30, 35],labels=[1,0,0,1])
-    m.drawlsmask(land_color='white',ocean_color='white',resolution='l', grid=5)
-    m.drawcoastlines()
+    m.drawparallels([30, 35, 40, 45],labels=[1,0,0,1],color='grey',linewidth=0.1)
+    m.drawmeridians([-5, 0, 5, 10, 15, 20, 25, 30, 35],labels=[1,0,0,1],color='grey',linewidth=0.1)
+    m.drawcoastlines(linewidth=0.1)
     m.imshow(var,origin='upper', extent=[min(lon), max(lon), min(lat), max(lat)],\
                                           norm=LogNorm(), cmap='rainbow')
 #    plt.colorbar(fraction=0.046, pad=0.04)
@@ -39,6 +38,10 @@ def plot_test_ANNOT_flags(path_in,path_out,filename1,filename2,year,doy):
     
     lon1 = nc_f1.variables['lon'][:]
     lon2 = nc_f2.variables['lon'][:]
+    
+#    cov0 = nc_f1.variables['coverage'][:,:]
+    
+    
     
     
     #%% Create figure and subplot for chl w/o ANNOTS flags
@@ -70,10 +73,9 @@ def plot_test_ANNOT_flags(path_in,path_out,filename1,filename2,year,doy):
     m = Basemap(llcrnrlat=min(lat1),urcrnrlat=max(lat1),\
         	llcrnrlon=min(lon1),urcrnrlon=max(lon1), resolution='l')
     x,y=np.meshgrid(lon1, lat1)
-    m.drawparallels([30, 35, 40, 45],labels=[1,0,0,1])
-    m.drawmeridians([-5, 0, 5, 10, 15, 20, 25, 30, 35],labels=[1,0,0,1])
-    m.drawlsmask(land_color='white',ocean_color='white',resolution='l', grid=5)
-    m.drawcoastlines()
+    m.drawparallels([30, 35, 40, 45],labels=[1,0,0,1],color='grey',linewidth=0.1)
+    m.drawmeridians([-5, 0, 5, 10, 15, 20, 25, 30, 35],labels=[1,0,0,1],color='grey',linewidth=0.1)
+    m.drawcoastlines(linewidth=0.1)
     m.imshow(mask_diff,origin='upper', extent=[min(lon1), max(lon1), min(lat1), max(lat1)],\
                                                cmap='gist_rainbow',interpolation='nearest')
     #    plt.colorbar(fraction=0.046, pad=0.04)
@@ -87,10 +89,9 @@ def plot_test_ANNOT_flags(path_in,path_out,filename1,filename2,year,doy):
     m = Basemap(llcrnrlat=min(lat1),urcrnrlat=max(lat1),\
         	llcrnrlon=min(lon1),urcrnrlon=max(lon1), resolution='l')
     x,y=np.meshgrid(lon1, lat1)
-    m.drawparallels([30, 35, 40, 45],labels=[1,0,0,1])
-    m.drawmeridians([-5, 0, 5, 10, 15, 20, 25, 30, 35],labels=[1,0,0,1])
-    m.drawlsmask(land_color='white',ocean_color='white',resolution='l', grid=5)
-    m.drawcoastlines()
+    m.drawparallels([30, 35, 40, 45],labels=[1,0,0,1],color='grey',linewidth=0.1)
+    m.drawmeridians([-5, 0, 5, 10, 15, 20, 25, 30, 35],labels=[1,0,0,1],color='grey',linewidth=0.1)
+    m.drawcoastlines(linewidth=0.1)
     m.imshow(chl_diff,origin='upper', extent=[min(lon1), max(lon1), min(lat1), max(lat1)],\
                                                norm=LogNorm(),cmap='rainbow')
     clb = plt.colorbar(fraction=0.046, pad=0.1,orientation='horizontal')
@@ -202,76 +203,153 @@ N: {:,.0f}'\
 
     fmb.close()
     
-    return chl_diff
+    return chl_diff, mask1_valid
 #%%
-#def main():
-"""business logic for when running this module as the primary one!"""
-print('Main Code!')
-
-#path_in = '/Users/javier/Desktop/Javier/2019_ROMA/CNR_Research/OLCI_flag_comp/DataArchive/'
-path_in = '/DataArchive/OC/OLCI/daily/'
-
-#path_out = '/Users/javier/Desktop/Javier/2019_ROMA/CNR_Research/OLCI_flag_comp/data'
-path_out = '/home/Vittorio.Brando/Javier/data'
-
-year_start = 2016
-year_end = 2017
-
-doy_start = 199
-doy_end = 200
-
-n_im = (year_end-year_start+1)*(doy_end-doy_start+1) #number of images
-chl_diff_3d=np.ma.zeros((n_im,1580, 3308), dtype=np.float32) # matrix with all difference pixels
-
-count = 0;
-
-for year_idx in range(year_start, year_end+1):
-    for doy_idx in range(doy_start, doy_end+1):
-        year = str(year_idx)
-        doy = str(doy_idx)
-        print(year+doy)
-        
-        filename1 = year+'/'+doy+'/''O'+year+doy+'--med-hr_brdf.nc'
-        filename2 = year+'/'+doy+'/''O'+year+doy+'--med-hr_brdf_w_ANNOT_DROUT.nc'
-        
-        if os.path.exists(path_in+filename1) & os.path.exists(path_in+filename2):
-            chl_diff = plot_test_ANNOT_flags(path_in,path_out,filename1,filename2,year,doy)
-            
-            chl_diff_3d[count,:] = chl_diff
-            count = count + 1
-        else:
-            print('Files not found!')
-#%% To plot density  
-filename = '2016/199/O2016199--med-hr_brdf.nc' # open an original for to copy properties to output file
-
-nc_f0=Dataset(os.path.join(path_in,filename), 'r')
+def main():
+    """business logic for when running this module as the primary one!"""
+    print('Main Code!')
     
-lat0 = nc_f0.variables['lat'][:]
-lon0 = nc_f0.variables['lon'][:]
+#    path_in = '/Users/javier/Desktop/Javier/2019_ROMA/CNR_Research/OLCI_flag_comp/DataArchive/'
+    path_in = '/DataArchive/OC/OLCI/daily/'
+    
+#    path_out = '/Users/javier/Desktop/Javier/2019_ROMA/CNR_Research/OLCI_flag_comp/data'
+    path_out = '/home/Vittorio.Brando/Javier/data'
+    
+    year_start = 2016
+    year_end = 2017
+    
+    doy_start = 1
+    doy_end = 366
+    
+    #%% To plot density  
+    filename = '2016/199/O2016199--med-hr_brdf.nc' # open an original for to copy properties to output file
+    
+    nc_f0=Dataset(os.path.join(path_in,filename), 'r')
+        
+    lat0 = nc_f0.variables['lat'][:]
+    lon0 = nc_f0.variables['lon'][:]
+    
+    ylen = len(lat0)
+    xlen = len(lon0)
+    #%%
+    
+    n_im = (year_end-year_start+1)*(doy_end-doy_start+1) #number of images
+    chl_diff_3d=np.ma.zeros((n_im,ylen, xlen), dtype=np.float32) # matrix with all difference pixels
+    cover_sum = np.ma.zeros((ylen, xlen), dtype=np.float32) # total of observations
+    cover_im = np.ma.zeros((ylen, xlen), dtype=np.float32) # coverage per image
+    
+    count = 0;
+    
+    for year_idx in range(year_start, year_end+1):
+        for doy_idx in range(doy_start, doy_end+1):
+            year = str(year_idx)
+            doy = str(doy_idx)
+            print(year+doy)
+            
+            filename1 = year+'/'+doy+'/''O'+year+doy+'--med-hr_brdf.nc'
+            filename2 = year+'/'+doy+'/''O'+year+doy+'--med-hr_brdf_w_ANNOT_DROUT.nc'
+            
+            if os.path.exists(path_in+filename1) & os.path.exists(path_in+filename2):
+                chl_diff, coverage = plot_test_ANNOT_flags(path_in,path_out,filename1,filename2,year,doy)
+                
+                chl_diff_3d[count,:] = chl_diff
+                cover_im[coverage==1] = 1
+                
+                cover_sum = cover_im + cover_sum
+    
+                count = count + 1
+            else:
+                print('Files not found!')
+    
+    
+    #%%
+    plt.figure(figsize=(10,10))
+    plt.subplot(3,1,1)
+    current_cmap = plt.cm.get_cmap()
+    current_cmap.set_bad(color='white')
+    
+    chl_diff_den = np.ma.sum(~chl_diff_3d.mask,axis=0)-(n_im-count)
+    chl_diff_den.mask = chl_diff_den==0
+    
+    m = Basemap(llcrnrlat=min(lat0),urcrnrlat=max(lat0),\
+        	llcrnrlon=min(lon0),urcrnrlon=max(lon0), resolution='l')
+    x,y=np.meshgrid(lon0, lat0)
+    m.drawparallels([30, 35, 40, 45],labels=[1,0,0,1],color='grey',linewidth=0.1)
+    m.drawmeridians([-5, 0, 5, 10, 15, 20, 25, 30, 35],labels=[1,0,0,1],color='grey',linewidth=0.1)
+    m.drawcoastlines(linewidth=0.1)
+    m.imshow(chl_diff_den,origin='upper', extent=[min(lon0), max(lon0), min(lat0), max(lat0)],\
+                                               cmap='rainbow',interpolation='nearest')
+    
+    clb = plt.colorbar(fraction=0.046, pad=0.1,orientation='horizontal')
+    clb.ax.set_xlabel('Absolute Density (counts)')
+    #%%
+    plt.subplot(3,1,2)
+    current_cmap = plt.cm.get_cmap()
+    current_cmap.set_bad(color='white')
+    
+    cover_sum.mask = cover_sum==0
+    
+    m = Basemap(llcrnrlat=min(lat0),urcrnrlat=max(lat0),\
+        	llcrnrlon=min(lon0),urcrnrlon=max(lon0), resolution='l')
+    x,y=np.meshgrid(lon0, lat0)
+    m.drawparallels([30, 35, 40, 45],labels=[1,0,0,1],color='grey',linewidth=0.1)
+    m.drawmeridians([-5, 0, 5, 10, 15, 20, 25, 30, 35],labels=[1,0,0,1],color='grey',linewidth=0.1)
+    m.drawcoastlines(linewidth=0.1)
+    m.imshow(cover_sum,origin='upper', extent=[min(lon0), max(lon0), min(lat0), max(lat0)],\
+                                               cmap='rainbow',interpolation='nearest')
+    m.drawlsmask(land_color='white',ocean_color='none',resolution='f', grid=1.25)
+    clb = plt.colorbar(fraction=0.046, pad=0.1,orientation='horizontal')
+    clb.ax.set_xlabel('Valid Occurences (counts)')
+    #%%
+    plt.subplot(3,1,3)
+    current_cmap = plt.cm.get_cmap()
+    current_cmap.set_bad(color='white')
+    
+    occurence_percent = chl_diff_den/cover_sum
+    
+    m = Basemap(llcrnrlat=min(lat0),urcrnrlat=max(lat0),\
+        	llcrnrlon=min(lon0),urcrnrlon=max(lon0), resolution='l')
+    x,y=np.meshgrid(lon0, lat0)
+    m.drawparallels([30, 35, 40, 45],labels=[1,0,0,1],color='grey',linewidth=0.1)
+    m.drawmeridians([-5, 0, 5, 10, 15, 20, 25, 30, 35],labels=[1,0,0,1],color='grey',linewidth=0.1)
+    m.drawcoastlines(linewidth=0.1)
+    m.imshow(occurence_percent,origin='upper', extent=[min(lon0), max(lon0), min(lat0), max(lat0)],\
+                                               cmap='rainbow',vmin=0, vmax=1,interpolation='nearest')
+    
+    
+    clb = plt.colorbar(fraction=0.046, pad=0.1,orientation='horizontal')
+    clb.set_ticks([0.0, 0.2, 0.4, 0.6, 0.8, 1.0])
+    clb.set_ticklabels(['0', '20', '40', '60', '80', '100'])
+    clb.ax.set_xlabel('Occurence Percentage [%]')
+    
+    figname = os.path.join(path_out,'Density.pdf')
+    #    print(figname)
+    plt.savefig(figname, dpi=200)
+    #plt.show()
+    
+    #%% Save netCDF4 file
 
-plt.figure(figsize=(10,10))
-current_cmap = plt.cm.get_cmap()
-current_cmap.set_bad(color='white')
-
-chl_diff_den = np.sum(~chl_diff_3d.mask,axis=0)-(n_im-count)
-
-m = Basemap(llcrnrlat=min(lat0),urcrnrlat=max(lat0),\
-    	llcrnrlon=min(lon0),urcrnrlon=max(lon0), resolution='l')
-x,y=np.meshgrid(lon0, lat0)
-m.drawparallels([30, 35, 40, 45],labels=[1,0,0,1])
-m.drawmeridians([-5, 0, 5, 10, 15, 20, 25, 30, 35],labels=[1,0,0,1])
-m.drawcoastlines()
-m.imshow(chl_diff_den,origin='upper', extent=[min(lon0), max(lon0), min(lat0), max(lat0)],\
-                                           cmap='rainbow',interpolation='nearest')
-m.drawlsmask(land_color='white',ocean_color='none',resolution='l', grid=5)
-
-clb = plt.colorbar(fraction=0.046, pad=0.04,orientation='horizontal')
-clb.ax.set_xlabel('Density')
-
-figname = os.path.join(path_out,'Density.pdf')
-#    print(figname)
-plt.savefig(figname, dpi=200)
-#plt.show()
-
-#if __name__ == '__main__':
-#    main()
+    ofname = 'Density.nc'
+    ofname = os.path.join(path_out,ofname)
+    fmb = Dataset(ofname, 'w', format='NETCDF4')
+    fmb.description = 'Chl difference density netCDF4 file'
+    
+    fmb.createDimension("lat", len(lat0))
+    fmb.createDimension("lon", len(lon0))
+    
+    lat = fmb.createVariable('lat',  'single', ('lat',)) 
+    lon = fmb.createVariable('lon',  'single', ('lon',))
+    
+    lat[:] = lat0
+    lon[:] = lon0
+    
+    gridd_var1=fmb.createVariable('chl_diff_den', 'single', ('lat', 'lon',), fill_value=np.nan, zlib=True, complevel=6)
+    gridd_var1[:] = chl_diff_den
+    
+    gridd_var2=fmb.createVariable('cover_sum', 'single', ('lat', 'lon',), fill_value=np.nan, zlib=True, complevel=6)
+    gridd_var2[:] = cover_sum
+    
+    fmb.close()
+#%%
+if __name__ == '__main__':
+    main()
