@@ -197,7 +197,7 @@ N: {:,.0f}'\
     lat[:] = lat1
     lon[:] = lon1
     
-    gridd_var=fmb.createVariable('chl_diff', 'single', ('lat', 'lon',), fill_value=np.nan, zlib=True, complevel=6)
+    gridd_var=fmb.createVariable('chl_diff', 'single', ('lat', 'lon',), fill_value=chl_diff.fill_value, zlib=True, complevel=6)
 
     gridd_var[:] = chl_diff
 
@@ -331,6 +331,10 @@ def main():
 
     ofname = 'Density.nc'
     ofname = os.path.join(path_out,ofname)
+    if os.path.exists(ofname):
+        os.remove(ofname)
+        print('File removed!')
+        
     fmb = Dataset(ofname, 'w', format='NETCDF4')
     fmb.description = 'Chl difference density netCDF4 file'
     
@@ -343,11 +347,11 @@ def main():
     lat[:] = lat0
     lon[:] = lon0
     
-    gridd_var1=fmb.createVariable('chl_diff_den', 'single', ('lat', 'lon',), fill_value=np.nan, zlib=True, complevel=6)
-    gridd_var1[:] = chl_diff_den
+    gridd_var1=fmb.createVariable('chl_diff_den', 'single', ('lat', 'lon',),fill_value=chl_diff_den.fill_value, zlib=True, complevel=6)
+    gridd_var1[:,:] = chl_diff_den
     
-    gridd_var2=fmb.createVariable('cover_sum', 'single', ('lat', 'lon',), fill_value=np.nan, zlib=True, complevel=6)
-    gridd_var2[:] = cover_sum
+    gridd_var2=fmb.createVariable('cover_sum', 'single', ('lat', 'lon',), fill_value=cover_sum.fill_value, zlib=True, complevel=6)
+    gridd_var2[:,:] = cover_sum
     
     fmb.close()
 #%%
