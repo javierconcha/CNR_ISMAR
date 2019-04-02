@@ -553,7 +553,6 @@ for bandname in bandlist:
                 apporrs*=specBRDF_mario[:,w_idx]
             valids=np.zeros(w*h, np.uint8)
             read_rrs.setValidPixelExpression(flags[rrs])
-            read_rrs.readValidMask(0,0,w,h,valids)
             invalids=np.where(valids==1,0,1)
             rrsfield[rrs]=np.ma.array(apporrs, mask=invalids, fill_value=fillvalue)
             #rrsfield[rrs]/=np.pi  # useless, ... ratio will be taken ...
