@@ -30,7 +30,7 @@ def plot_map(var,lat,lon):
 #    plt.colorbar(fraction=0.046, pad=0.04)
 #%% function to plot the products and histograms
 
-def plot_test_ANNOT_flags(path_in,path_out,filename1,filename2,year,doy,fout):
+def plot_test_ANNOT_flags(path_in,path_out,filename1,filename2,year,doy,fout,site_name):
     nc_f1=Dataset(path_in+filename1, 'r')
     nc_f2=Dataset(path_in+filename2, 'r')
     
@@ -179,7 +179,7 @@ def plot_test_ANNOT_flags(path_in,path_out,filename1,filename2,year,doy,fout):
         xpos = 10**(np.log10(left)+0.6*((np.log10(right))-(np.log10(left))))
         plt.text(xpos, 0.45*top, str3, fontsize=12,color='black')
         
-        ofname = 'O'+year+doy+'ANNOT_flag_test.pdf'
+        ofname = 'O'+year+doy+'ANNOT_flag_'+site_name+'.pdf'
         ofname = os.path.join(path_out,ofname)
     
         plt.savefig(ofname, dpi=200)
@@ -188,7 +188,7 @@ def plot_test_ANNOT_flags(path_in,path_out,filename1,filename2,year,doy,fout):
         
         # Save netCDF4 file
     
-        ofname = 'O'+year+doy+'_pxdiff.nc'
+        ofname = 'O'+year+doy+'_pxdiff_'+site_name+'.nc'
         ofname = os.path.join(path_out,ofname)
         fmb = Dataset(ofname, 'w', format='NETCDF4')
         fmb.description = 'Chl difference netCDF4 file'
@@ -227,7 +227,11 @@ def main():
     doy_end = 366
     
     #%% To plot density  
-    filename = '2016/199/O2016199--med-hr_brdf.nc' # open an original for to copy properties to output file
+    
+    site_name = 'med'
+#    site_name= 'bs'
+    
+    filename = '2016/199/O2016199--'+site_name+'-hr_brdf.nc' # open an original for to copy properties to output file
     
     nc_f0=Dataset(os.path.join(path_in,filename), 'r')
         
@@ -237,7 +241,7 @@ def main():
     ylen = len(lat0)
     xlen = len(lon0)
     
-    fout = open(os.path.join(path_out,'output.txt'),'w+')
+    fout = open(os.path.join(path_out,'output_'+site_name+'.txt'),'w+')
     #%%
 
     chl_diff_den = np.ma.zeros((ylen, xlen), dtype=np.float32) #   
@@ -258,12 +262,13 @@ def main():
                 
 #            print(year+doy)    
             
-            filename1 = year+'/'+doy+'/''O'+year+doy+'--med-hr_brdf.nc'
-            filename2 = year+'/'+doy+'/''O'+year+doy+'--med-hr_brdf_w_ANNOT_DROUT.nc'
+            filename1 = year+'/'+doy+'/''O'+year+doy+'--'+site_name+'-hr_brdf.nc'
+            filename2 = year+'/'+doy+'/''O'+year+doy+'--'+site_name+'-hr_brdf_w_ANNOT_DROUT.nc'
             
             if os.path.exists(path_in+filename1) & os.path.exists(path_in+filename2):
                 if access(path_in+filename1, R_OK) & access(path_in+filename2, R_OK):
-                    chl_diff_mask, coverage, valid_flag = plot_test_ANNOT_flags(path_in,path_out,filename1,filename2,year,doy,fout)
+                    chl_diff_mask, coverage, valid_flag = plot_test_ANNOT_flags\
+                    (path_in,path_out,filename1,filename2,year,doy,fout,site_name)
                     if valid_flag:   
                         print('File processing: '+year+doy)
                         fout.write('File processing: '+year+doy+'\n')
@@ -336,14 +341,14 @@ def main():
     clb.set_ticklabels(['0', '20', '40', '60', '80', '100'])
     clb.ax.set_xlabel('Occurence Percentage [%]')
     
-    figname = os.path.join(path_out,'Density.pdf')
+    figname = os.path.join(path_out,'Density_'+site_name+'.pdf')
     #    print(figname)
     plt.savefig(figname, dpi=200)
     #plt.show()
     
     #%% Save netCDF4 file
 
-    ofname = 'Density.nc'
+    ofname = 'Density_'+site_name+'.nc'
     ofname = os.path.join(path_out,ofname)
     if os.path.exists(ofname):
         os.remove(ofname)
