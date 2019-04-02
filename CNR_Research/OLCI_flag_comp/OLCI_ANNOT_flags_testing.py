@@ -15,6 +15,8 @@ import os.path
 import os
 os.environ['QT_QPA_PLATFORM']='offscreen' # to avoid error "QXcbConnection: Could not connect to display"
 
+from os import access, R_OK
+from os.path import isfile
 #%% function to plot different products in a map
 def plot_map(var,lat,lon):
     m = Basemap(llcrnrlat=min(lat),urcrnrlat=max(lat),\
@@ -212,11 +214,11 @@ def main():
     """business logic for when running this module as the primary one!"""
     print('Main Code!')
     
-#    path_in = '/Users/javier/Desktop/Javier/2019_ROMA/CNR_Research/OLCI_flag_comp/DataArchive/'
-    path_in = '/DataArchive/OC/OLCI/daily/'
+    path_in = '/Users/javier/Desktop/Javier/2019_ROMA/CNR_Research/OLCI_flag_comp/DataArchive/'
+#    path_in = '/DataArchive/OC/OLCI/daily/'
     
-#    path_out = '/Users/javier/Desktop/Javier/2019_ROMA/CNR_Research/OLCI_flag_comp/data'
-    path_out = '/home/Vittorio.Brando/Javier/data'
+    path_out = '/Users/javier/Desktop/Javier/2019_ROMA/CNR_Research/OLCI_flag_comp/data'
+#    path_out = '/home/Vittorio.Brando/Javier/data'
     
     year_start = 2016
     year_end = 2019
@@ -260,14 +262,17 @@ def main():
             filename2 = year+'/'+doy+'/''O'+year+doy+'--med-hr_brdf_w_ANNOT_DROUT.nc'
             
             if os.path.exists(path_in+filename1) & os.path.exists(path_in+filename2):
-                chl_diff_mask, coverage, valid_flag = plot_test_ANNOT_flags(path_in,path_out,filename1,filename2,year,doy,fout)
-                if valid_flag:   
-                    print('File processing: '+year+doy)
-                    fout.write('File processing: '+year+doy+'\n')
-                    chl_diff_den = ~chl_diff_mask + chl_diff_den
-                    
-                    cover_sum = coverage + cover_sum
-                    count = count + 1
+                if access(path_in+filename1, R_OK) & access(path_in+filename2, R_OK):
+                    chl_diff_mask, coverage, valid_flag = plot_test_ANNOT_flags(path_in,path_out,filename1,filename2,year,doy,fout)
+                    if valid_flag:   
+                        print('File processing: '+year+doy)
+                        fout.write('File processing: '+year+doy+'\n')
+                        chl_diff_den = ~chl_diff_mask + chl_diff_den
+                        
+                        cover_sum = coverage + cover_sum
+                        count = count + 1
+                else:
+                    print('File access denied: '+year+doy)                        
             else:
                 print('File not found: '+year+doy)
                 fout.write('File not found: '+year+doy+'\n')
