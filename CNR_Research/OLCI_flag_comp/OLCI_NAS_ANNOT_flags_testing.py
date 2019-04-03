@@ -16,54 +16,64 @@ import os
 os.environ['QT_QPA_PLATFORM']='offscreen' # to avoid error "QXcbConnection: Could not connect to display"
 
 from os import access, R_OK
-from os.path import isfile
 #%% function to plot different products in a map
-def plot_map(var,lat,lon):
+def plot_map(var,lat,lon,meridian_steps,parallel_steps):
     m = Basemap(llcrnrlat=min(lat),urcrnrlat=max(lat),\
     	llcrnrlon=min(lon),urcrnrlon=max(lon), resolution='l')
     x,y=np.meshgrid(lon, lat)
-    m.drawparallels([30, 35, 40, 45],labels=[1,0,0,1],color='grey',linewidth=0.1)
-    m.drawmeridians([-5, 0, 5, 10, 15, 20, 25, 30, 35],labels=[1,0,0,1],color='grey',linewidth=0.1)
+    m.drawparallels(parallel_steps,labels=[1,0,0,1],color='grey',linewidth=0.1)
+    m.drawmeridians(meridian_steps,labels=[1,0,0,1],color='grey',linewidth=0.1)
     m.drawcoastlines(linewidth=0.1)
     m.imshow(var,origin='upper', extent=[min(lon), max(lon), min(lat), max(lat)],\
                                           norm=LogNorm(), cmap='rainbow')
 #    plt.colorbar(fraction=0.046, pad=0.04)
 #%% function to plot the products and histograms
 
-def plot_test_ANNOT_flags(path_in,path_out,filename1,filename2,year,doy,fout,site_name):
+def plot_test_NAS_ANNOT_flags(path_in,path_out,filename1,fout,meridian_steps,parallel_steps):
+    #%%
     nc_f1=Dataset(path_in+filename1, 'r')
-    nc_f2=Dataset(path_in+filename2, 'r')
-    
-    chl1 = nc_f1.variables['chl'][:,:]
-    chl2 = nc_f2.variables['chl'][:,:]
-    
     lat1 = nc_f1.variables['lat'][:]
-    lat2 = nc_f2.variables['lat'][:]
-    
     lon1 = nc_f1.variables['lon'][:]
-    lon2 = nc_f2.variables['lon'][:]
+    lat2 = lat1
+    lon2 = lon1
     
+    chl1 = nc_f1.groups['Geo_data']['chl'][:]
+    chl1.fill_value = -999.0
+    ANNOT_flag = nc_f1.groups['Geo_data']['ANNOT_DROUT'][:]   
+    
+    ylen = len(lat1)
+    xlen = len(lon1)
+    chl2 = np.ma.zeros((ylen, xlen), dtype=np.float32) #
+    chl2.mask=True
+    chl2.fill_value = chl1.fill_value
+    
+    chl2.mask = chl1.mask | (ANNOT_flag == 1)
+    chl2[~chl2.mask] = chl1[~chl2.mask]
+    #%%
     if ((len(lon1)*len(lat1) == np.sum(chl1.mask)) & (len(lon2)*len(lat2) == np.sum(chl2.mask))) \
     | (len(lat1)*len(lon1)-sum(sum(chl1.mask))<2) | (len(lat2)*len(lon2)-sum(sum(chl2.mask))<2): 
-        print('File empty: '+year+doy)
-        fout.write('File empty: '+year+doy+'\n')
+        print('File empty: '+filename1)
+        fout.write('File empty: '+filename1+'\n')
         return False, False, False
     else:
         #%% Create figure and subplot for chl w/o ANNOTS flags
+        pad_value = 0.07
         plt.figure(figsize=(12,12))
-        plt.suptitle('O'+year+doy)
+        plt.suptitle(filename1)
         plt.subplot(3, 2, 1)
-        plot_map(chl1,lat1,lon1)   
+        plot_map(chl1,lat1,lon1,meridian_steps,parallel_steps) 
         plt.title('chl w/o ANNOT flags')
-        clb = plt.colorbar(fraction=0.046, pad=0.1,orientation='horizontal')
-        clb.ax.set_xlabel('chl')
+        clb = plt.colorbar(fraction=0.046, pad=pad_value,orientation='horizontal')
+        plt.clim(1E-3,1E2)
+#        clb.ax.set_xlabel('chl')
         
         #%% subplot for chl w/ ANNOTS flags
         plt.subplot(3, 2, 2)
-        plot_map(chl2,lat2,lon2)   
+        plot_map(chl2,lat2,lon2,meridian_steps,parallel_steps)  
         plt.title('chl w/ ANNOT flags')
-        clb = plt.colorbar(fraction=0.046, pad=0.1,orientation='horizontal')
-        clb.ax.set_xlabel('chl')
+        clb = plt.colorbar(fraction=0.046, pad=pad_value,orientation='horizontal')
+        plt.clim(1E-3,1E2)
+#        clb.ax.set_xlabel('chl')
         
         #%% create masked difference and mask
         mask1_valid = ~chl1.mask
@@ -78,8 +88,8 @@ def plot_test_ANNOT_flags(path_in,path_out,filename1,filename2,year,doy,fout,sit
         m = Basemap(llcrnrlat=min(lat1),urcrnrlat=max(lat1),\
             	llcrnrlon=min(lon1),urcrnrlon=max(lon1), resolution='l')
         x,y=np.meshgrid(lon1, lat1)
-        m.drawparallels([30, 35, 40, 45],labels=[1,0,0,1],color='grey',linewidth=0.1)
-        m.drawmeridians([-5, 0, 5, 10, 15, 20, 25, 30, 35],labels=[1,0,0,1],color='grey',linewidth=0.1)
+        m.drawparallels(parallel_steps,labels=[1,0,0,1],color='grey',linewidth=0.1)
+        m.drawmeridians(meridian_steps,labels=[1,0,0,1],color='grey',linewidth=0.1)
         m.drawcoastlines(linewidth=0.1)
         m.imshow(mask_diff,origin='upper', extent=[min(lon1), max(lon1), min(lat1), max(lat1)],\
                                                    cmap='gist_rainbow',interpolation='nearest')
@@ -94,13 +104,14 @@ def plot_test_ANNOT_flags(path_in,path_out,filename1,filename2,year,doy,fout,sit
         m = Basemap(llcrnrlat=min(lat1),urcrnrlat=max(lat1),\
             	llcrnrlon=min(lon1),urcrnrlon=max(lon1), resolution='l')
         x,y=np.meshgrid(lon1, lat1)
-        m.drawparallels([30, 35, 40, 45],labels=[1,0,0,1],color='grey',linewidth=0.1)
-        m.drawmeridians([-5, 0, 5, 10, 15, 20, 25, 30, 35],labels=[1,0,0,1],color='grey',linewidth=0.1)
+        m.drawparallels(parallel_steps,labels=[1,0,0,1],color='grey',linewidth=0.1)
+        m.drawmeridians(meridian_steps,labels=[1,0,0,1],color='grey',linewidth=0.1)
         m.drawcoastlines(linewidth=0.1)
         m.imshow(chl_diff,origin='upper', extent=[min(lon1), max(lon1), min(lat1), max(lat1)],\
                                                    norm=LogNorm(),cmap='rainbow')
-        clb = plt.colorbar(fraction=0.046, pad=0.1,orientation='horizontal')
-        clb.ax.set_xlabel('chl')
+        clb = plt.colorbar(fraction=0.046, pad=pad_value,orientation='horizontal')
+        plt.clim(1E-3,1E2)
+#        clb.ax.set_xlabel('chl')
         plt.title('Difference Pixels -- chl')
         
         #%% histogram of the two chl products
@@ -113,15 +124,15 @@ def plot_test_ANNOT_flags(path_in,path_out,filename1,filename2,year,doy,fout,sit
         plt.xscale('log')
         plt.xlabel('chl')
         plt.ylabel('Frequency')
-    #    plt.xlim(1E-6,1E5)
+        plt.xlim(1E-3,1E3)
         
         str1 = 'w/o ANNOT flags\n\
-    min: {:f}\n\
-    max: {:f}\n\
-    std: {:f}\n\
-    median: {:f}\n\
-    mean: {:f}\n\
-    N: {:,.0f}'\
+min: {:f}\n\
+max: {:f}\n\
+std: {:f}\n\
+median: {:f}\n\
+mean: {:f}\n\
+N: {:,.0f}'\
         .format(np.nanmin(chl1[~chl1.mask]),
                 np.nanmax(chl1[~chl1.mask]),
                 np.nanstd(chl1[~chl1.mask]),
@@ -130,13 +141,13 @@ def plot_test_ANNOT_flags(path_in,path_out,filename1,filename2,year,doy,fout,sit
                 sum(sum(~chl1.mask)))
         
         str2 = 'w/ ANNOT flags\n\
-    min: {:f}\n\
-    max: {:f}\n\
-    std: {:f}\n\
-    median: {:f}\n\
-    mean: {:f}\n\
-    N: {:,.0f}\n\
-    Diff: {:,.0f}'\
+min: {:f}\n\
+max: {:f}\n\
+std: {:f}\n\
+median: {:f}\n\
+mean: {:f}\n\
+N: {:,.0f}\n\
+Diff: {:,.0f}'\
         .format(np.nanmin(chl2[~chl2.mask]),
                 np.nanmax(chl2[~chl2.mask]),
                 np.nanstd(chl2[~chl2.mask]),
@@ -158,15 +169,15 @@ def plot_test_ANNOT_flags(path_in,path_out,filename1,filename2,year,doy,fout,sit
         plt.xscale('log')
         plt.xlabel('chl')
         plt.ylabel('Frequency')
-    #    plt.xlim(1E-6,1E5)
+        plt.xlim(1E-3,1E3)
         
         str3 = 'Diff. Pixels\n\
-    min: {:f}\n\
-    max: {:f}\n\
-    std: {:f}\n\
-    median: {:f}\n\
-    mean: {:f}\n\
-    N: {:,.0f}'\
+min: {:f}\n\
+max: {:f}\n\
+std: {:f}\n\
+median: {:f}\n\
+mean: {:f}\n\
+N: {:,.0f}'\
         .format(np.nanmin(chl_diff[~chl_diff.mask]),
                 np.nanmax(chl_diff[~chl_diff.mask]),
                 np.nanstd(chl_diff[~chl_diff.mask]),
@@ -179,16 +190,18 @@ def plot_test_ANNOT_flags(path_in,path_out,filename1,filename2,year,doy,fout,sit
         xpos = 10**(np.log10(left)+0.6*((np.log10(right))-(np.log10(left))))
         plt.text(xpos, 0.45*top, str3, fontsize=12,color='black')
         
-        ofname = 'O'+year+doy+'ANNOT_flag_'+site_name+'.pdf'
+        ofname = filename1[:-3]+'_ANNOT_flag.pdf'
         ofname = os.path.join(path_out,ofname)
-    
+        
+#        plt.tight_layout()
+        
         plt.savefig(ofname, dpi=200)
     #    plt.show()
         plt.close()
         
         # Save netCDF4 file
     
-        ofname = 'O'+year+doy+'_pxdiff_'+site_name+'.nc'
+        ofname = filename1[:-3]+'_pxdiff.nc'
         ofname = os.path.join(path_out,ofname)
         fmb = Dataset(ofname, 'w', format='NETCDF4')
         fmb.description = 'Chl difference netCDF4 file'
@@ -214,24 +227,22 @@ def main():
     """business logic for when running this module as the primary one!"""
     print('Main Code!')
     
-    path_in = '/Users/javier/Desktop/Javier/2019_ROMA/CNR_Research/OLCI_flag_comp/DataArchive/'
-#    path_in = '/DataArchive/OC/OLCI/daily/'
+#    host = 'mac'
+    host = 'vm'
     
-    path_out = '/Users/javier/Desktop/Javier/2019_ROMA/CNR_Research/OLCI_flag_comp/data'
-#    path_out = '/home/Vittorio.Brando/Javier/data'
-    
-    year_start = 2016
-    year_end = 2019
-    
-    doy_start = 1
-    doy_end = 366
-    
-    #%% To plot density  
-    
-    site_name = 'med'
-#    site_name= 'bs'
-    
-    filename = '2016/199/O2016199--'+site_name+'-hr_brdf.nc' # open an original for to copy properties to output file
+    if host == 'mac':
+        path_in = '/Users/javier/Desktop/Javier/2019_ROMA/CNR_Research/OLCI_flag_comp/DataArchive/OLCI_NAS/20160426_20190228/'   
+        path_out = '/Users/javier/Desktop/Javier/2019_ROMA/CNR_Research/OLCI_flag_comp/DataArchive/OLCI_NAS/data/'        
+        path_list = path_in
+    elif host == 'vm':
+        path_in = '/store3/OLCI_NAS/20160426_20190228/'
+        path_out = '/home/Vittorio.Brando/Javier/data'
+        path_list = '/home/Vittorio.Brando/Javier/codes'
+    else:
+        print('Not sure from where this script will be run!')
+        
+    #%% To plot density      
+    filename = 'VGOCS_2016117094003_O.nc' # open an original for to copy properties to output file
     
     nc_f0=Dataset(os.path.join(path_in,filename), 'r')
         
@@ -241,51 +252,46 @@ def main():
     ylen = len(lat0)
     xlen = len(lon0)
     
-    fout = open(os.path.join(path_out,'output_'+site_name+'.txt'),'w+')
+    fout = open(os.path.join(path_out,'output_NAS.txt'),'w+')
+    
+    meridian_steps = [12.5, 13, 13.5]
+    parallel_steps = [44, 44.5, 45, 45.5]
     #%%
-
+    
     chl_diff_den = np.ma.zeros((ylen, xlen), dtype=np.float32) #   
     cover_sum = np.ma.zeros((ylen, xlen), dtype=np.float32) # total of observations
     
     count = 0;
     
-    for year_idx in range(year_start, year_end+1):
-        for doy_idx in range(doy_start, doy_end+1):
-            year = str(year_idx)
-            doy = str(doy_idx)
-            
-            if float(doy) < 100:
-                if float(doy) < 10:
-                    doy = '00'+doy
-                else:
-                    doy = '0'+doy
-                
-#            print(year+doy)    
-            
-            filename1 = year+'/'+doy+'/''O'+year+doy+'--'+site_name+'-hr_brdf.nc'
-            filename2 = year+'/'+doy+'/''O'+year+doy+'--'+site_name+'-hr_brdf_w_ANNOT_DROUT.nc'
-            
-            if os.path.exists(path_in+filename1) & os.path.exists(path_in+filename2):
-                if access(path_in+filename1, R_OK) & access(path_in+filename2, R_OK):
-                    chl_diff_mask, coverage, valid_flag = plot_test_ANNOT_flags\
-                    (path_in,path_out,filename1,filename2,year,doy,fout,site_name)
-                    if valid_flag:   
-                        print('File processing: '+year+doy)
-                        fout.write('File processing: '+year+doy+'\n')
-                        chl_diff_den = ~chl_diff_mask + chl_diff_den
-                        
-                        cover_sum = coverage + cover_sum
-                        count = count + 1
-                else:
-                    print('File access denied: '+year+doy)                        
+    file = open(os.path.join(path_list,'file_list.txt'),'r')
+    
+    for line in file:       
+    #            print(year+doy)    
+        
+        filename1 = line[2:-1]    
+#        print(path_in+filename1)
+        if os.path.exists(path_in+filename1):
+            if access(path_in+filename1, R_OK) :
+                chl_diff_mask, coverage, valid_flag = plot_test_NAS_ANNOT_flags\
+                (path_in,path_out,filename1,fout,meridian_steps,parallel_steps)
+                if valid_flag:   
+                    print('File processing: '+filename1)
+                    fout.write('File processing: '+filename1+'\n')
+                    chl_diff_den = ~chl_diff_mask + chl_diff_den
+                    
+                    cover_sum = coverage + cover_sum
+                    count = count + 1
             else:
-                print('File not found: '+year+doy)
-                fout.write('File not found: '+year+doy+'\n')
+                print('File access denied: '+filename1)                        
+        else:
+            print('File not found: '+filename1)
+            fout.write('File not found: '+filename1+'\n')
     
     
     #%%
     plt.figure(figsize=(10,10))
-    plt.subplot(3,1,1)
+    ax = plt.subplot(2,2,1)
+    ax.set_title('Absolute Density (counts)')
     current_cmap = plt.cm.get_cmap()
     current_cmap.set_bad(color='white')
     
@@ -294,16 +300,17 @@ def main():
     m = Basemap(llcrnrlat=min(lat0),urcrnrlat=max(lat0),\
         	llcrnrlon=min(lon0),urcrnrlon=max(lon0), resolution='l')
     x,y=np.meshgrid(lon0, lat0)
-    m.drawparallels([30, 35, 40, 45],labels=[1,0,0,1],color='grey',linewidth=0.1)
-    m.drawmeridians([-5, 0, 5, 10, 15, 20, 25, 30, 35],labels=[1,0,0,1],color='grey',linewidth=0.1)
+    m.drawparallels(parallel_steps,labels=[1,0,0,1],color='grey',linewidth=0.1)
+    m.drawmeridians(meridian_steps,labels=[1,0,0,1],color='grey',linewidth=0.1)
     m.drawcoastlines(linewidth=0.1)
     m.imshow(chl_diff_den,origin='upper', extent=[min(lon0), max(lon0), min(lat0), max(lat0)],\
                                                cmap='rainbow',interpolation='nearest')
     
-    clb = plt.colorbar(fraction=0.046, pad=0.1,orientation='horizontal')
-    clb.ax.set_xlabel('Absolute Density (counts)')
+    clb = plt.colorbar(fraction=0.046, pad=0.05,orientation='horizontal')
+#    clb.ax.set_xlabel('Absolute Density (counts)')
     #%%
-    plt.subplot(3,1,2)
+    ax = plt.subplot(2,2,2)
+    ax.set_title('Valid Occurences (counts)')
     current_cmap = plt.cm.get_cmap()
     current_cmap.set_bad(color='white')
     
@@ -312,16 +319,17 @@ def main():
     m = Basemap(llcrnrlat=min(lat0),urcrnrlat=max(lat0),\
         	llcrnrlon=min(lon0),urcrnrlon=max(lon0), resolution='l')
     x,y=np.meshgrid(lon0, lat0)
-    m.drawparallels([30, 35, 40, 45],labels=[1,0,0,1],color='grey',linewidth=0.1)
-    m.drawmeridians([-5, 0, 5, 10, 15, 20, 25, 30, 35],labels=[1,0,0,1],color='grey',linewidth=0.1)
+    m.drawparallels(parallel_steps,labels=[1,0,0,1],color='grey',linewidth=0.1)
+    m.drawmeridians(meridian_steps,labels=[1,0,0,1],color='grey',linewidth=0.1)
     m.drawcoastlines(linewidth=0.1)
     m.imshow(cover_sum,origin='upper', extent=[min(lon0), max(lon0), min(lat0), max(lat0)],\
                                                cmap='rainbow',interpolation='nearest')
     m.drawlsmask(land_color='white',ocean_color='none',resolution='f', grid=1.25)
-    clb = plt.colorbar(fraction=0.046, pad=0.1,orientation='horizontal')
-    clb.ax.set_xlabel('Valid Occurences (counts)')
+    clb = plt.colorbar(fraction=0.046, pad=0.05,orientation='horizontal')
+#    clb.ax.set_xlabel('Valid Occurences (counts)')
     #%%
-    plt.subplot(3,1,3)
+    ax = plt.subplot(2,1,2)
+    ax.set_title('Occurence Percentage [%]')
     current_cmap = plt.cm.get_cmap()
     current_cmap.set_bad(color='white')
     
@@ -330,25 +338,28 @@ def main():
     m = Basemap(llcrnrlat=min(lat0),urcrnrlat=max(lat0),\
         	llcrnrlon=min(lon0),urcrnrlon=max(lon0), resolution='l')
     x,y=np.meshgrid(lon0, lat0)
-    m.drawparallels([30, 35, 40, 45],labels=[1,0,0,1],color='grey',linewidth=0.1)
-    m.drawmeridians([-5, 0, 5, 10, 15, 20, 25, 30, 35],labels=[1,0,0,1],color='grey',linewidth=0.1)
+    m.drawparallels(parallel_steps,labels=[1,0,0,1],color='grey',linewidth=0.1)
+    m.drawmeridians(meridian_steps,labels=[1,0,0,1],color='grey',linewidth=0.1)
     m.drawcoastlines(linewidth=0.1)
     m.imshow(occurence_percent,origin='upper', extent=[min(lon0), max(lon0), min(lat0), max(lat0)],\
                                                cmap='rainbow',vmin=0, vmax=1,interpolation='nearest')
     
-    clb = plt.colorbar(fraction=0.046, pad=0.1,orientation='horizontal')
+    clb = plt.colorbar(fraction=0.046, pad=0.05,orientation='horizontal')
     clb.set_ticks([0.0, 0.2, 0.4, 0.6, 0.8, 1.0])
     clb.set_ticklabels(['0', '20', '40', '60', '80', '100'])
-    clb.ax.set_xlabel('Occurence Percentage [%]')
+#    clb.ax.set_xlabel('Occurence Percentage [%]')
     
-    figname = os.path.join(path_out,'Density_'+site_name+'.pdf')
+    plt.tight_layout()
+    
+    figname = os.path.join(path_out,'Density_NAS.pdf')
     #    print(figname)
     plt.savefig(figname, dpi=200)
     #plt.show()
+    plt.close()
     
     #%% Save netCDF4 file
-
-    ofname = 'Density_'+site_name+'.nc'
+    
+    ofname = 'Density_NAS.nc'
     ofname = os.path.join(path_out,ofname)
     if os.path.exists(ofname):
         os.remove(ofname)
@@ -373,7 +384,7 @@ def main():
     gridd_var2[:,:] = cover_sum
     
     fmb.close()
-    fout.close()
+    fout.close()                            
 #%%
 if __name__ == '__main__':
     main()
