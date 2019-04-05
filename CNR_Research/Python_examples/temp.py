@@ -2,6 +2,7 @@
 import numpy as np
 from netCDF4 import Dataset
 from matplotlib import pyplot as plt
+import matplotlib
 import os.path
 import sys  
 sys.path.append('/Users/javier/Desktop/Javier/2019_ROMA/CNR_Research/OLCI_flag_comp/')   
@@ -11,6 +12,13 @@ from matplotlib.colors import LogNorm
 from mpl_toolkits.basemap import Basemap
 import os
 os.environ['QT_QPA_PLATFORM']='offscreen' # to avoid error "QXcbConnection: Could not connect to display"
+
+#% shape files and higher res for coastlines
+from color_constants import RGB
+from shapely.geometry import Point, Polygon
+import geopandas as gpd
+
+from time import sleep
 #%%
 path_in = '/Users/javier/Desktop/Javier/2019_ROMA/CNR_Research/OLCI_flag_comp/DataArchive/OLCI_NAS/20160426_20190228'
 
@@ -38,138 +46,50 @@ chl2[~chl2.mask] = chl1[~chl2.mask]
 
 meridian_steps = [12.5, 13, 13.5]
 parallel_steps = [44, 44.5, 45, 45.5]
+#%%
+sh = gpd.read_file('/Users/javier/Desktop/Javier/2019_ROMA/CNR_Research/Shapefiles/ISPRA/Bacini_idrografici_principali_0607/Bacini_idrografici_principali_0607.shp')
 
-#%% Create figure and subplot for chl w/o ANNOTS flags
-plt.figure(figsize=(12,12))
-plt.subplot(3, 2, 1)
-plot_map(chl1,lat1,lon1,meridian_steps,parallel_steps) 
-plt.title('chl w/o ANNOT flags')
-clb = plt.colorbar(fraction=0.046, pad=0.1,orientation='horizontal')
-#        clb.ax.set_xlabel('chl')
+sh = sh.to_crs(epsg=4326)
 
-#%% subplot for chl w/ ANNOTS flags
-plt.subplot(3, 2, 2)
-plot_map(chl2,lat2,lon2,meridian_steps,parallel_steps)  
-plt.title('chl w/ ANNOT flags')
-clb = plt.colorbar(fraction=0.046, pad=0.1,orientation='horizontal')
-#        clb.ax.set_xlabel('chl')
+sh1 = gpd.read_file('/Users/javier/Desktop/Javier/2019_ROMA/CNR_Research/Shapefiles/GSHHS_shp/h/GSHHS_h_L1.shp')
+borders=list(sh1['geometry']) #polygon
+rivers=list(sh['geometry'])[:7]
 
-#%% create masked difference and mask
-mask1_valid = ~chl1.mask
-mask2_valid = ~chl2.mask
-mask_diff = np.ma.masked_where((mask1_valid ^ mask2_valid)==0,(mask1_valid ^ mask2_valid))
-
-chl_diff = np.ma.masked_where(~(mask1_valid ^ mask2_valid),chl1)
-
-#%% Mask of the difference pixels
-plt.subplot(3, 2, 3)
-#plt.imshow(mask_diff, cmap='gray') 
+coords=[(12.,44.), (12.,46.), (14.,46.), (14.,44.)]
+poly_NAD=Polygon(coords) # POLYGON ((12 44, 12 46, 14 46, 14 44, 12 44))
+#%%
+plt.figure(figsize=(8,8))
 m = Basemap(llcrnrlat=min(lat1),urcrnrlat=max(lat1),\
-    	llcrnrlon=min(lon1),urcrnrlon=max(lon1), resolution='l')
-x,y=np.meshgrid(lon1, lat1)
-m.drawparallels(parallel_steps,labels=[1,0,0,1],color='grey',linewidth=0.1)
-m.drawmeridians(meridian_steps,labels=[1,0,0,1],color='grey',linewidth=0.1)
-m.drawcoastlines(linewidth=0.1)
-m.imshow(mask_diff,origin='upper', extent=[min(lon1), max(lon1), min(lat1), max(lat1)],\
-                                           cmap='gist_rainbow',interpolation='nearest')
-#    plt.colorbar(fraction=0.046, pad=0.04)
-plt.title('Difference Pixels -- Mask')
+			llcrnrlon=min(lon1),urcrnrlon=max(lon1), resolution='f')
 
-#%% chl difference pixels 
-plt.subplot(3, 2, 4)
-current_cmap = plt.cm.get_cmap()
-current_cmap.set_bad(color='white')
+m.drawparallels(np.linspace(min(lat1), max(lat1), 7),labels=[1,0,0,1])
+m.drawmeridians(np.linspace(min(lon1), max(lon1), 7),labels=[1,0,0,1])
 
-m = Basemap(llcrnrlat=min(lat1),urcrnrlat=max(lat1),\
-    	llcrnrlon=min(lon1),urcrnrlon=max(lon1), resolution='l')
-x,y=np.meshgrid(lon1, lat1)
-m.drawparallels(parallel_steps,labels=[1,0,0,1],color='grey',linewidth=0.1)
-m.drawmeridians(meridian_steps,labels=[1,0,0,1],color='grey',linewidth=0.1)
-m.drawcoastlines(linewidth=0.1)
-m.imshow(chl_diff,origin='upper', extent=[min(lon1), max(lon1), min(lat1), max(lat1)],\
-                                           norm=LogNorm(),cmap='rainbow')
-clb = plt.colorbar(fraction=0.046, pad=0.1,orientation='horizontal')
-#        clb.ax.set_xlabel('chl')
-plt.title('Difference Pixels -- chl')
+m.drawlsmask(land_color=RGB.hex_format(RGB(169,169,169)),ocean_color='white',resolution='f',lakes=True, grid=1.25) #same colour for land and ocean
+#%%
+for (r,i) in zip(borders, range(2)): #plot the borders and fill the continent if the polygon is inside poly_NAD
+	elements=list(r.exterior.coords) # Ex: print(elements): [(-119.972972, 77.0295), (-119.974694, 77.029361), (-119.970361, 77.031278), (-119.972972, 77.0295)]
+	xx,yy=zip(*elements) # unzip using the * operators. xx and yy 
+	xy = np.array(list(zip(xx,yy)))
+    
+	if r.intersects(poly_NAD)==True:
+		m.plot(xx,yy,marker=None, color='black', linewidth=0.5)
+		poly = matplotlib.patches.Polygon(xy, facecolor=RGB.hex_format(RGB(238, 213, 183)))
+		plt.gca().add_patch((poly))
+			
+for (r,i) in zip(rivers, range(len(rivers))):
+    if i!=3 and i!=0 and i!=1:
+        elements=list(r.exterior.coords)
+        xx,yy=zip(*elements)
+        m.plot(xx,yy,marker=None, color=RGB.hex_format(RGB(0,229,238)), linewidth=1)
+#%%
+m.drawrivers(linewidth=1.0, color=RGB.hex_format(RGB(0,229,238)))
+cs=m.imshow(chl1,origin='upper', extent=[min(lon1), max(lon1), min(lat1), max(lat1)],cmap=plt.cm.Spectral_r)
+plt.axes().set_aspect('equal')
 
-#%% histogram of the two chl products
-plt.subplot(3, 2, 5)
-kwargs = dict(bins=np.logspace(-4,2,200),histtype='step')
-
-plt.hist(chl1[~chl1.mask],color='blue', **kwargs) 
-plt.xscale('log')
-plt.hist(chl2[~chl2.mask],color='red', **kwargs) 
-plt.xscale('log')
-plt.xlabel('chl')
-plt.ylabel('Frequency')
-plt.xlim(1E-3,1E3)
-
-str1 = 'w/o ANNOT flags\n\
-min: {:f}\n\
-max: {:f}\n\
-std: {:f}\n\
-median: {:f}\n\
-mean: {:f}\n\
-N: {:,.0f}'\
-.format(np.nanmin(chl1[~chl1.mask]),
-        np.nanmax(chl1[~chl1.mask]),
-        np.nanstd(chl1[~chl1.mask]),
-        np.nanmedian(chl1[~chl1.mask]),
-        np.nanmean(chl1[~chl1.mask]),
-        sum(sum(~chl1.mask)))
-
-str2 = 'w/ ANNOT flags\n\
-min: {:f}\n\
-max: {:f}\n\
-std: {:f}\n\
-median: {:f}\n\
-mean: {:f}\n\
-N: {:,.0f}\n\
-Diff: {:,.0f}'\
-.format(np.nanmin(chl2[~chl2.mask]),
-        np.nanmax(chl2[~chl2.mask]),
-        np.nanstd(chl2[~chl2.mask]),
-        np.nanmedian(chl2[~chl2.mask]),
-        np.nanmean(chl2[~chl2.mask]),
-        sum(sum(~chl2.mask)),
-        sum(sum(~chl1.mask))-sum(sum(~chl2.mask)))
-
-bottom, top = plt.ylim()
-left, right = plt.xlim()
-xpos = 10**(np.log10(left)+0.02*((np.log10(right))-(np.log10(left))))
-plt.text(xpos, 0.45*top, str1, fontsize=12,color='blue')
-xpos = 10**(np.log10(left)+0.6*((np.log10(right))-(np.log10(left))))
-plt.text(xpos, 0.37*top, str2, fontsize=12,color='red')
-
-#%% histogram of the difference pixels
-plt.subplot(3, 2, 6)
-plt.hist(chl_diff[~chl_diff.mask],color='black', **kwargs) 
-plt.xscale('log')
-plt.xlabel('chl')
-plt.ylabel('Frequency')
-plt.xlim(1E-3,1E3)
-
-str3 = 'Diff. Pixels\n\
-min: {:f}\n\
-max: {:f}\n\
-std: {:f}\n\
-median: {:f}\n\
-mean: {:f}\n\
-N: {:,.0f}'\
-.format(np.nanmin(chl_diff[~chl_diff.mask]),
-        np.nanmax(chl_diff[~chl_diff.mask]),
-        np.nanstd(chl_diff[~chl_diff.mask]),
-        np.nanmedian(chl_diff[~chl_diff.mask]),
-        np.nanmean(chl_diff[~chl_diff.mask]),
-        sum(sum(~chl_diff.mask)))
-
-bottom, top = plt.ylim()
-left, right = plt.xlim()
-xpos = 10**(np.log10(left)+0.6*((np.log10(right))-(np.log10(left))))
-plt.text(xpos, 0.45*top, str3, fontsize=12,color='black')
-
-
-
-plt.tight_layout()
+path_out = '/Users/javier/Desktop/Javier/2019_ROMA/CNR_Research/OLCI_flag_comp'
+figname = os.path.join(path_out,'test.pdf')
+#    print(figname)
+plt.savefig(figname, dpi=200)
 plt.show()
-#plt.close()
+plt.close()
