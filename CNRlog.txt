@@ -1,5 +1,14 @@
 ------------------------------------------------------------
-2019-04-04
+2019-04-04 Thu
 
 to convert from pdf to jpg using imagemagick:
 (base) javier@Javier-Conchas-MacBook-Pro:data$ ls ./*.pdf | xargs -L1 -I {} convert {}  -quality 101 -density 300 {}.jpg
+
+to create a movie:
+(base) javier@Javier-Conchas-MacBook-Pro:OLCI_flag_comp$ ffmpeg -framerate 2 -pattern_type glob -i '*.jpg' -c:v libx264 -pix_fmt yuv420p out.mp4
+
+------------------------------------------------------------
+2019-04-05 Fri
+
+shapely Tutorial:
+https://automating-gis-processes.github.io/CSC18/lessons/L4/point-in-polygon.html

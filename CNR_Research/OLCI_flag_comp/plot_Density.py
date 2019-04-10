@@ -10,12 +10,26 @@ import numpy as np
 from netCDF4 import Dataset
 from matplotlib import pyplot as plt
 from matplotlib.colors import LogNorm
-from mpl_toolkits.basemap import Basemap
+from mpl_toolkits.basemap import Basemap 
 import os.path
+
+import sys  
+sys.path.append('/Users/javier/Desktop/Javier/2019_ROMA/CNR_Research/Python_examples/') 
+from plot_map_hres import plot_mask
 #%% To plot density  
 path_in = '/Users/javier/Desktop/Javier/2019_ROMA/CNR_Research/OLCI_flag_comp/'
 
-filename = 'Density_med_Final.nc' # open an original for to copy properties to output file
+#region_flag = 'med'
+region_flag = 'NAS'
+
+if region_flag=='med':
+    filename = 'Density_med_Final.nc' # open an original for to copy properties to output file
+    parallel_steps = [30, 35, 40, 45]
+    meridian_steps = [-5, 0, 5, 10, 15, 20, 25, 30, 35]
+elif region_flag== 'NAS':
+    filename = 'Density_NAS_Final.nc' # open an original for to copy properties to output file
+    meridian_steps = [12.5, 13, 13.5]
+    parallel_steps = [44, 44.5, 45, 45.5]   
 
 nc_f0=Dataset(os.path.join(path_in,filename), 'r')
     
@@ -28,62 +42,45 @@ cover_sum = nc_f0.variables['cover_sum'][:,:]
 ylen = len(lat0)
 xlen = len(lon0)
 
-#%%
-plt.figure(figsize=(10,10))
-plt.subplot(3,1,1)
-current_cmap = plt.cm.get_cmap()
-current_cmap.set_bad(color='white')
+coords=[(min(lon0),min(lat0)), (min(lon0),max(lat0)), (max(lon0),max(lat0)), (max(lon0),min(lat0))]
 
-m = Basemap(llcrnrlat=min(lat0),urcrnrlat=max(lat0),\
-    	llcrnrlon=min(lon0),urcrnrlon=max(lon0), resolution='l')
-x,y=np.meshgrid(lon0, lat0)
-m.drawparallels([30, 35, 40, 45],labels=[1,0,0,1],color='grey',linewidth=0.1)
-m.drawmeridians([-5, 0, 5, 10, 15, 20, 25, 30, 35],labels=[1,0,0,1],color='grey',linewidth=0.1)
-m.drawcoastlines(linewidth=0.1)
+#%%
+fig  = plt.figure(figsize=(10,10))
+
+plt.subplots_adjust(hspace=0.5)
+
+#%
+plt.subplot(3,1,1)
+plt.title('Absolute Density')
+m = plot_mask(lat0,lon0,coords,meridian_steps,parallel_steps,rivers_flag = False)
 m.imshow(chl_diff_den,origin='upper', extent=[min(lon0), max(lon0), min(lat0), max(lat0)],\
                                            cmap='rainbow')
-
 clb = plt.colorbar(fraction=0.046, pad=0.1,orientation='horizontal')
-clb.ax.set_xlabel('Absolute Density (counts)')
-#%%
-plt.subplot(3,1,2)
-current_cmap = plt.cm.get_cmap()
-current_cmap.set_bad(color='white')
+clb.ax.set_xlabel('counts')
 
-m = Basemap(llcrnrlat=min(lat0),urcrnrlat=max(lat0),\
-    	llcrnrlon=min(lon0),urcrnrlon=max(lon0), resolution='l')
-x,y=np.meshgrid(lon0, lat0)
-m.drawparallels([30, 35, 40, 45],labels=[1,0,0,1],color='grey',linewidth=0.1)
-m.drawmeridians([-5, 0, 5, 10, 15, 20, 25, 30, 35],labels=[1,0,0,1],color='grey',linewidth=0.1)
-m.drawcoastlines(linewidth=0.1)
+#%
+plt.subplot(3,1,2)
+plt.title('Valid Occurences')
+m = plot_mask(lat0,lon0,coords,meridian_steps,parallel_steps,rivers_flag = False)
 m.imshow(cover_sum,origin='upper', extent=[min(lon0), max(lon0), min(lat0), max(lat0)],\
                                            cmap='rainbow')
-m.drawlsmask(land_color='white',ocean_color='none',resolution='f', grid=1.25)
 clb = plt.colorbar(fraction=0.046, pad=0.1,orientation='horizontal')
-clb.ax.set_xlabel('Valid Occurences (counts)')
-#%%
+clb.ax.set_xlabel('counts')
+
+#%
 plt.subplot(3,1,3)
-current_cmap = plt.cm.get_cmap()
-current_cmap.set_bad(color='white')
-
+plt.title('Occurence Percentage')
 occurence_percent = chl_diff_den/cover_sum
-
-m = Basemap(llcrnrlat=min(lat0),urcrnrlat=max(lat0),\
-    	llcrnrlon=min(lon0),urcrnrlon=max(lon0), resolution='l')
-x,y=np.meshgrid(lon0, lat0)
-m.drawparallels([30, 35, 40, 45],labels=[1,0,0,1],color='grey',linewidth=0.1)
-m.drawmeridians([-5, 0, 5, 10, 15, 20, 25, 30, 35],labels=[1,0,0,1],color='grey',linewidth=0.1)
-m.drawcoastlines(linewidth=0.1)
+m = plot_mask(lat0,lon0,coords,meridian_steps,parallel_steps,rivers_flag = False)
 m.imshow(occurence_percent,origin='upper', extent=[min(lon0), max(lon0), min(lat0), max(lat0)],\
-                                           cmap='rainbow',vmin=0)
-
-
+                                           cmap='rainbow')
 clb = plt.colorbar(fraction=0.046, pad=0.1,orientation='horizontal')
 clb.set_ticks([0.0, 0.2, 0.4, 0.6, 0.8, 1.0])
 clb.set_ticklabels(['0', '20', '40', '60', '80', '100'])
-clb.ax.set_xlabel('Occurence Percentage [%]')
+clb.ax.set_xlabel('%')
 
-figname = os.path.join(path_in,'Density_med_Final.pdf')
-#    print(figname)
-plt.savefig(figname, dpi=300)
+figname = os.path.join(path_in,'Density_'+region_flag+'_Final.pdf')
+fig.savefig(figname, dpi=300)
+
+plt.show()
 plt.close()

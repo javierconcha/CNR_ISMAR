@@ -214,17 +214,23 @@ def main():
     """business logic for when running this module as the primary one!"""
     print('Main Code!')
     
-    path_in = '/Users/javier/Desktop/Javier/2019_ROMA/CNR_Research/OLCI_flag_comp/DataArchive/'
-#    path_in = '/DataArchive/OC/OLCI/daily/'
+    host = 'mac'
+#    host = 'vm'
     
-    path_out = '/Users/javier/Desktop/Javier/2019_ROMA/CNR_Research/OLCI_flag_comp/data'
-#    path_out = '/home/Vittorio.Brando/Javier/data'
+    if host == 'mac':
+        path_in = '/Users/javier/Desktop/Javier/2019_ROMA/CNR_Research/OLCI_flag_comp/DataArchive/'   
+        path_out = '/Users/javier/Desktop/Javier/2019_ROMA/CNR_Research/OLCI_flag_comp/data'        
+    elif host == 'vm':
+        path_in = '/DataArchive/OC/OLCI/daily/'
+        path_out = '/home/Vittorio.Brando/Javier/data'
+    else:
+        print('Not sure from where this script will be run!')
     
     year_start = 2016
-    year_end = 2019
+    year_end = 2016
     
-    doy_start = 1
-    doy_end = 366
+    doy_start = 199
+    doy_end = 199
     
     #%% To plot density  
     

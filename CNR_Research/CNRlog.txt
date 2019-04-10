@@ -1,5 +1,0 @@
-------------------------------------------------------------
-2019-04-04
-
-to convert from pdf to jpg using imagemagick:
-(base) javier@Javier-Conchas-MacBook-Pro:data$ ls ./*.pdf | xargs -L1 -I {} convert {}  -quality 101 -density 300 {}.jpg
