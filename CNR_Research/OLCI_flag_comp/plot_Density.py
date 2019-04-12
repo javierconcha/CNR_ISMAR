@@ -26,10 +26,12 @@ if region_flag=='med':
     filename = 'Density_med_Final.nc' # open an original for to copy properties to output file
     parallel_steps = [30, 35, 40, 45]
     meridian_steps = [-5, 0, 5, 10, 15, 20, 25, 30, 35]
+    rivers_flag = False
 elif region_flag== 'NAS':
     filename = 'Density_NAS_Final.nc' # open an original for to copy properties to output file
     meridian_steps = [12.5, 13, 13.5]
     parallel_steps = [44, 44.5, 45, 45.5]   
+    rivers_flag = True
 
 nc_f0=Dataset(os.path.join(path_in,filename), 'r')
     
@@ -52,7 +54,7 @@ plt.subplots_adjust(hspace=0.5)
 #%
 plt.subplot(3,1,1)
 plt.title('Absolute Density')
-m = plot_mask(lat0,lon0,coords,meridian_steps,parallel_steps,rivers_flag = False)
+m = plot_mask(lat0,lon0,coords,meridian_steps,parallel_steps,rivers_flag)
 m.imshow(chl_diff_den,origin='upper', extent=[min(lon0), max(lon0), min(lat0), max(lat0)],\
                                            cmap='rainbow')
 clb = plt.colorbar(fraction=0.046, pad=0.1,orientation='horizontal')
@@ -61,7 +63,7 @@ clb.ax.set_xlabel('counts')
 #%
 plt.subplot(3,1,2)
 plt.title('Valid Occurences')
-m = plot_mask(lat0,lon0,coords,meridian_steps,parallel_steps,rivers_flag = False)
+m = plot_mask(lat0,lon0,coords,meridian_steps,parallel_steps,rivers_flag)
 m.imshow(cover_sum,origin='upper', extent=[min(lon0), max(lon0), min(lat0), max(lat0)],\
                                            cmap='rainbow')
 clb = plt.colorbar(fraction=0.046, pad=0.1,orientation='horizontal')
@@ -71,7 +73,7 @@ clb.ax.set_xlabel('counts')
 plt.subplot(3,1,3)
 plt.title('Occurence Percentage')
 occurence_percent = chl_diff_den/cover_sum
-m = plot_mask(lat0,lon0,coords,meridian_steps,parallel_steps,rivers_flag = False)
+m = plot_mask(lat0,lon0,coords,meridian_steps,parallel_steps,rivers_flag)
 m.imshow(occurence_percent,origin='upper', extent=[min(lon0), max(lon0), min(lat0), max(lat0)],\
                                            cmap='rainbow')
 clb = plt.colorbar(fraction=0.046, pad=0.1,orientation='horizontal')

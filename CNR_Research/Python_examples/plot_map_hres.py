@@ -43,7 +43,7 @@ def plot_mask(lat1,lon1,coords,meridian_steps,parallel_steps,rivers_flag):
     xy = np.array(list(zip(xx,yy))) # (N,2) numpy array
         
     if Europa_shape.intersects(poly_NAD)==True:
-        m.plot(xx,yy,marker=None, color='black', linewidth=0.5)
+        m.plot(xx,yy,marker=None, color='black', linewidth=0.2)
         poly = matplotlib.patches.Polygon(xy, facecolor='#EED5B7')
         plt.gca().add_patch((poly))
         
@@ -51,7 +51,7 @@ def plot_mask(lat1,lon1,coords,meridian_steps,parallel_steps,rivers_flag):
     xx,yy = Africa_shape.exterior.coords.xy 
     xy = np.array(list(zip(xx,yy))) # (N,2) numpy array    
     if Africa_shape.intersects(poly_NAD)==True:
-        m.plot(xx,yy,marker=None, color='black', linewidth=0.5)
+        m.plot(xx,yy,marker=None, color='black', linewidth=0.2)
         poly = matplotlib.patches.Polygon(xy, facecolor='#EED5B7')
         plt.gca().add_patch((poly))
     
@@ -60,6 +60,6 @@ def plot_mask(lat1,lon1,coords,meridian_steps,parallel_steps,rivers_flag):
             if i!=3 and i!=0 and i!=1:
                 elements=list(r.exterior.coords)
                 xx,yy=zip(*elements)
-                m.plot(xx,yy,marker=None, color='royalblue', linewidth=1)
+                m.plot(xx,yy,marker=None, color='royalblue', linewidth=0.1)
             
     return m
