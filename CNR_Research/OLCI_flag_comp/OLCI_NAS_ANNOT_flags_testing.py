@@ -227,12 +227,12 @@ def main():
     """business logic for when running this module as the primary one!"""
     print('Main Code!')
     
-#    host = 'mac'
-    host = 'vm'
+    host = 'mac'
+#    host = 'vm'
     
     if host == 'mac':
         path_in = '/Users/javier/Desktop/Javier/2019_ROMA/CNR_Research/OLCI_flag_comp/DataArchive/OLCI_NAS/20160426_20190228/'   
-        path_out = '/Users/javier/Desktop/Javier/2019_ROMA/CNR_Research/OLCI_flag_comp/DataArchive/OLCI_NAS/data/'        
+        path_out = '/Users/javier/Desktop/Javier/2019_ROMA/CNR_Research/OLCI_flag_comp/data/NAS/'        
         path_list = path_in
     elif host == 'vm':
         path_in = '/store3/OLCI_NAS/20160426_20190228/'
@@ -342,11 +342,13 @@ def main():
     m.drawmeridians(meridian_steps,labels=[1,0,0,1],color='grey',linewidth=0.1)
     m.drawcoastlines(linewidth=0.1)
     m.imshow(occurence_percent,origin='upper', extent=[min(lon0), max(lon0), min(lat0), max(lat0)],\
-                                               cmap='rainbow',vmin=0, vmax=1,interpolation='nearest')
+                                               cmap='rainbow',vmin=0, vmax=0.5,interpolation='nearest')
     
     clb = plt.colorbar(fraction=0.046, pad=0.05,orientation='horizontal')
-    clb.set_ticks([0.0, 0.2, 0.4, 0.6, 0.8, 1.0])
-    clb.set_ticklabels(['0', '20', '40', '60', '80', '100'])
+#    clb.set_ticks([0.0, 0.2, 0.4, 0.6, 0.8, 1.0])
+#    clb.set_ticklabels(['0', '20', '40', '60', '80', '100'])
+    clb.set_ticks([0.0, 0.1, 0.2, 0.3, 0.4, 0.5])
+    clb.set_ticklabels(['0', '10', '20', '30', '40', '50'])    
 #    clb.ax.set_xlabel('Occurence Percentage [%]')
     
     plt.tight_layout()

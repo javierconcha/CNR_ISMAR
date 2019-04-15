@@ -19,8 +19,8 @@ from plot_map_hres import plot_mask
 #%% To plot density  
 path_in = '/Users/javier/Desktop/Javier/2019_ROMA/CNR_Research/OLCI_flag_comp/'
 
-#region_flag = 'med'
-region_flag = 'NAS'
+region_flag = 'med'
+#region_flag = 'NAS'
 
 if region_flag=='med':
     filename = 'Density_med_Final.nc' # open an original for to copy properties to output file
@@ -70,19 +70,38 @@ clb = plt.colorbar(fraction=0.046, pad=0.1,orientation='horizontal')
 clb.ax.set_xlabel('counts')
 
 #%
-plt.subplot(3,1,3)
+ax2 = plt.subplot(3,1,3)
 plt.title('Occurence Percentage')
 occurence_percent = chl_diff_den/cover_sum
 m = plot_mask(lat0,lon0,coords,meridian_steps,parallel_steps,rivers_flag)
 m.imshow(occurence_percent,origin='upper', extent=[min(lon0), max(lon0), min(lat0), max(lat0)],\
-                                           cmap='rainbow')
+                                           vmin=0,vmax=0.1,cmap='rainbow')
 clb = plt.colorbar(fraction=0.046, pad=0.1,orientation='horizontal')
-clb.set_ticks([0.0, 0.2, 0.4, 0.6, 0.8, 1.0])
-clb.set_ticklabels(['0', '20', '40', '60', '80', '100'])
-clb.ax.set_xlabel('%')
+#clb.set_ticks([0.0, 0.2, 0.4, 0.6, 0.8, 1.0])
+#clb.set_ticklabels(['0', '20', '40', '60', '80', '100'])
+clb.set_ticks([0.0, 0.02, 0.04,0.06,0.08, 0.1])
+clb.set_ticklabels(['0','0.02','0.04','0.06','0.08', '0.1'])
+
+clb.ax.set_xlabel('(%)')
 
 figname = os.path.join(path_in,'Density_'+region_flag+'_Final.pdf')
 fig.savefig(figname, dpi=300)
+#%%
+fig  = plt.figure(figsize=(5,5))
+plt.title('Occurence Percentage')
+m = plot_mask(lat0,lon0,coords,meridian_steps,parallel_steps,rivers_flag)
+m.imshow(occurence_percent,origin='upper', extent=[min(lon0), max(lon0), min(lat0), max(lat0)],\
+                                           vmin=0,vmax=0.1,cmap='rainbow')
+clb = plt.colorbar(fraction=0.046, pad=0.1,orientation='horizontal')
+#clb.set_ticks([0.0, 0.2, 0.4, 0.6, 0.8, 1.0])
+#clb.set_ticklabels(['0', '20', '40', '60', '80', '100'])
+#clb.set_ticks([0.0, 0.1, 0.2, 0.3, 0.4, 0.5])
+#clb.set_ticklabels(['0', '10', '20', '30', '40', '50'])
+clb.set_ticks([0.0, 0.02, 0.04,0.06,0.08, 0.1])
+clb.set_ticklabels(['0','0.02','0.04','0.06','0.08', '0.1'])
+clb.ax.set_xlabel('(%)')
+figname = os.path.join(path_in,'Density_'+region_flag+'.png')
+fig.savefig(figname, dpi=300)
 
-plt.show()
-plt.close()
+#plt.show()
+#plt.close()
