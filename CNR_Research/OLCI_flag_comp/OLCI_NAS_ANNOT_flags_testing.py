@@ -21,7 +21,6 @@ def plot_map(var,lat,lon,meridian_steps,parallel_steps):
     m = Basemap(llcrnrlat=min(lat),urcrnrlat=max(lat),\
     	llcrnrlon=min(lon),urcrnrlon=max(lon), resolution='l')
     x,y=np.meshgrid(lon, lat)
-    m.drawparallels(parallel_steps,labels=[1,0,0,1],color='grey',linewidth=0.1)
     m.drawmeridians(meridian_steps,labels=[1,0,0,1],color='grey',linewidth=0.1)
     m.drawcoastlines(linewidth=0.1)
     m.imshow(var,origin='upper', extent=[min(lon), max(lon), min(lat), max(lat)],\
