@@ -15,9 +15,12 @@ from datetime import datetime
 #from joblib import Parallel, delayed
 #import multiprocessing
 import time
-
 import math
 
+# This import registers the 3D projection, but is otherwise unused.
+from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 unused import
+from netCDF4 import Dataset, num2date, date2num
+#%
 from pandas.plotting import register_matplotlib_converters
 register_matplotlib_converters()
 
@@ -87,130 +90,152 @@ def extract_data(line0,path_main,prod_name,par_name):
             prod_temp = float(line.split('=')[1])
         return prod_temp
 
-#%%
+#%
+def load_vars(path_main,path_list,path_out):
+    filepath0 = os.path.join(path_main,path_list)
+    #    print(filepath0)
+    nlines = None 
+    nlines = file_len(filepath0)
+    #    print(nlines)
+    chlor_a_filtered_median_vec = np.zeros((nlines,), dtype=np.float32) # array with chlor_a values
+    chlor_a_filtered_stddev_vec = np.zeros((nlines,), dtype=np.float32) # array with chlor_a values
+    chlor_a_filtered_mean_vec = np.zeros((nlines,), dtype=np.float32) # array with chlor_a values
+    chlor_a_filtered_valid_pixel_count_vec = np.zeros((nlines,), dtype=np.float32)
+    # chlor_a_filtered_median_vec = np.zeros((nlines,), dtype=np.float32) # array with chlor_a values
+    # chlor_a_filtered_stddev_vec = np.zeros((nlines,), dtype=np.float32) # array with chlor_a values
+    #    chlor_a_CV_vec = np.zeros((nlines,), dtype=np.float32) # array with chlor_a values
     
+    Rrs_412_filtered_median_vec = np.zeros((nlines,), dtype=np.float32) # array with Rrs_412 values
+    Rrs_412_filtered_stddev_vec = np.zeros((nlines,), dtype=np.float32) # array with Rrs_412 values
+    Rrs_412_filtered_mean_vec = np.zeros((nlines,), dtype=np.float32) # array with Rrs_412 values
+    Rrs_412_CV_vec = np.zeros((nlines,), dtype=np.float32) # array with Rrs_412 values
+    
+    Rrs_443_filtered_median_vec = np.zeros((nlines,), dtype=np.float32) # array with Rrs_443 values
+    Rrs_443_filtered_stddev_vec = np.zeros((nlines,), dtype=np.float32) # array with Rrs_443 values
+    Rrs_443_filtered_mean_vec = np.zeros((nlines,), dtype=np.float32) # array with Rrs_443 values
+    Rrs_443_CV_vec = np.zeros((nlines,), dtype=np.float32) # array with Rrs_443 values    
+    
+    Rrs_490_filtered_median_vec = np.zeros((nlines,), dtype=np.float32) # array with Rrs_490 values
+    Rrs_490_filtered_stddev_vec = np.zeros((nlines,), dtype=np.float32) # array with Rrs_490 values
+    Rrs_490_filtered_mean_vec = np.zeros((nlines,), dtype=np.float32) # array with Rrs_490 values
+    Rrs_490_CV_vec = np.zeros((nlines,), dtype=np.float32) # array with Rrs_490 values
+    
+    Rrs_555_filtered_median_vec = np.zeros((nlines,), dtype=np.float32) # array with Rrs_555 values
+    Rrs_555_filtered_stddev_vec = np.zeros((nlines,), dtype=np.float32) # array with Rrs_555 values
+    Rrs_555_filtered_mean_vec = np.zeros((nlines,), dtype=np.float32) # array with Rrs_555 values 
+    Rrs_555_CV_vec = np.zeros((nlines,), dtype=np.float32) # array with Rrs_555 values
+    
+    aot_865_filtered_median_vec = np.zeros((nlines,), dtype=np.float32) # array with aot_865 values
+    aot_865_filtered_stddev_vec = np.zeros((nlines,), dtype=np.float32) # array with aot_865 values
+    aot_865_filtered_mean_vec = np.zeros((nlines,), dtype=np.float32) # array with aot_865 values   
+    aot_865_CV_vec = np.zeros((nlines,), dtype=np.float32) # array with aot_865 values  
+    
+    median_CV_vec = np.zeros((nlines,), dtype=np.float32) # array with median_CV values   
+    
+    senz_center_value_vec = np.zeros((nlines,), dtype=np.float32)
+    solz_center_value_vec = np.zeros((nlines,), dtype=np.float32)
+    
+    datetime_vec = np.zeros((nlines,), dtype=np.dtype(datetime)) # array with datetime
+    #    print(len(chlor_a_filtered_mean_vec))
+    
+    file0 = open(filepath0,'r')
+    
+    #% Sequencial
+    for idx, line in enumerate(file0):
+        datetime_vec[idx] = extract_data(line[2:-1],path_main,'main_prod',None)
+      
+        chlor_a_filtered_mean_vec[idx] = extract_data(line[2:-1],path_main,'chlor_a','filtered_mean')
+        chlor_a_filtered_median_vec[idx] = extract_data(line[2:-1],path_main,'chlor_a','filtered_median')
+        chlor_a_filtered_stddev_vec[idx] = extract_data(line[2:-1],path_main,'chlor_a','filtered_stddev')
+        chlor_a_filtered_valid_pixel_count_vec[idx] = extract_data(line[2:-1],path_main,'chlor_a','filtered_valid_pixel_count')
+    #        chlor_a_filtered_max_vec[idx] = extract_data(line[2:-1],path_main,'chlor_a','filtered_max')
+    #        chlor_a_filtered_min_vec[idx] = extract_data(line[2:-1],path_main,'chlor_a','filtered_min')
+        # chlor_a_CV_vec = chlor_a_filtered_stddev_vec[idx]/chlor_a_filtered_mean_vec[idx]
+    
+        Rrs_412_filtered_mean_vec[idx] = extract_data(line[2:-1],path_main,'Rrs_412','filtered_mean')
+        Rrs_412_filtered_median_vec[idx] = extract_data(line[2:-1],path_main,'Rrs_412','filtered_median')
+        Rrs_412_filtered_stddev_vec[idx] = extract_data(line[2:-1],path_main,'Rrs_412','filtered_stddev')
+        Rrs_412_CV_vec[idx] = Rrs_412_filtered_stddev_vec[idx]/Rrs_412_filtered_mean_vec[idx]
+        
+        Rrs_443_filtered_mean_vec[idx] = extract_data(line[2:-1],path_main,'Rrs_443','filtered_mean')
+        Rrs_443_filtered_median_vec[idx] = extract_data(line[2:-1],path_main,'Rrs_443','filtered_median')
+        Rrs_443_filtered_stddev_vec[idx] = extract_data(line[2:-1],path_main,'Rrs_443','filtered_stddev') 
+        Rrs_443_CV_vec[idx] = Rrs_443_filtered_stddev_vec[idx]/Rrs_443_filtered_mean_vec[idx]
+    
+        Rrs_490_filtered_mean_vec[idx] = extract_data(line[2:-1],path_main,'Rrs_490','filtered_mean')
+        Rrs_490_filtered_median_vec[idx] = extract_data(line[2:-1],path_main,'Rrs_490','filtered_median')
+        Rrs_490_filtered_stddev_vec[idx] = extract_data(line[2:-1],path_main,'Rrs_490','filtered_stddev') 
+        Rrs_490_CV_vec[idx] = Rrs_490_filtered_stddev_vec[idx]/Rrs_490_filtered_mean_vec[idx]
+    
+        Rrs_555_filtered_mean_vec[idx] = extract_data(line[2:-1],path_main,'Rrs_555','filtered_mean')
+        Rrs_555_filtered_median_vec[idx] = extract_data(line[2:-1],path_main,'Rrs_555','filtered_median')
+        Rrs_555_filtered_stddev_vec[idx] = extract_data(line[2:-1],path_main,'Rrs_555','filtered_stddev') 
+        Rrs_555_CV_vec[idx] = Rrs_555_filtered_stddev_vec[idx]/Rrs_555_filtered_mean_vec[idx]
+        
+        aot_865_filtered_mean_vec[idx] = extract_data(line[2:-1],path_main,'aot_865','filtered_mean')
+        aot_865_filtered_median_vec[idx] = extract_data(line[2:-1],path_main,'aot_865','filtered_median')
+        aot_865_filtered_stddev_vec[idx] = extract_data(line[2:-1],path_main,'aot_865','filtered_stddev') 
+        aot_865_CV_vec[idx] = aot_865_filtered_stddev_vec[idx]/aot_865_filtered_mean_vec[idx]
+    
+        senz_center_value_vec[idx] = extract_data(line[2:-1],path_main,'senz','center_value')
+        solz_center_value_vec[idx] = extract_data(line[2:-1],path_main,'solz','center_value')   
+    
+        median_CV_vec[idx] = np.median([Rrs_412_CV_vec[idx],Rrs_443_CV_vec[idx],Rrs_490_CV_vec[idx],Rrs_555_CV_vec[idx],aot_865_CV_vec[idx]])
+        
+    #% parallel
+    #    num_cores = multiprocessing.cpu_count()       
+    #    results = Parallel(n_jobs=num_cores, verbose=10)(delayed(extract_data)(line0[2:-1]) for line0 in file0)  
+    #    datetime_vec = [item[0] for item in results]
+    #    chlor_a_vec = [item[1] for item in results]
+                 
+    file0.close()
+    
+    #    end = time.time()
+    #    print('Time processing: {} min'.format((end-start)/60))
+    total_px_GOCI = 968*433 # new GCWS
+    ratio_from_the_total = 3 # 2 3 4 % half or third or fourth of the total of pixels
+    cond_area = chlor_a_filtered_valid_pixel_count_vec >= total_px_GOCI/ratio_from_the_total
+    senz_lim = 60
+    cond_senz = senz_center_value_vec <=senz_lim
+    solz_lim = 90
+    cond_solz = solz_center_value_vec <=solz_lim
+    median_CV_lim = 0.25
+    cond_median_CV = median_CV_vec <= median_CV_lim
+    cond_used = cond_area & cond_senz & cond_solz & cond_median_CV
+
+
+    chlor_a_filtered = chlor_a_filtered_mean_vec[cond_used]
+    datetime_filtered = datetime_vec[cond_used]
+    senz_filtered = senz_center_value_vec[cond_used]
+    solz_filtered = solz_center_value_vec[cond_used]
+    return chlor_a_filtered, datetime_filtered, senz_filtered, solz_filtered     
+
+#%%    
 #def main():
 #    start = time.time()  
 path_main = '/Users/javier/Desktop/Javier/2019_ROMA/2019_NASAwork/GOCI_ROI_STATS_R2018_vcal_aqua/'
+path_out = '/Users/javier/Desktop/Javier/2019_ROMA/2019_NASAwork/'
 #path_folder = 'G2016006061640.L2_COMS_BRDF7/G2016006061640.L2_COMS_BRDF7_valregion'
 path_list = 'file_list_sort.txt'
 #    print(path_list)
 
+load_vars_flag = True
 
-filepath0 = os.path.join(path_main,path_list)
-#    print(filepath0)
-nlines = None 
-nlines = file_len(filepath0)
-#    print(nlines)
-chlor_a_filtered_median_vec = np.zeros((nlines,), dtype=np.float32) # array with chlor_a values
-chlor_a_filtered_stddev_vec = np.zeros((nlines,), dtype=np.float32) # array with chlor_a values
-chlor_a_filtered_mean_vec = np.zeros((nlines,), dtype=np.float32) # array with chlor_a values
-chlor_a_filtered_valid_pixel_count_vec = np.zeros((nlines,), dtype=np.float32)
-# chlor_a_filtered_median_vec = np.zeros((nlines,), dtype=np.float32) # array with chlor_a values
-# chlor_a_filtered_stddev_vec = np.zeros((nlines,), dtype=np.float32) # array with chlor_a values
-#    chlor_a_CV_vec = np.zeros((nlines,), dtype=np.float32) # array with chlor_a values
-
-Rrs_412_filtered_median_vec = np.zeros((nlines,), dtype=np.float32) # array with Rrs_412 values
-Rrs_412_filtered_stddev_vec = np.zeros((nlines,), dtype=np.float32) # array with Rrs_412 values
-Rrs_412_filtered_mean_vec = np.zeros((nlines,), dtype=np.float32) # array with Rrs_412 values
-Rrs_412_CV_vec = np.zeros((nlines,), dtype=np.float32) # array with Rrs_412 values
-
-Rrs_443_filtered_median_vec = np.zeros((nlines,), dtype=np.float32) # array with Rrs_443 values
-Rrs_443_filtered_stddev_vec = np.zeros((nlines,), dtype=np.float32) # array with Rrs_443 values
-Rrs_443_filtered_mean_vec = np.zeros((nlines,), dtype=np.float32) # array with Rrs_443 values
-Rrs_443_CV_vec = np.zeros((nlines,), dtype=np.float32) # array with Rrs_443 values    
-
-Rrs_490_filtered_median_vec = np.zeros((nlines,), dtype=np.float32) # array with Rrs_490 values
-Rrs_490_filtered_stddev_vec = np.zeros((nlines,), dtype=np.float32) # array with Rrs_490 values
-Rrs_490_filtered_mean_vec = np.zeros((nlines,), dtype=np.float32) # array with Rrs_490 values
-Rrs_490_CV_vec = np.zeros((nlines,), dtype=np.float32) # array with Rrs_490 values
-
-Rrs_555_filtered_median_vec = np.zeros((nlines,), dtype=np.float32) # array with Rrs_555 values
-Rrs_555_filtered_stddev_vec = np.zeros((nlines,), dtype=np.float32) # array with Rrs_555 values
-Rrs_555_filtered_mean_vec = np.zeros((nlines,), dtype=np.float32) # array with Rrs_555 values 
-Rrs_555_CV_vec = np.zeros((nlines,), dtype=np.float32) # array with Rrs_555 values
-
-aot_865_filtered_median_vec = np.zeros((nlines,), dtype=np.float32) # array with aot_865 values
-aot_865_filtered_stddev_vec = np.zeros((nlines,), dtype=np.float32) # array with aot_865 values
-aot_865_filtered_mean_vec = np.zeros((nlines,), dtype=np.float32) # array with aot_865 values   
-aot_865_CV_vec = np.zeros((nlines,), dtype=np.float32) # array with aot_865 values  
-
-median_CV_vec = np.zeros((nlines,), dtype=np.float32) # array with median_CV values   
-
-senz_center_value_vec = np.zeros((nlines,), dtype=np.float32)
-solz_center_value_vec = np.zeros((nlines,), dtype=np.float32)
-
-datetime_vec = np.zeros((nlines,), dtype=np.dtype(datetime)) # array with datetime
-#    print(len(chlor_a_filtered_mean_vec))
-
-file0 = open(filepath0,'r')
-
-#%% Sequencial
-for idx, line in enumerate(file0):
-    datetime_vec[idx] = extract_data(line[2:-1],path_main,'main_prod',None)
-  
-    chlor_a_filtered_mean_vec[idx] = extract_data(line[2:-1],path_main,'chlor_a','filtered_mean')
-    chlor_a_filtered_median_vec[idx] = extract_data(line[2:-1],path_main,'chlor_a','filtered_median')
-    chlor_a_filtered_stddev_vec[idx] = extract_data(line[2:-1],path_main,'chlor_a','filtered_stddev')
-    chlor_a_filtered_valid_pixel_count_vec[idx] = extract_data(line[2:-1],path_main,'chlor_a','filtered_valid_pixel_count')
-#        chlor_a_filtered_max_vec[idx] = extract_data(line[2:-1],path_main,'chlor_a','filtered_max')
-#        chlor_a_filtered_min_vec[idx] = extract_data(line[2:-1],path_main,'chlor_a','filtered_min')
-    # chlor_a_CV_vec = chlor_a_filtered_stddev_vec[idx]/chlor_a_filtered_mean_vec[idx]
-
-    Rrs_412_filtered_mean_vec[idx] = extract_data(line[2:-1],path_main,'Rrs_412','filtered_mean')
-    Rrs_412_filtered_median_vec[idx] = extract_data(line[2:-1],path_main,'Rrs_412','filtered_median')
-    Rrs_412_filtered_stddev_vec[idx] = extract_data(line[2:-1],path_main,'Rrs_412','filtered_stddev')
-    Rrs_412_CV_vec[idx] = Rrs_412_filtered_stddev_vec[idx]/Rrs_412_filtered_mean_vec[idx]
-    
-    Rrs_443_filtered_mean_vec[idx] = extract_data(line[2:-1],path_main,'Rrs_443','filtered_mean')
-    Rrs_443_filtered_median_vec[idx] = extract_data(line[2:-1],path_main,'Rrs_443','filtered_median')
-    Rrs_443_filtered_stddev_vec[idx] = extract_data(line[2:-1],path_main,'Rrs_443','filtered_stddev') 
-    Rrs_443_CV_vec[idx] = Rrs_443_filtered_stddev_vec[idx]/Rrs_443_filtered_mean_vec[idx]
-
-    Rrs_490_filtered_mean_vec[idx] = extract_data(line[2:-1],path_main,'Rrs_490','filtered_mean')
-    Rrs_490_filtered_median_vec[idx] = extract_data(line[2:-1],path_main,'Rrs_490','filtered_median')
-    Rrs_490_filtered_stddev_vec[idx] = extract_data(line[2:-1],path_main,'Rrs_490','filtered_stddev') 
-    Rrs_490_CV_vec[idx] = Rrs_490_filtered_stddev_vec[idx]/Rrs_490_filtered_mean_vec[idx]
-
-    Rrs_555_filtered_mean_vec[idx] = extract_data(line[2:-1],path_main,'Rrs_555','filtered_mean')
-    Rrs_555_filtered_median_vec[idx] = extract_data(line[2:-1],path_main,'Rrs_555','filtered_median')
-    Rrs_555_filtered_stddev_vec[idx] = extract_data(line[2:-1],path_main,'Rrs_555','filtered_stddev') 
-    Rrs_555_CV_vec[idx] = Rrs_555_filtered_stddev_vec[idx]/Rrs_555_filtered_mean_vec[idx]
-    
-    aot_865_filtered_mean_vec[idx] = extract_data(line[2:-1],path_main,'aot_865','filtered_mean')
-    aot_865_filtered_median_vec[idx] = extract_data(line[2:-1],path_main,'aot_865','filtered_median')
-    aot_865_filtered_stddev_vec[idx] = extract_data(line[2:-1],path_main,'aot_865','filtered_stddev') 
-    aot_865_CV_vec[idx] = aot_865_filtered_stddev_vec[idx]/aot_865_filtered_mean_vec[idx]
-
-    senz_center_value_vec[idx] = extract_data(line[2:-1],path_main,'senz','center_value')
-    solz_center_value_vec[idx] = extract_data(line[2:-1],path_main,'solz','center_value')   
-
-    median_CV_vec[idx] = np.median([Rrs_412_CV_vec[idx],Rrs_443_CV_vec[idx],Rrs_490_CV_vec[idx],Rrs_555_CV_vec[idx],aot_865_CV_vec[idx]])
-    
-#%% parallel
-#    num_cores = multiprocessing.cpu_count()       
-#    results = Parallel(n_jobs=num_cores, verbose=10)(delayed(extract_data)(line0[2:-1]) for line0 in file0)  
-#    datetime_vec = [item[0] for item in results]
-#    chlor_a_vec = [item[1] for item in results]
-             
-file0.close()
-
-#    end = time.time()
-#    print('Time processing: {} min'.format((end-start)/60))
+if load_vars_flag:
+    chlor_a_filtered, datetime_filtered, senz_filtered, solz_filtered = \
+    load_vars(path_main,path_list,path_out)
 #%% Plot
 #    print(datetime_vec)
 #    print(chlor_a_filtered_stddev_vec)
 #    print(chlor_a_filtered_mean_vec)
 
 #plot
-total_px_GOCI = 968*433 # new GCWS
-ratio_from_the_total = 3 # 2 3 4 % half or third or fourth of the total of pixels
-cond_area = chlor_a_filtered_valid_pixel_count_vec >= total_px_GOCI/ratio_from_the_total
 
-plt.figure(figsize=(12,8))
-plt.subplot(5,1,1)
-plt.plot(datetime_vec,chlor_a_filtered_valid_pixel_count_vec,'o-b')
-plt.plot(datetime_vec[cond_area],chlor_a_filtered_valid_pixel_count_vec[cond_area],'o-g')
+
+#plt.figure(figsize=(12,8))
+#plt.subplot(5,1,1)
+#plt.plot(datetime_vec,chlor_a_filtered_valid_pixel_count_vec,'o-b')
+#plt.plot(datetime_vec[cond_area],chlor_a_filtered_valid_pixel_count_vec[cond_area],'o-g')
 # plt.plot(datetime_vec,chlor_a_filtered_mean_vec,'o-b')
 # plt.plot(datetime_vec,chlor_a_filtered_mean_vec+chlor_a_filtered_stddev_vec,'--b')
 # plt.plot(datetime_vec,chlor_a_filtered_mean_vec-chlor_a_filtered_stddev_vec,'--b')
@@ -220,12 +245,11 @@ plt.plot(datetime_vec[cond_area],chlor_a_filtered_valid_pixel_count_vec[cond_are
 
 #    plt.ylim(0,0.f5)
 
-senz_lim = 60
-cond_senz = senz_center_value_vec <=senz_lim
 
-plt.subplot(5,1,2)
-plt.plot(datetime_vec,senz_center_value_vec,'o-b')
-plt.plot(datetime_vec[cond_senz],senz_center_value_vec[cond_senz],'o-g')
+
+#plt.subplot(5,1,2)
+#plt.plot(datetime_vec,senz_center_value_vec,'o-b')
+#plt.plot(datetime_vec[cond_senz],senz_center_value_vec[cond_senz],'o-g')
 #    print(chlor_a_CV_vec)
 #    plt.plot(datetime_vec,chlor_a_CV_vec,'k')
 # plt.plot(datetime_vec,Rrs_412_CV_vec,'r')
@@ -234,34 +258,26 @@ plt.plot(datetime_vec[cond_senz],senz_center_value_vec[cond_senz],'o-g')
 # plt.plot(datetime_vec,Rrs_555_CV_vec,'k')
 # plt.plot(datetime_vec,aot_865_CV_vec,'m')
 
-solz_lim = 90
-cond_solz = solz_center_value_vec <=solz_lim
-
-plt.subplot(5,1,3)
-plt.plot(datetime_vec,solz_center_value_vec,'o-b')
-plt.plot(datetime_vec[cond_solz],solz_center_value_vec[cond_solz],'o-g')
-
-median_CV_lim = 0.25
-cond_median_CV = median_CV_vec <= median_CV_lim
-
-plt.subplot(5,1,4)
-plt.plot(datetime_vec,median_CV_vec,'o-b')
-plt.plot(datetime_vec[cond_median_CV],median_CV_vec[cond_median_CV],'o-g')
 
 
-cond_used = cond_area & cond_senz & cond_solz & cond_median_CV
+#plt.subplot(5,1,3)
+#plt.plot(datetime_vec,solz_center_value_vec,'o-b')
+#plt.plot(datetime_vec[cond_solz],solz_center_value_vec[cond_solz],'o-g')
 
 
-chlor_a_filtered = chlor_a_filtered_mean_vec[cond_used]
-datetime_filtered = datetime_vec[cond_used]
-senz_filtered = senz_center_value_vec[cond_used]
-solz_filtered = solz_center_value_vec[cond_used]
 
-plt.subplot(5,1,5)
-plt.plot(datetime_vec,chlor_a_filtered_mean_vec,'o-b')
-plt.plot(datetime_filtered,chlor_a_filtered,'o-g')
+#plt.subplot(5,1,4)
+#plt.plot(datetime_vec,median_CV_vec,'o-b')
+#plt.plot(datetime_vec[cond_median_CV],median_CV_vec[cond_median_CV],'o-g')
 
-plt.show()
+
+
+
+#plt.subplot(5,1,5)
+#plt.plot(datetime_vec,chlor_a_filtered_mean_vec,'o-b')
+#plt.plot(datetime_filtered,chlor_a_filtered,'o-g')
+#
+#plt.show()
 
 #      % CV from Matlab script
 #      if strcmp(sensor_id,'GOCI')
@@ -272,6 +288,41 @@ plt.show()
 #                  satcell.Rrs_555_CV,...
 #                  satcell.aot_865_CV]);
 
+#%% Save netCDF4 file
+
+ofname = 'GOCI_temp.nc'
+ofname = os.path.join(path_out,ofname)
+fmb = Dataset(ofname, 'w', format='NETCDF4')
+fmb.description = 'GOCI temporal variables in netCDF4 file'
+
+fmb.createDimension("datetime", len(datetime_filtered))
+
+dt = fmb.createVariable('datetime',  'single', ('datetime',)) 
+
+dt[:] = date2num(datetime_filtered,'seconds since 0001-01-01 00:00:00.0')
+
+
+chlor_a_var=fmb.createVariable('chlor_a', 'single', ('datetime',), fill_value=-999, zlib=True, complevel=6)
+chlor_a_var[:] = chlor_a_filtered
+
+senz_var=fmb.createVariable('senz', 'single', ('datetime',), fill_value=-999, zlib=True, complevel=6)
+senz_var[:] = senz_filtered
+
+solz_var=fmb.createVariable('solz', 'single', ('datetime',), fill_value=-999, zlib=True, complevel=6)
+solz_var[:] = solz_filtered
+
+fmb.close()
+
+#%% Open netCDF4
+ofname = 'GOCI_temp.nc'
+ofname = os.path.join(path_out,ofname)
+nc_f0=Dataset(ofname, 'r')
+    
+time_var = nc_f0.variables['datetime'][:]
+datetime_filtered = num2date(time_var[:],'seconds since 0001-01-01 00:00:00.0')
+chlor_a_filtered = nc_f0.variables['chlor_a'][:]
+senz_filtered = nc_f0.variables['senz'][:]
+solz_filtered = nc_f0.variables['solz'][:]
 #%%
 year_vec = np.array([datetime_filtered[i].year for i in range(0,len(datetime_filtered))])
 month_vec = np.array([datetime_filtered[i].month for i in range(0,len(datetime_filtered))])
@@ -280,128 +331,149 @@ hour_vec = np.array([datetime_filtered[i].hour for i in range(0,len(datetime_fil
 minute_vec = np.array([datetime_filtered[i].minute for i in range(0,len(datetime_filtered))])
 second_vec = np.array([datetime_filtered[i].second for i in range(0,len(datetime_filtered))])
 doy_vec = np.array([datetime_filtered[i].timetuple().tm_yday for i in range(0,len(datetime_filtered))])
+
+cond_spring = ((month_vec == 3) | (month_vec == 4) | (month_vec == 5))
+cond_summer = ((month_vec == 6) | (month_vec == 7) | (month_vec == 8))
+cond_fall = ((month_vec == 9) | (month_vec == 10) | (month_vec == 11))
+cond_winter = ((month_vec == 12) | (month_vec == 1) | (month_vec == 2))
+
+# [ 1,  32, 61, 92, 122, 153, 183, 214, 245, 275, 306, 336, 366=1]
+#   Jan Feb Mar Apr May  Jun  Jul  Aug  Sep  Oct  Nov  Dec  Jan   
+#   1   2   3   4   5    6    7    8    9    10   11   12   1     
+# winter  |   spring  |   summer      |  fall         | winter    
+
+# Transform to:
+#   fall winter spring summer
+#   1    31   62   92    122   153 182 213  243  274  304 335  366
+#diff  30   31   30   30     31  29  31  30    31   30  31   31 
+# , 245, 275, 306, 336, 366=1] 32, 61, 92, 122, 153, 183, 214,
+#   Sep  Oct  Nov  Dec  Jan    Feb Mar Apr May  Jun  Jul  Aug 
+#   9    10   11   12   1      2   3   4   5    6    7    8   
+# |  fall        | winter        |   spring   |   summer      |
+
+#   1    31   62   92    122    153 182 213  243  274  304 335  366  # transform
+# , 245, 275, 306, 336,  366=1] 32, 61, 92,  122, 153, 183,214, 245  # original
+#  doy>=245 -> doy-(245-1)| doy<245 -> doy + 121
+#   1    31   62   92  122| 122 153 182 213  243  274  304 335  366
+
 #%%
+#
+#plt.figure(figsize=(12,8))
+##% Spring - from March 1 to May 31; 3, 4, 5
+#cond_spring = ((month_vec == 3) | (month_vec == 4) | (month_vec == 5))
+#ax = plt.subplot(2,2,1)
+#ax.set_title('Spring')
+#cond_used = cond_spring & (hour_vec == 0)
+#plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'or',mfc='none')
+#cond_used = cond_spring & (hour_vec == 1)
+#plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'o',color='lime',mfc='none')
+#cond_used = cond_spring & (hour_vec == 2)
+#plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'ob',mfc='none')
+#cond_used = cond_spring & (hour_vec == 3)
+#plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'ok',mfc='none')
+#cond_used = cond_spring & (hour_vec == 4)
+#plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'oc',mfc='none')
+#cond_used = cond_spring & (hour_vec == 5)
+#plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'om',mfc='none')
+#cond_used = cond_spring & (hour_vec == 6)
+#plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'o',color=(1, 0.5, 0),mfc='none')
+#cond_used = cond_spring & (hour_vec == 7)
+#plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'o',color=(0.5, 0, 0.5),mfc='none')
+#plt.xlabel('chlor_a')
+#plt.ylabel('SZA ($^o$)')
+#plt.xlim(0,0.3)
+#plt.ylim(0,90)
+#plt.grid(True)
+#
+##% Summer - from June 1 to August 31; 6, 7, 8
+#cond_summer = ((month_vec == 6) | (month_vec == 7) | (month_vec == 8))
+#ax = plt.subplot(2,2,2)
+#ax.set_title('Summer')
+#cond_used = cond_summer & (hour_vec == 0)
+#plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'or',mfc='none')
+#cond_used = cond_summer & (hour_vec == 1)
+#plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'o',color='lime',mfc='none')
+#cond_used = cond_summer & (hour_vec == 2)
+#plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'ob',mfc='none')
+#cond_used = cond_summer & (hour_vec == 3)
+#plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'ok',mfc='none')
+#cond_used = cond_summer & (hour_vec == 4)
+#plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'oc',mfc='none')
+#cond_used = cond_summer & (hour_vec == 5)
+#plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'om',mfc='none')
+#cond_used = cond_summer & (hour_vec == 6)
+#plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'o',color=(1, 0.5, 0),mfc='none')
+#cond_used = cond_summer & (hour_vec == 7)
+#plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'o',color=(0.5, 0, 0.5),mfc='none')
+#plt.xlabel('chlor_a')
+#plt.ylabel('SZA ($^o$)')
+#plt.xlim(0,0.3)
+#plt.ylim(0,90)
+#plt.grid(True)
+#
+##% Fall (autumn) - from September 1 to November 30; and, 9, 10, 11
+#cond_fall = ((month_vec == 9) | (month_vec == 10) | (month_vec == 11))
+#ax = plt.subplot(2,2,3)
+#ax.set_title('Fall')
+#cond_used = cond_fall & (hour_vec == 0)
+#plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'or',mfc='none')
+#cond_used = cond_fall & (hour_vec == 1)
+#plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'o',color='lime',mfc='none')
+#cond_used = cond_fall & (hour_vec == 2)
+#plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'ob',mfc='none')
+#cond_used = cond_fall & (hour_vec == 3)
+#plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'ok',mfc='none')
+#cond_used = cond_fall & (hour_vec == 4)
+#plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'oc',mfc='none')
+#cond_used = cond_fall & (hour_vec == 5)
+#plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'om',mfc='none')
+#cond_used = cond_fall & (hour_vec == 6)
+#plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'o',color=(1, 0.5, 0),mfc='none')
+#cond_used = cond_fall & (hour_vec == 7)
+#plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'o',color=(0.5, 0, 0.5),mfc='none')
+#plt.xlabel('chlor_a')
+#plt.ylabel('SZA ($^o$)')
+#plt.xlim(0,0.3)
+#plt.ylim(0,90)
+#plt.grid(True)
+#
+##% Winter - from December 1 to February 28 (February 29 in a leap year). 12, 1, 2
+#cond_winter = ((month_vec == 12) | (month_vec == 1) | (month_vec == 2))
+#ax = plt.subplot(2,2,4)
+#ax.set_title('Winter')
+#cond_used = cond_winter & (hour_vec == 0)
+#plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'or',mfc='none')
+#cond_used = cond_winter & (hour_vec == 1)
+#plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'o',color='lime',mfc='none')
+#cond_used = cond_winter & (hour_vec == 2)
+#plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'ob',mfc='none')
+#cond_used = cond_winter & (hour_vec == 3)
+#plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'ok',mfc='none')
+#cond_used = cond_winter & (hour_vec == 4)
+#plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'oc',mfc='none')
+#cond_used = cond_winter & (hour_vec == 5)
+#plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'om',mfc='none')
+#cond_used = cond_winter & (hour_vec == 6)
+#plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'o',color=(1, 0.5, 0),mfc='none')
+#cond_used = cond_winter & (hour_vec == 7)
+#plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'o',color=(0.5, 0, 0.5),mfc='none')
+#plt.xlabel('chlor_a')
+#plt.ylabel('SZA ($^o$)')
+#plt.xlim(0,0.3)
+#plt.ylim(0,90)
+#plt.grid(True)
+#
+#plt.tight_layout()
+#
+#path_out = '/Users/javier/Desktop/Javier/2019_ROMA/2019_NASAwork/Figures'
+#figname = os.path.join(path_out,'SZAvschlor_a_AllSeasons.pdf')
+#    #    print(figname)
+#plt.savefig(figname, dpi=300)
+#
+#plt.show()
+#plt.close()
 
-plt.figure(figsize=(12,8))
-#% Spring - from March 1 to May 31; 3, 4, 5
-cond_spring = ((month_vec == 3) | (month_vec == 4) | (month_vec == 5))
-ax = plt.subplot(2,2,1)
-ax.set_title('Spring')
-cond_used = cond_spring & (hour_vec == 0)
-plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'or',mfc='none')
-cond_used = cond_spring & (hour_vec == 1)
-plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'o',color='lime',mfc='none')
-cond_used = cond_spring & (hour_vec == 2)
-plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'ob',mfc='none')
-cond_used = cond_spring & (hour_vec == 3)
-plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'ok',mfc='none')
-cond_used = cond_spring & (hour_vec == 4)
-plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'oc',mfc='none')
-cond_used = cond_spring & (hour_vec == 5)
-plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'om',mfc='none')
-cond_used = cond_spring & (hour_vec == 6)
-plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'o',color=(1, 0.5, 0),mfc='none')
-cond_used = cond_spring & (hour_vec == 7)
-plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'o',color=(0.5, 0, 0.5),mfc='none')
-plt.xlabel('chlor_a')
-plt.ylabel('SZA ($^o$)')
-plt.xlim(0,0.3)
-plt.ylim(0,90)
-plt.grid(True)
-
-#% Summer - from June 1 to August 31; 6, 7, 8
-cond_summer = ((month_vec == 6) | (month_vec == 7) | (month_vec == 8))
-ax = plt.subplot(2,2,2)
-ax.set_title('Summer')
-cond_used = cond_summer & (hour_vec == 0)
-plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'or',mfc='none')
-cond_used = cond_summer & (hour_vec == 1)
-plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'o',color='lime',mfc='none')
-cond_used = cond_summer & (hour_vec == 2)
-plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'ob',mfc='none')
-cond_used = cond_summer & (hour_vec == 3)
-plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'ok',mfc='none')
-cond_used = cond_summer & (hour_vec == 4)
-plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'oc',mfc='none')
-cond_used = cond_summer & (hour_vec == 5)
-plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'om',mfc='none')
-cond_used = cond_summer & (hour_vec == 6)
-plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'o',color=(1, 0.5, 0),mfc='none')
-cond_used = cond_summer & (hour_vec == 7)
-plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'o',color=(0.5, 0, 0.5),mfc='none')
-plt.xlabel('chlor_a')
-plt.ylabel('SZA ($^o$)')
-plt.xlim(0,0.3)
-plt.ylim(0,90)
-plt.grid(True)
-
-#% Fall (autumn) - from September 1 to November 30; and, 9, 10, 11
-cond_fall = ((month_vec == 9) | (month_vec == 10) | (month_vec == 11))
-ax = plt.subplot(2,2,3)
-ax.set_title('Fall')
-cond_used = cond_fall & (hour_vec == 0)
-plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'or',mfc='none')
-cond_used = cond_fall & (hour_vec == 1)
-plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'o',color='lime',mfc='none')
-cond_used = cond_fall & (hour_vec == 2)
-plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'ob',mfc='none')
-cond_used = cond_fall & (hour_vec == 3)
-plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'ok',mfc='none')
-cond_used = cond_fall & (hour_vec == 4)
-plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'oc',mfc='none')
-cond_used = cond_fall & (hour_vec == 5)
-plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'om',mfc='none')
-cond_used = cond_fall & (hour_vec == 6)
-plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'o',color=(1, 0.5, 0),mfc='none')
-cond_used = cond_fall & (hour_vec == 7)
-plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'o',color=(0.5, 0, 0.5),mfc='none')
-plt.xlabel('chlor_a')
-plt.ylabel('SZA ($^o$)')
-plt.xlim(0,0.3)
-plt.ylim(0,90)
-plt.grid(True)
-
-#% Winter - from December 1 to February 28 (February 29 in a leap year). 12, 1, 2
-cond_winter = ((month_vec == 12) | (month_vec == 1) | (month_vec == 2))
-ax = plt.subplot(2,2,4)
-ax.set_title('Winter')
-cond_used = cond_winter & (hour_vec == 0)
-plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'or',mfc='none')
-cond_used = cond_winter & (hour_vec == 1)
-plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'o',color='lime',mfc='none')
-cond_used = cond_winter & (hour_vec == 2)
-plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'ob',mfc='none')
-cond_used = cond_winter & (hour_vec == 3)
-plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'ok',mfc='none')
-cond_used = cond_winter & (hour_vec == 4)
-plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'oc',mfc='none')
-cond_used = cond_winter & (hour_vec == 5)
-plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'om',mfc='none')
-cond_used = cond_winter & (hour_vec == 6)
-plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'o',color=(1, 0.5, 0),mfc='none')
-cond_used = cond_winter & (hour_vec == 7)
-plt.plot(chlor_a_filtered[cond_used],solz_filtered[cond_used],'o',color=(0.5, 0, 0.5),mfc='none')
-plt.xlabel('chlor_a')
-plt.ylabel('SZA ($^o$)')
-plt.xlim(0,0.3)
-plt.ylim(0,90)
-plt.grid(True)
-
-plt.tight_layout()
-
-path_out = '/Users/javier/Desktop/Javier/2019_ROMA/2019_NASAwork/Figures'
-figname = os.path.join(path_out,'SZAvschlor_a_AllSeasons.pdf')
-    #    print(figname)
-plt.savefig(figname, dpi=300)
-
-plt.show()
-plt.close()
-#%% 
-cond_spring = ((month_vec == 3) | (month_vec == 4) | (month_vec == 5))
-cond_summer = ((month_vec == 6) | (month_vec == 7) | (month_vec == 8))
-cond_fall = ((month_vec == 9) | (month_vec == 10) | (month_vec == 11))
-cond_winter = ((month_vec == 12) | (month_vec == 1) | (month_vec == 2))
-
+#%%
 #season_str = 'spring' 
 #season_str = 'summer'
 #season_str = 'fall'
@@ -534,119 +606,143 @@ for season in season_str:
     plt.show()
     plt.close()
     
-#%%
+#%%    
+fig = plt.figure(figsize=(8, 8))
+ax = fig.add_subplot(111, projection='3d')
+#ax = fig.add_subplot(111)
+#fig, axes = plt.subplots(nrows=4, ncols=2, figsize=(8, 8),projection='3d')
+#fig.suptitle('All Seasons',y=1.05)
 
-fig, axes = plt.subplots(nrows=4, ncols=2, figsize=(8, 8))
-plt.suptitle('All Seasons',y=1.05)
+
+#   1    31   62   92    122    153 182 213  243  274  304 335  366  # transform
+# , 245, 275, 306, 336,  366=1] 32, 61, 92,  122, 153, 183,214, 245  # original
+#  doy>=245 -> doy-(245-1)| doy<245 -> doy + (122-1)
+#   1    31   62   92  122| 122 153 182 213  243  274  304 335  366
 
 doy_vec_aux = doy_vec
-doy_vec_aux[doy_vec < 245] = doy_vec[doy_vec < 245] + (153-1)
-doy_vec_aux[(doy_vec >= 245) & (doy_vec < 336)] = doy_vec[(doy_vec >= 245) & (doy_vec < 336)] - (245-1)
-doy_vec_aux[doy_vec >=336] = doy_vec[doy_vec >=336] - (245-1)
+#doy_vec_aux[doy_vec >= 245] = doy_vec[soy_vec < 245] + (122-1)
+# doy_vec_aux[doy_vec >=336] = doy_vec[doy_vec >=336] - (245-1)
 
-kwargs = dict(vmin=1)
+# doy_vec_aux = doy_vec
+# doy_vec_aux[doy_vec < 245] = doy_vec[doy_vec < 245] + (122-1)
+# doy_vec_aux[(doy_vec >= 245) & (doy_vec < 336)] = doy_vec[(doy_vec >= 245) & (doy_vec < 336)] - (245-1)
+# doy_vec_aux[doy_vec >=336] = doy_vec[doy_vec >=336] - (245-1)
 
-cond_season = cond_spring | cond_fall
 
-ax = plt.subplot(4,2,1)
-ax.set_title('09:00 AM')
-cond_used = cond_season & (hour_vec == 0)
-plt.scatter(chlor_a_filtered[cond_used],solz_filtered[cond_used],c=doy_vec_aux[cond_used],**kwargs)
-plt.xlabel('chlor_a')
-plt.ylabel('SZA ($^o$)')
-plt.xlim(0,0.3)
-plt.ylim(0,90)
-plt.grid(True)
 
-ax = plt.subplot(4,2,2)
-ax.set_title('10:00 AM')
-cond_used = cond_season & (hour_vec == 1)
-plt.scatter(chlor_a_filtered[cond_used],solz_filtered[cond_used],c=doy_vec_aux[cond_used],**kwargs)
-plt.xlabel('chlor_a')
-plt.ylabel('SZA ($^o$)')
-plt.xlim(0,0.3)
-plt.ylim(0,90)
-plt.grid(True)
+cond_season = cond_fall | cond_winter | cond_spring | cond_summer
+#cond_season = cond_spring
 
-ax = plt.subplot(4,2,3)
-ax.set_title('11:00 AM')
-cond_used = cond_season & (hour_vec == 2)
-plt.scatter(chlor_a_filtered[cond_used],solz_filtered[cond_used],c=doy_vec_aux[cond_used],**kwargs)
-plt.xlabel('chlor_a')
-plt.ylabel('SZA ($^o$)')
-plt.xlim(0,0.3)
-plt.ylim(0,90)
-plt.grid(True)
-
-ax = plt.subplot(4,2,4)
-ax.set_title('12:00 PM')
+#ax = plt.subplot(4,2,1)
+ax.set_title('All Seasons for 12:00PM')
 cond_used = cond_season & (hour_vec == 3)
-plt.scatter(chlor_a_filtered[cond_used],solz_filtered[cond_used],c=doy_vec_aux[cond_used],**kwargs)
-plt.xlabel('chlor_a')
-plt.ylabel('SZA ($^o$)')
-plt.xlim(0,0.3)
-plt.ylim(0,90)
-plt.grid(True)
+kwargs = dict(vmin=min(doy_vec_aux[cond_used]),vmax=max(doy_vec_aux[cond_used]),cmap='hsv')
+im = ax.scatter(chlor_a_filtered[cond_used],solz_filtered[cond_used],doy_vec_aux[cond_used],\
+            c=doy_vec_aux[cond_used],**kwargs)
+ax.set_xlabel('chlor_a')
+ax.set_ylabel('SZA ($^o$)')
+#ax.set_zlabel('DOY')
+ax.set_xlim(0,0.3)
+ax.set_ylim(0,90)
+ax.set_zlim(min(doy_vec_aux[cond_used]),max(doy_vec_aux[cond_used]))
+ax.grid(True)
+ax.view_init(elev=90, azim=-90)
+cbar = plt.colorbar(im)
 
-ax = plt.subplot(4,2,5)
-ax.set_title('01:00 PM')
-cond_used = cond_season & (hour_vec == 4)
-plt.scatter(chlor_a_filtered[cond_used],solz_filtered[cond_used],c=doy_vec_aux[cond_used],**kwargs)
-plt.xlabel('chlor_a')
-plt.ylabel('SZA ($^o$)')
-plt.xlim(0,0.3)
-plt.ylim(0,90)
-plt.grid(True)
-
-ax = plt.subplot(4,2,6)
-ax.set_title('02:00 PM')
-cond_used = cond_season & (hour_vec == 5)
-plt.scatter(chlor_a_filtered[cond_used],solz_filtered[cond_used],c=doy_vec_aux[cond_used],**kwargs)
-plt.xlabel('chlor_a')
-plt.ylabel('SZA ($^o$)')
-plt.xlim(0,0.3)
-plt.ylim(0,90)
-plt.grid(True)
-
-ax = plt.subplot(4,2,7)
-ax.set_title('03:00 PM')
-cond_used = cond_season & (hour_vec == 6)
-plt.scatter(chlor_a_filtered[cond_used],solz_filtered[cond_used],c=doy_vec_aux[cond_used],**kwargs)
-plt.xlabel('chlor_a')
-plt.ylabel('SZA ($^o$)')
-plt.xlim(0,0.3)
-plt.ylim(0,90)
-plt.grid(True)
-
-ax = plt.subplot(4,2,8)
-ax.set_title('04:00 PM')
-cond_used = cond_season & (hour_vec == 7)
-im = plt.scatter(chlor_a_filtered[cond_used],solz_filtered[cond_used],c=doy_vec_aux[cond_used],**kwargs)
-plt.xlabel('chlor_a')
-plt.ylabel('SZA ($^o$)')
-plt.xlim(0,0.3)
-plt.ylim(0,90)
-plt.grid(True)
-
-fig.subplots_adjust(bottom=0.1, top=0.9, left=0.1, right=0.9,
-                wspace=0.02, hspace=0.02)
-
-cb_ax = fig.add_axes([1.0, 0.1, 0.02, 0.8]) # control the colobar dimension
-cbar = fig.colorbar(im, cax=cb_ax)
-
-doy_month = [1,32,61,92,122,153,183,214,245,275,306,336,366]
+doy_month = [1,32,61,92,122,153,183,214,245,275,306,336,366,366+31,366+61]
 cbar.set_ticks(doy_month)
-cbar.set_ticklabels(['Sep','Oct','Nov','Dec','Jan', 'Feb', 'Mar','Apr','May','Jun','Jul','Aug','Sep'])
+cbar.set_ticklabels(['Jan', 'Feb', 'Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan', 'Feb', 'Mar'])
 
-plt.tight_layout()
 
-path_out = '/Users/javier/Desktop/Javier/2019_ROMA/2019_NASAwork/Figures'
-figname = os.path.join(path_out,'SZAvschlor_a_All.pdf')
-    #    print(figname)
-plt.savefig(figname, dpi=300,bbox_inches = 'tight')
+#ax = plt.subplot(4,2,2)
+#ax.set_title('10:00 AM')
+#cond_used = cond_season & (hour_vec == 1)
+#plt.scatter(chlor_a_filtered[cond_used],solz_filtered[cond_used],c=doy_vec_aux[cond_used],**kwargs)
+#plt.xlabel('chlor_a')
+#plt.ylabel('SZA ($^o$)')
+#plt.xlim(0,0.3)
+#plt.ylim(0,90)
+#plt.grid(True)
+#
+#ax = plt.subplot(4,2,3)
+#ax.set_title('11:00 AM')
+#cond_used = cond_season & (hour_vec == 2)
+#plt.scatter(chlor_a_filtered[cond_used],solz_filtered[cond_used],c=doy_vec_aux[cond_used],**kwargs)
+#plt.xlabel('chlor_a')
+#plt.ylabel('SZA ($^o$)')
+#plt.xlim(0,0.3)
+#plt.ylim(0,90)
+#plt.grid(True)
+#
+#ax = plt.subplot(4,2,4)
+#ax.set_title('12:00 PM')
+#cond_used = cond_season & (hour_vec == 3)
+#plt.scatter(chlor_a_filtered[cond_used],solz_filtered[cond_used],c=doy_vec_aux[cond_used],**kwargs)
+#plt.xlabel('chlor_a')
+#plt.ylabel('SZA ($^o$)')
+#plt.xlim(0,0.3)
+#plt.ylim(0,90)
+#plt.grid(True)
+#
+#ax = plt.subplot(4,2,5)
+#ax.set_title('01:00 PM')
+#cond_used = cond_season & (hour_vec == 4)
+#plt.scatter(chlor_a_filtered[cond_used],solz_filtered[cond_used],c=doy_vec_aux[cond_used],**kwargs)
+#plt.xlabel('chlor_a')
+#plt.ylabel('SZA ($^o$)')
+#plt.xlim(0,0.3)
+#plt.ylim(0,90)
+#plt.grid(True)
+#
+#ax = plt.subplot(4,2,6)
+#ax.set_title('02:00 PM')
+#cond_used = cond_season & (hour_vec == 5)
+#plt.scatter(chlor_a_filtered[cond_used],solz_filtered[cond_used],c=doy_vec_aux[cond_used],**kwargs)
+#plt.xlabel('chlor_a')
+#plt.ylabel('SZA ($^o$)')
+#plt.xlim(0,0.3)
+#plt.ylim(0,90)
+#plt.grid(True)
+#
+#ax = plt.subplot(4,2,7)
+#ax.set_title('03:00 PM')
+#cond_used = cond_season & (hour_vec == 6)
+#plt.scatter(chlor_a_filtered[cond_used],solz_filtered[cond_used],c=doy_vec_aux[cond_used],**kwargs)
+#plt.xlabel('chlor_a')
+#plt.ylabel('SZA ($^o$)')
+#plt.xlim(0,0.3)
+#plt.ylim(0,90)
+#plt.grid(True)
+#
+#ax = plt.subplot(4,2,8)
+#ax.set_title('04:00 PM')
+#cond_used = cond_season & (hour_vec == 7)
+#im = plt.scatter(chlor_a_filtered[cond_used],solz_filtered[cond_used],c=doy_vec_aux[cond_used],**kwargs)
+#plt.xlabel('chlor_a')
+#plt.ylabel('SZA ($^o$)')
+#plt.xlim(0,0.3)
+#plt.ylim(0,90)
+#plt.grid(True)
+
+#fig.subplots_adjust(bottom=0.1, top=0.9, left=0.1, right=0.9,
+#                wspace=0.02, hspace=0.02)
+#
+#cb_ax = fig.add_axes([1.0, 0.1, 0.02, 0.8]) # control the colobar dimension
+#cbar = ax.colorbar(im, cax=cb_ax)
+#
+#doy_month = [1,32,61,92,122,153,183,214,245,275,306,336,366]
+#cbar.set_ticks(doy_month)
+#cbar.set_ticklabels(['Sep','Oct','Nov','Dec','Jan', 'Feb', 'Mar','Apr','May','Jun','Jul','Aug','Sep'])
+
+#plt.tight_layout()
+#
+#path_out = '/Users/javier/Desktop/Javier/2019_ROMA/2019_NASAwork/Figures'
+#figname = os.path.join(path_out,'SZAvschlor_a_All.pdf')
+#    #    print(figname)
+#plt.savefig(figname, dpi=300,bbox_inches = 'tight')
     
 plt.show()
-plt.close()    
+#plt.close()    
 #%%
 #if __name__ == '__main__':
 #    main()    
