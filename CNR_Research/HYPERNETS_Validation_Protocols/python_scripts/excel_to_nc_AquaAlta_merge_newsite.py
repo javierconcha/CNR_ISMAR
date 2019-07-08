@@ -1,6 +1,15 @@
 # -*- coding: utf-8 -*-
 """
 Created on Mon Nov 20 16:10:50 2017
+Function to create a netcdf file with the in situ data.
+Example how to call the function:
+    python excel_to_nc_AquaAlta_merge_newsite.py -sd 2016 01 01 -ed 2016 12 31 -s Venise
+    
+Note: The following subfolder should be created in advance:
+    - temp_file_15/
+    - temp_file_20/
+    - excel_file/
+    - netcdf_file/
 
 @author: Marco
 """
@@ -15,20 +24,32 @@ import openpyxl
 import xlwt
 import argparse
 import wget
-parser= argparse.ArgumentParser()
-parser.add_argument("-s", "--station" , nargs=1, help="The Aeronet OC station", required=True)
-parser.add_argument("-sd", "--sdate", nargs=3, help="Three integers: start year, start month and start day ",required=True)
-parser.add_argument("-ed", "--edate", nargs=3, help="Three integers: end year, end month and end day",required=True)
-#parser.add_argument("-l", "--level", nargs=1, help="Three integers: end year, end month and end day",required=True)
+#%%
+cmd_line = 1
+if cmd_line:
+    parser= argparse.ArgumentParser()
+    parser.add_argument("-s", "--station" , nargs=1, help="The Aeronet OC station", required=True)
+    parser.add_argument("-sd", "--sdate", nargs=3, help="Three integers: start year, start month and start day ",required=True)
+    parser.add_argument("-ed", "--edate", nargs=3, help="Three integers: end year, end month and end day",required=True)
+    #parser.add_argument("-l", "--level", nargs=1, help="Three integers: end year, end month and end day",required=True)
+    args=parser.parse_args()
+    station=args.station[0]
+    starty=args.sdate[0]
+    startm=args.sdate[1]
+    startd=args.sdate[2]
+    endy=args.edate[0]
+    endm=args.edate[1]
+    endd=args.edate[2]
+else:
+    # example for debugging
+    station='Venise'
+    starty='2016'
+    startm='01'
+    startd='01'
+    endy='2016'
+    endm='12'
+    endd='31'
 
-args=parser.parse_args()
-station=args.station[0]
-starty=args.sdate[0]
-startm=args.sdate[1]
-startd=args.sdate[2]
-endy=args.edate[0]
-endm=args.edate[1]
-endd=args.edate[2]
 #level=args.level[0]
 if int(startm)>12 or int(startm)<1:
     sys.exit("Non valid month")
@@ -74,13 +95,14 @@ if len(endd)==1:
     endd='00'+endd
 elif len(endd)==2:
     endd='0'+endd
+#%%    
 filename1_15=station_list[ind]+'_15_'+starty+startm+startd+'_'+endy+endm+endd+'.txt'
 filename2_15=filename1_15[:-4]+'.xlsx'
 filename1_20=station_list[ind]+'_20_'+starty+startm+startd+'_'+endy+endm+endd+'.txt'
 filename2_20=filename1_20[:-4]+'.xlsx'
 if os.path.isfile(filename2_15):
     sys.exit('Data already downloaded for the chosen period')
-print (link_15)
+print(link_15)
 filename_15=wget.download(link_15, 'temp_file_15/')
 filename_20=wget.download(link_20, 'temp_file_20/')
 os.rename(filename_15, filename1_15)
@@ -90,6 +112,7 @@ file_excel_15 = 'excel_file/'+filename2_15
 input_file_20 = filename1_20
 file_excel_20 = 'excel_file/'+filename2_20
 print ('ciao')
+#%%
 wb = openpyxl.Workbook()
 ws = wb.worksheets[0]
 with open(input_file_15, 'r') as data:

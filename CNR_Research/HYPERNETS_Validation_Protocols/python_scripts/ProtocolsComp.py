@@ -8,7 +8,7 @@ Created on Mon Jul  1 15:04:37 2019
 import matplotlib.pyplot as plt
 from scipy import stats
 import numpy as np
-#%%
+#%% Plotting
 x = np.array([0.1, 0.2, 0.3, 0.4],dtype=np.float32)
 y = np.array([-0.1, 0.21, 0.39, 0.45],dtype=np.float32)
 e_x = np.array([0.01, 0.03, 0.01, 0.05],dtype=np.float32)
