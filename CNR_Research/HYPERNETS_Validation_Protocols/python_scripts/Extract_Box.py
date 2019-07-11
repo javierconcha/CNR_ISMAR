@@ -6,9 +6,9 @@ Description: Extract box around  and save it as netCDF file
 @author: javier
 """
 from netCDF4 import Dataset
-import netCDF4 as nc
 import os
 import numpy as np
+import numpy.ma as ma
 def convert_DMS_to_decimal(DD,MM,SS,cardinal):
     D = DD + (MM/60) + (SS/3600)
     if (cardinal == 'S') or (cardinal == 'W'):
@@ -26,8 +26,8 @@ def find_row_column_from_lat_lon(lat0,lon0):
 #%%
 #year_str = '2016'
 #doy_str =     
-path_data = '/Users/javier/Desktop/Javier/2019_ROMA/CNR_Research/HYPERNETS_Validation_Protocols/python_scripts/data/source/'
-path_prod_folder = 'S3A_OL_2_WFR____20160517T085515_20160517T085715_20171031T182843_0119_004_164______MR1_R_NT_002.SEN3'
+path_data = '/Users/javier/Desktop/Javier/2019_ROMA/CNR_Research/HYPERNETS_Validation_Protocols/python_scripts/data/source/2016/120'
+path_prod_folder = 'S3A_OL_2_WFR____20160429T100230_20160429T100430_20171030T211000_0119_003_293______MR1_R_NT_002.SEN3'
 coordinates_filename = 'geo_coordinates.nc'
 
 Rrs_0412p50_filename = 'Oa02_reflectance.nc'
@@ -89,10 +89,27 @@ lon_Venise = convert_DMS_to_decimal(12,30,29,'E')
 
 r, c = find_row_column_from_lat_lon(lat_Venise,lon_Venise)
 
-size_box = 11
+size_box = 3
+start_idx_x = (r-int(size_box/2))
+stop_idx_x = (r+int(size_box/2)+1)
+start_idx_y = (c-int(size_box/2))
+stop_idx_y = (c+int(size_box/2)+1)
 
+print(start_idx_x)
+print(r)
+print(stop_idx_x)
+print(start_idx_y)
+print(c)
+print(stop_idx_y)
+print(str(lat.shape[0]))
+print(str(lat.shape[1]))
 
-
+if r+1>=lat.shape[1] or r<0:
+    print('Index out of bound for axis 0')
+    exit()
+elif c+1>=lat.shape[1] or c<0:
+    print('Index out of bound for axis 1')  
+    exit()
 #chl=chl[latind-1:latind+2,lonind-1:lonind+2] 
 
 #%% Save netCDF4 file
@@ -112,48 +129,37 @@ fmb.createDimension('size_box_x', size_box)
 fmb.createDimension('size_box_y', size_box)
 
 latitude = fmb.createVariable('latitude',  'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6) 
-latitude[:] = lat[r-int(size_box/2):r+(int(size_box/2)+1),\
-                c-int(size_box/2):c+(int(size_box/2)+1)]
+latitude[:,:] = lat[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
 
 longitude = fmb.createVariable('longitude',  'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
-longitude[:] = lon[r-int(size_box/2):r+(int(size_box/2)+1),\
-                c-int(size_box/2):c+(int(size_box/2)+1)]
+longitude[:] = lon[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
 
 Rrs_0412p50_box=fmb.createVariable('Rrs_0412p50_box', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
-Rrs_0412p50_box[:] = np.array(Rrs_0412p50[r-int(size_box/2):r+(int(size_box/2)+1),\
-                    c-int(size_box/2):c+(int(size_box/2)+1)],dtype=np.float)
+Rrs_0412p50_box[:] = ma.array(Rrs_0412p50[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y],dtype=np.float)
 
 Rrs_0442p50_box=fmb.createVariable('Rrs_0442p50_box', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
-Rrs_0442p50_box[:] = np.array(Rrs_0442p50[r-int(size_box/2):r+(int(size_box/2)+1),\
-                    c-int(size_box/2):c+(int(size_box/2)+1)],dtype=np.float)
+Rrs_0442p50_box[:] = ma.array(Rrs_0442p50[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y],dtype=np.float)
 
 Rrs_0490p00_box=fmb.createVariable('Rrs_0490p00_box', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
-Rrs_0490p00_box[:] = np.array(Rrs_0490p00[r-int(size_box/2):r+(int(size_box/2)+1),\
-                    c-int(size_box/2):c+(int(size_box/2)+1)],dtype=np.float)
+Rrs_0490p00_box[:] = ma.array(Rrs_0490p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y],dtype=np.float)
 
 Rrs_0510p00_box=fmb.createVariable('Rrs_0510p00_box', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
-Rrs_0510p00_box[:] = np.array(Rrs_0510p00[r-int(size_box/2):r+(int(size_box/2)+1),\
-                    c-int(size_box/2):c+(int(size_box/2)+1)],dtype=np.float)
+Rrs_0510p00_box[:] = ma.array(Rrs_0510p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y],dtype=np.float)
 
 Rrs_0560p00_box=fmb.createVariable('Rrs_0560p00_box', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
-Rrs_0560p00_box[:] = np.array(Rrs_0560p00[r-int(size_box/2):r+(int(size_box/2)+1),\
-                    c-int(size_box/2):c+(int(size_box/2)+1)],dtype=np.float)
+Rrs_0560p00_box[:] = ma.array(Rrs_0560p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y],dtype=np.float)
 
 Rrs_0665p00_box=fmb.createVariable('Rrs_0665p00_box', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
-Rrs_0665p00_box[:] = np.array(Rrs_0665p00[r-int(size_box/2):r+(int(size_box/2)+1),\
-                    c-int(size_box/2):c+(int(size_box/2)+1)],dtype=np.float)
+Rrs_0665p00_box[:] = ma.array(Rrs_0665p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y],dtype=np.float)
 
 Rrs_0673p75_box=fmb.createVariable('Rrs_0673p75_box', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
-Rrs_0673p75_box[:] = np.array(Rrs_0673p75[r-int(size_box/2):r+(int(size_box/2)+1),\
-                    c-int(size_box/2):c+(int(size_box/2)+1)],dtype=np.float)
+Rrs_0673p75_box[:] = ma.array(Rrs_0673p75[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y],dtype=np.float)
 
 Rrs_0865p00_box=fmb.createVariable('Rrs_0865p00_box', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
-Rrs_0865p00_box[:] = np.array(Rrs_0865p00[r-int(size_box/2):r+(int(size_box/2)+1),\
-                    c-int(size_box/2):c+(int(size_box/2)+1)],dtype=np.float)
+Rrs_0865p00_box[:] = ma.array(Rrs_0865p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y],dtype=np.float)
 
 Rrs_1020p50_box=fmb.createVariable('Rrs_1020p50_box', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
-Rrs_1020p50_box[:] = np.array(Rrs_1020p50[r-int(size_box/2):r+(int(size_box/2)+1),\
-                    c-int(size_box/2):c+(int(size_box/2)+1)],dtype=np.float)
+Rrs_1020p50_box[:] = ma.array(Rrs_1020p50[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y],dtype=np.float)
 
 fmb.close()
 
