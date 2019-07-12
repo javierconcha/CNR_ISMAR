@@ -150,8 +150,12 @@ def extract_box(path_source,path_output,in_situ_lat,in_situ_lon):
         
         fmb.close()
         print('Extract created!')
+        created_flag = 1
+        return created_flag
     else:
         print('Index out of bound!')
+        created_flag = 0
+        return created_flag
 #%%
 def main():
     """business logic for when running this module as the primary one!"""
@@ -161,7 +165,7 @@ def main():
     if host == 'vm': 
         path_main = '/home/Javier.Concha/Val_Prot/'
         path_source = '/DataArchive/OC/OLCI/sources_baseline_2.23/'
-        listname = 'OLCI_list_test.txt' #'OLCI_list_uniq.txt '
+        listname = 'OLCI_list_uniq.txt' #'OLCI_list_uniq.txt '
         path_to_list = os.path.join(path_main,'codes',listname)
         
     elif host == 'mac':
@@ -212,9 +216,30 @@ def main():
                 print("Unexpected error:", sys.exc_info())
             path_to_unzip = os.path.join(output_dir,zipfilename[:-4])   # without the .zip ending
 #            print(path_to_unzip)
-            extract_box(path_source=path_to_unzip,path_output=output_dir,in_situ_lat=lat_Venise,in_situ_lon=lon_Venise)
-            
-            (ls_status, ls_output) = subprocess.getstatusoutput('rm -r '+path_to_unzip+'*')
+            created_flag = extract_box(path_source=path_to_unzip,path_output=output_dir,in_situ_lat=lat_Venise,in_situ_lon=lon_Venise)
+            if not created_flag:
+                cmd = 'rm '+path_to_unzip+'/*' # remove .nc
+                print(cmd)
+                (ls_status, ls_output) = subprocess.getstatusoutput(cmd)
+                cmd = 'rm '+output_dir+'/*.zip' # remove .zip
+                print(cmd)
+                (ls_status, ls_output) = subprocess.getstatusoutput(cmd)
+                cmd = 'mv '+output_dir+' '+os.path.join(path_main,'data/output/not_processed') # move directory to be deleted after
+                print(cmd)
+                (ls_status, ls_output) = subprocess.getstatusoutput(cmd)
+                print(ls_status)
+                print(ls_output)
+            else:
+                cmd = 'rm '+path_to_unzip+'/*' # remove .nc
+                print(cmd)
+                (ls_status, ls_output) = subprocess.getstatusoutput(cmd)
+                cmd = 'mv '+path_to_unzip+' '+os.path.join(path_main,'data/output/not_processed')# move unzipped directory to be deleted after
+                print(cmd)
+                (ls_status, ls_output) = subprocess.getstatusoutput(cmd)
+                cmd = 'rm '+output_dir+'/*.zip' # remove .zip
+                print(cmd)
+                (ls_status, ls_output) = subprocess.getstatusoutput(cmd)
+
         
 #%%
 if __name__ == '__main__':
