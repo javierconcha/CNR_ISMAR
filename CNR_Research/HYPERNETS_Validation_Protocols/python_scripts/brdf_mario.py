@@ -2,6 +2,7 @@
 # -*- coding: ascii -*-
 """
 Created on Wed Jan 23 18:21:01 2019
+Modified by Javier on July 15 2019
 
 @author: mario
 mario.benincasa@artov.isac.cnr.it
@@ -26,6 +27,54 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # brdf_mario.py
 # Bidirectional Reflectance Distribution Function
 # computation of the bdrf correction for OLCI sensor
+
+# Wang2006.nc content
+# netcdf Wang2006 {
+# dimensions:
+#     Coefficient = 4 ;
+#     Sigma = 5 ;
+#     Wavelength = 6 ;
+# variables:
+#     float Coefficient(Coefficient) ;
+#     float Sigma(Sigma) ;
+#     float Wavelength(Wavelength) ;
+#     float Wang2006(Sigma, Coefficient, Wavelength) ;
+# data:
+
+#  Wavelength = 412, 443, 490, 510, 555, 670 ;
+# }
+
+# morel_fq.nc content 
+# netcdf morel_fq {
+# dimensions:
+#     n_phi = 13 ;
+#     n_senz = 17 ;
+#     n_chl = 6 ;
+#     n_solz = 6 ;
+#     n_wave = 7 ;
+# variables:
+#     float phi(n_phi) ;
+#         phi:units = "degrees" ;
+#     float senz(n_senz) ;
+#         senz:units = "degrees" ;
+#     float chl(n_chl) ;
+#         chl:units = "mg m^-3" ;
+#     float solz(n_solz) ;
+#         solz:units = "degrees" ;
+#     float wave(n_wave) ;
+#         wave:units = "um" ;
+#     float foq(n_wave, n_solz, n_chl, n_senz, n_phi) ;
+
+# // global attributes:
+#         :description = "F/Q" ;
+#         :history = "Created Tue Jul 21 13:43:50 2015" ;
+#         :source = "cre_morel_ncfile.py" ;
+#         :author = "Rick Healy richard.healy@nasa.gov" ;
+# data:
+
+#  wave = 412.5, 442.5, 490, 510, 560, 620, 660 ;
+# }
+
 
 """
 import with something like:
