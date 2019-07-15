@@ -5,6 +5,20 @@ Created on Mon Jul  8 16:41:12 2019
 
 @author: javier
 """
+"""
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
 import os
 import shutil
 import sys
@@ -14,6 +28,15 @@ import subprocess
 from netCDF4 import Dataset
 import numpy as np
 import numpy.ma as ma
+
+host = 'mac'
+
+# to import brdf_mario.py
+if host == 'mac':
+    sys.path.insert(0,'/Users/javier/Desktop/Javier/2019_ROMA/CNR_Research/HYPERNETS_Validation_Protocols/python_scripts')
+elif host == 'vm':
+    sys.path.insert(0,'/home/Javier.Concha/Val_Prot/codes')
+import brdf_mario as brdf
 
 os.environ['QT_QPA_PLATFORM']='offscreen' # to avoid error "QXcbConnection: Could not connect to display"
 
@@ -31,8 +54,39 @@ def find_row_column_from_lat_lon(lat,lon,lat0,lon0):
     r, c = np.unravel_index(np.argmin(dist_squared),lon.shape) # index to the closest in the latitude and longitude arrays
     return r, c
 
+def extract_wind_and_angles(path_source,in_situ_lat,in_situ_lon):
+    # from Tie-Points grid (a coarser grid)
+    filepah = os.path.join(path_source,'tie_geo_coordinates.nc')
+    nc_f0 = Dataset(filepah,'r')
+    tie_lon = nc_f0.variables['longitude'][:]
+    tie_lat = nc_f0.variables['latitude'][:]
+    
+    filepah = os.path.join(path_source,'tie_meteo.nc')
+    nc_f0 = Dataset(filepah,'r')
+    horizontal_wind = nc_f0.variables['horizontal_wind'][:]
+    nc_f0.close()
+    
+    filepah = os.path.join(path_source,'tie_geometries.nc')
+    nc_f1 = Dataset(filepah,'r')
+    SZA = nc_f1.variables['SZA'][:]    
+    SAA = nc_f1.variables['SAA'][:]  
+    OZA = nc_f1.variables['OZA'][:]  
+    OAA = nc_f1.variables['OAA'][:] 
+    nc_f1.close()        
+      
+    r, c = find_row_column_from_lat_lon(tie_lat,tie_lon,in_situ_lat,in_situ_lon)
+    
+    ws0 = horizontal_wind[r,c,0]
+    ws1 = horizontal_wind[r,c,1]  
+    sza = SZA[r,c]
+    saa = SAA[r,c]
+    vza = OZA[r,c]
+    vaa = OAA[r,c]
+
+    return ws0, ws1, sza, saa, vza, vaa
+
 def extract_box(path_source,path_output,in_situ_lat,in_situ_lon):
-    #%%
+    #%
   
     coordinates_filename = 'geo_coordinates.nc'
     
@@ -41,6 +95,7 @@ def extract_box(path_source,path_output,in_situ_lat,in_situ_lon):
     Rrs_0490p00_filename = 'Oa04_reflectance.nc'
     Rrs_0510p00_filename = 'Oa05_reflectance.nc'
     Rrs_0560p00_filename = 'Oa06_reflectance.nc'
+    Rrs_0620p00_filename = 'Oa07_reflectance.nc'
     Rrs_0665p00_filename = 'Oa08_reflectance.nc'
     Rrs_0673p75_filename = 'Oa09_reflectance.nc'
     Rrs_0865p00_filename = 'Oa17_reflectance.nc'
@@ -51,6 +106,7 @@ def extract_box(path_source,path_output,in_situ_lat,in_situ_lon):
     
     lat = nc_f0.variables['latitude'][:,:]
     lon = nc_f0.variables['longitude'][:,:]
+
     r, c = find_row_column_from_lat_lon(lat,lon,in_situ_lat,in_situ_lon)
     
     size_box = 11
@@ -62,42 +118,87 @@ def extract_box(path_source,path_output,in_situ_lat,in_situ_lon):
 
     
     if r>=0 and r+1<lat.shape[1] and c>=0 and c+1<lat.shape[1]:
+        
         filepah = os.path.join(path_source,Rrs_0412p50_filename)
         nc_f1 = Dataset(filepah,'r')
         Rrs_0412p50 = nc_f1.variables['Oa02_reflectance'][:]
+        nc_f1.close()
         
         filepah = os.path.join(path_source,Rrs_0442p50_filename)
         nc_f2 = Dataset(filepah,'r')
-        Rrs_0442p50 = nc_f2.variables['Oa03_reflectance'][:,:]
+        Rrs_0442p50 = nc_f2.variables['Oa03_reflectance'][:]
+        nc_f2.close()
         
         filepah = os.path.join(path_source,Rrs_0490p00_filename)
         nc_f3 = Dataset(filepah,'r')
-        Rrs_0490p00 = nc_f3.variables['Oa04_reflectance'][:,:]
+        Rrs_0490p00 = nc_f3.variables['Oa04_reflectance'][:]
+        nc_f3.close()
         
         filepah = os.path.join(path_source,Rrs_0510p00_filename)
         nc_f4 = Dataset(filepah,'r')
-        Rrs_0510p00 = nc_f4.variables['Oa05_reflectance'][:,:]
+        Rrs_0510p00 = nc_f4.variables['Oa05_reflectance'][:]
+        nc_f4.close()
         
         filepah = os.path.join(path_source,Rrs_0560p00_filename)
         nc_f5 = Dataset(filepah,'r')
-        Rrs_0560p00 = nc_f5.variables['Oa06_reflectance'][:,:]
+        Rrs_0560p00 = nc_f5.variables['Oa06_reflectance'][:]
+        nc_f5.close()
+
+        filepah = os.path.join(path_source,Rrs_0620p00_filename)
+        nc_f6 = Dataset(filepah,'r')
+        Rrs_0620p00 = nc_f6.variables['Oa07_reflectance'][:]
+        nc_f6.close()
         
         filepah = os.path.join(path_source,Rrs_0665p00_filename)
-        nc_f6 = Dataset(filepah,'r')
-        Rrs_0665p00 = nc_f6.variables['Oa08_reflectance'][:,:]
+        nc_f7 = Dataset(filepah,'r')
+        Rrs_0665p00 = nc_f7.variables['Oa08_reflectance'][:]
+        nc_f7.close()
         
         filepah = os.path.join(path_source,Rrs_0673p75_filename)
-        nc_f7 = Dataset(filepah,'r')
-        Rrs_0673p75 = nc_f7.variables['Oa09_reflectance'][:,:]
+        nc_f8 = Dataset(filepah,'r')
+        Rrs_0673p75 = nc_f8.variables['Oa09_reflectance'][:]
+        nc_f8.close()
         
         filepah = os.path.join(path_source,Rrs_0865p00_filename)
-        nc_f8 = Dataset(filepah,'r')
-        Rrs_0865p00 = nc_f8.variables['Oa17_reflectance'][:,:]
+        nc_f9 = Dataset(filepah,'r')
+        Rrs_0865p00 = nc_f9.variables['Oa17_reflectance'][:]
+        nc_f9.close()
         
         filepah = os.path.join(path_source,Rrs_1020p50_filename)
-        nc_f9 = Dataset(filepah,'r')
-        Rrs_1020p50 = nc_f9.variables['Oa21_reflectance'][:,:]
+        nc_f10 = Dataset(filepah,'r')
+        Rrs_1020p50 = nc_f10.variables['Oa21_reflectance'][:]
+        nc_f10.close()
         
+        #%% Calculate BRDF
+        ws0, ws1, sza, saa, vza, vaa = extract_wind_and_angles(path_source,in_situ_lat,in_situ_lon)
+        
+        filepah = os.path.join(path_source,'chl_oc4me.nc')
+        nc_f11 = Dataset(filepah,'r')
+        CHL_OC4ME = nc_f11.variables['CHL_OC4ME'][:]
+        nc_f11.close()
+        CHL_OC4ME_extract = ma.array(CHL_OC4ME[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y])
+        BRDF0 = np.full(CHL_OC4ME_extract.shape,np.nan)
+        BRDF1 = np.full(CHL_OC4ME_extract.shape,np.nan)
+        BRDF2 = np.full(CHL_OC4ME_extract.shape,np.nan)
+        BRDF3 = np.full(CHL_OC4ME_extract.shape,np.nan)
+        BRDF4 = np.full(CHL_OC4ME_extract.shape,np.nan)
+        BRDF5 = np.full(CHL_OC4ME_extract.shape,np.nan)
+        BRDF6 = np.full(CHL_OC4ME_extract.shape,np.nan)
+        for ind0 in range(CHL_OC4ME_extract.shape[0]):
+            for ind1 in range(CHL_OC4ME_extract.shape[1]):
+                chl = CHL_OC4ME_extract[ind0,ind1]
+                # 412.5, 442.5, 490, 510, 560, 620, 660 bands
+                # 0      1      2    3    4    5    6   brdf index
+                # 412.5  442.5  490  510  560  620  665 OLCI bands
+                # 02     03     04   05   06   07   08  OLCI band names in L2
+                brdf_coeffs = brdf.brdf(ws0, ws1, chl, sza, saa, vza, vaa)
+                BRDF0[ind0,ind1] = brdf_coeffs[0,0]
+                BRDF1[ind0,ind1] = brdf_coeffs[0,1]
+                BRDF2[ind0,ind1] = brdf_coeffs[0,2]
+                BRDF3[ind0,ind1] = brdf_coeffs[0,3]
+                BRDF4[ind0,ind1] = brdf_coeffs[0,4]
+                BRDF5[ind0,ind1] = brdf_coeffs[0,5]
+                BRDF6[ind0,ind1] = brdf_coeffs[0,6]
         #%% Save netCDF4 file
         path_out = os.path.join(path_output)
         ofname = 'extract.nc'
@@ -115,38 +216,103 @@ def extract_box(path_source,path_output,in_situ_lat,in_situ_lon):
         fmb.createDimension('size_box_x', size_box)
         fmb.createDimension('size_box_y', size_box)
         
+        fmb.createDimension('index',None)
+        row_center = fmb.createVariable('row_center',  'f4', ('index'), fill_value=-999, zlib=True, complevel=6) 
+        row_center[:] = r
+        row_center.description = 'row index to the original L2 file'
+        col_center = fmb.createVariable('col_center',  'f4', ('index'), fill_value=-999, zlib=True, complevel=6) 
+        col_center[:] = c
+        col_center.description = 'column index to the original L2 file'
+        
+        lat_insitu = fmb.createVariable('lat_insitu',  'f4', ('index'), fill_value=-999, zlib=True, complevel=6) 
+        lat_insitu[:] = in_situ_lat
+        lat_insitu.description = 'latitude of in situ measurement'
+        
+        lon_insitu = fmb.createVariable('lon_insitu',  'f4', ('index'), fill_value=-999, zlib=True, complevel=6) 
+        lon_insitu[:] = in_situ_lon
+        lon_insitu.description = 'longitude of in situ measurement'
+        
+        fmb.createDimension('angles_and_wind',None)
+        ws0_value = fmb.createVariable('ws0_value',  'f4', ('angles_and_wind'), fill_value=-999, zlib=True, complevel=6) 
+        ws0_value[:] = ws0
+        ws1_value = fmb.createVariable('ws1_value',  'f4', ('angles_and_wind'), fill_value=-999, zlib=True, complevel=6) 
+        ws1_value[:] = ws1
+        sza_value = fmb.createVariable('sza_value',  'f4', ('angles_and_wind'), fill_value=-999, zlib=True, complevel=6) 
+        sza_value[:] = sza
+        saa_value = fmb.createVariable('saa_value',  'f4', ('angles_and_wind'), fill_value=-999, zlib=True, complevel=6) 
+        saa_value[:] = saa
+        vza_value = fmb.createVariable('vza_value',  'f4', ('angles_and_wind'), fill_value=-999, zlib=True, complevel=6) 
+        vza_value[:] = vza
+        vaa_value = fmb.createVariable('vaa_value',  'f4', ('angles_and_wind'), fill_value=-999, zlib=True, complevel=6) 
+        vaa_value[:] = vaa
+
+        
         latitude = fmb.createVariable('latitude',  'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6) 
         latitude[:] = lat[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
         
         longitude = fmb.createVariable('longitude',  'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
         longitude[:] = lon[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
         
-        Rrs_0412p50_box=fmb.createVariable('Rrs_0412p50_box', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
-        Rrs_0412p50_box[:] = ma.array(Rrs_0412p50[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y])
+        Rrs_0412p50_fq=fmb.createVariable('Rrs_0412p50_fq', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
+        Rrs_0412p50_fq[:] = ma.array(Rrs_0412p50[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]*BRDF0)
+        Rrs_0412p50_fq.description = 'Rrs(0412.50) brdf-corrected'
         
-        Rrs_0442p50_box=fmb.createVariable('Rrs_0442p50_box', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
-        Rrs_0442p50_box[:] = ma.array(Rrs_0442p50[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y],dtype=np.float)
+        Rrs_0442p50_fq=fmb.createVariable('Rrs_0442p50_fq', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
+        Rrs_0442p50_fq[:] = ma.array(Rrs_0442p50[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]*BRDF1)
+        Rrs_0442p50_fq.description = 'Rrs(0442.50) brdf-corrected'
         
-        Rrs_0490p00_box=fmb.createVariable('Rrs_0490p00_box', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
-        Rrs_0490p00_box[:] = ma.array(Rrs_0490p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y],dtype=np.float)
+        Rrs_0490p00_fq=fmb.createVariable('Rrs_0490p00_fq', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
+        Rrs_0490p00_fq[:] = ma.array(Rrs_0490p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]*BRDF2)
+        Rrs_0490p00_fq.description = 'Rrs(0490.00) brdf-corrected'
         
-        Rrs_0510p00_box=fmb.createVariable('Rrs_0510p00_box', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
-        Rrs_0510p00_box[:] = ma.array(Rrs_0510p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y],dtype=np.float)
+        Rrs_0510p00_fq=fmb.createVariable('Rrs_0510p00_fq', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
+        Rrs_0510p00_fq[:] = ma.array(Rrs_0510p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]*BRDF3)
+        Rrs_0510p00_fq.description = 'Rrs(0510.00) brdf-corrected'
         
-        Rrs_0560p00_box=fmb.createVariable('Rrs_0560p00_box', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
-        Rrs_0560p00_box[:] = ma.array(Rrs_0560p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y],dtype=np.float)
+        Rrs_0560p00_fq=fmb.createVariable('Rrs_0560p00_fq', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
+        Rrs_0560p00_fq[:] = ma.array(Rrs_0560p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]*BRDF4)
+        Rrs_0560p00_fq.description = 'Rrs(0560.00) brdf-corrected'
+
+        Rrs_0620p00_fq=fmb.createVariable('Rrs_0620p00_fq', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
+        Rrs_0620p00_fq[:] = ma.array(Rrs_0620p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]*BRDF5)
+        Rrs_0620p00_fq.description = 'Rrs(0620.00) brdf-corrected'
         
-        Rrs_0665p00_box=fmb.createVariable('Rrs_0665p00_box', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
-        Rrs_0665p00_box[:] = ma.array(Rrs_0665p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y],dtype=np.float)
+        Rrs_0665p00_fq=fmb.createVariable('Rrs_0665p00_fq', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
+        Rrs_0665p00_fq[:] = ma.array(Rrs_0665p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]*BRDF6)
+        Rrs_0665p00_fq.description = 'Rrs(0665.00) brdf-corrected'
         
         Rrs_0673p75_box=fmb.createVariable('Rrs_0673p75_box', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
-        Rrs_0673p75_box[:] = ma.array(Rrs_0673p75[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y],dtype=np.float)
+        Rrs_0673p75_box[:] = ma.array(Rrs_0673p75[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y])
         
         Rrs_0865p00_box=fmb.createVariable('Rrs_0865p00_box', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
-        Rrs_0865p00_box[:] = ma.array(Rrs_0865p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y],dtype=np.float)
+        Rrs_0865p00_box[:] = ma.array(Rrs_0865p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y])
         
         Rrs_1020p50_box=fmb.createVariable('Rrs_1020p50_box', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
-        Rrs_1020p50_box[:] = ma.array(Rrs_1020p50[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y],dtype=np.float)
+        Rrs_1020p50_box[:] = ma.array(Rrs_1020p50[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y])
+
+        fq_0 = fmb.createVariable('fq_0', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
+        fq_0[:] = ma.array(BRDF0)
+
+        fq_1 = fmb.createVariable('fq_1', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
+        fq_1[:] = ma.array(BRDF1)
+
+        fq_2 = fmb.createVariable('fq_2', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
+        fq_2[:] = ma.array(BRDF2)
+
+        fq_3 = fmb.createVariable('fq_3', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
+        fq_3[:] = ma.array(BRDF3)
+
+        fq_4 = fmb.createVariable('fq_4', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
+        fq_4[:] = ma.array(BRDF4)
+
+        fq_5 = fmb.createVariable('fq_5', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
+        fq_5[:] = ma.array(BRDF5)
+
+        fq_6 = fmb.createVariable('fq_6', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
+        fq_6[:] = ma.array(BRDF6)
+
+        chl_oc4me = fmb.createVariable('chl_oc4me', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
+        chl_oc4me[:] = ma.array(CHL_OC4ME_extract)
         
         fmb.close()
         print('Extract created!')
@@ -160,7 +326,6 @@ def extract_box(path_source,path_output,in_situ_lat,in_situ_lon):
 def main():
     """business logic for when running this module as the primary one!"""
     print('Main Code!')
-    host = 'mac'
     
     if host == 'vm': 
         path_main = '/home/Javier.Concha/Val_Prot/'
