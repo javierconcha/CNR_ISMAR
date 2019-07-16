@@ -12,6 +12,7 @@ Note: The following subfolder should be created in advance:
     - netcdf_file/
 
 @author: Marco
+Modified by Javier A. Concha on July 15 2019
 """
 """
 This program is free software: you can redistribute it and/or modify
