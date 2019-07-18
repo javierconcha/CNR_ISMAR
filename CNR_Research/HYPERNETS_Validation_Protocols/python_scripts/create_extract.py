@@ -90,16 +90,18 @@ def extract_box(path_source,path_output,in_situ_lat,in_situ_lon):
   
     coordinates_filename = 'geo_coordinates.nc'
     
-    Rrs_0412p50_filename = 'Oa02_reflectance.nc'
-    Rrs_0442p50_filename = 'Oa03_reflectance.nc'
-    Rrs_0490p00_filename = 'Oa04_reflectance.nc'
-    Rrs_0510p00_filename = 'Oa05_reflectance.nc'
-    Rrs_0560p00_filename = 'Oa06_reflectance.nc'
-    Rrs_0620p00_filename = 'Oa07_reflectance.nc'
-    Rrs_0665p00_filename = 'Oa08_reflectance.nc'
-    Rrs_0673p75_filename = 'Oa09_reflectance.nc'
-    Rrs_0865p00_filename = 'Oa17_reflectance.nc'
-    Rrs_1020p50_filename = 'Oa21_reflectance.nc'
+    rhow_0412p50_filename = 'Oa02_reflectance.nc'
+    rhow_0442p50_filename = 'Oa03_reflectance.nc'
+    rhow_0490p00_filename = 'Oa04_reflectance.nc'
+    rhow_0510p00_filename = 'Oa05_reflectance.nc'
+    rhow_0560p00_filename = 'Oa06_reflectance.nc'
+    rhow_0620p00_filename = 'Oa07_reflectance.nc'
+    rhow_0665p00_filename = 'Oa08_reflectance.nc'
+    rhow_0673p75_filename = 'Oa09_reflectance.nc'
+    rhow_0865p00_filename = 'Oa17_reflectance.nc'
+    rhow_1020p50_filename = 'Oa21_reflectance.nc'
+    
+    AOT_0865p50_filename = 'w_aer.nc'
     
     filepah = os.path.join(path_source,coordinates_filename)
     nc_f0 = Dataset(filepah,'r')
@@ -117,58 +119,62 @@ def extract_box(path_source,path_output,in_situ_lat,in_situ_lon):
     stop_idx_y = (c+int(size_box/2)+1)
 
     
-    if r>=0 and r+1<lat.shape[1] and c>=0 and c+1<lat.shape[1]:
+    if r>=0 and r+1<lat.shape[0] and c>=0 and c+1<lat.shape[1]:
         
-        filepah = os.path.join(path_source,Rrs_0412p50_filename)
+        filepah = os.path.join(path_source,rhow_0412p50_filename)
         nc_f1 = Dataset(filepah,'r')
-        Rrs_0412p50 = nc_f1.variables['Oa02_reflectance'][:]
+        rhow_0412p50 = nc_f1.variables['Oa02_reflectance'][:]
         nc_f1.close()
         
-        filepah = os.path.join(path_source,Rrs_0442p50_filename)
+        filepah = os.path.join(path_source,rhow_0442p50_filename)
         nc_f2 = Dataset(filepah,'r')
-        Rrs_0442p50 = nc_f2.variables['Oa03_reflectance'][:]
+        rhow_0442p50 = nc_f2.variables['Oa03_reflectance'][:]
         nc_f2.close()
         
-        filepah = os.path.join(path_source,Rrs_0490p00_filename)
+        filepah = os.path.join(path_source,rhow_0490p00_filename)
         nc_f3 = Dataset(filepah,'r')
-        Rrs_0490p00 = nc_f3.variables['Oa04_reflectance'][:]
+        rhow_0490p00 = nc_f3.variables['Oa04_reflectance'][:]
         nc_f3.close()
         
-        filepah = os.path.join(path_source,Rrs_0510p00_filename)
+        filepah = os.path.join(path_source,rhow_0510p00_filename)
         nc_f4 = Dataset(filepah,'r')
-        Rrs_0510p00 = nc_f4.variables['Oa05_reflectance'][:]
+        rhow_0510p00 = nc_f4.variables['Oa05_reflectance'][:]
         nc_f4.close()
         
-        filepah = os.path.join(path_source,Rrs_0560p00_filename)
+        filepah = os.path.join(path_source,rhow_0560p00_filename)
         nc_f5 = Dataset(filepah,'r')
-        Rrs_0560p00 = nc_f5.variables['Oa06_reflectance'][:]
+        rhow_0560p00 = nc_f5.variables['Oa06_reflectance'][:]
         nc_f5.close()
 
-        filepah = os.path.join(path_source,Rrs_0620p00_filename)
+        filepah = os.path.join(path_source,rhow_0620p00_filename)
         nc_f6 = Dataset(filepah,'r')
-        Rrs_0620p00 = nc_f6.variables['Oa07_reflectance'][:]
+        rhow_0620p00 = nc_f6.variables['Oa07_reflectance'][:]
         nc_f6.close()
         
-        filepah = os.path.join(path_source,Rrs_0665p00_filename)
+        filepah = os.path.join(path_source,rhow_0665p00_filename)
         nc_f7 = Dataset(filepah,'r')
-        Rrs_0665p00 = nc_f7.variables['Oa08_reflectance'][:]
+        rhow_0665p00 = nc_f7.variables['Oa08_reflectance'][:]
         nc_f7.close()
         
-        filepah = os.path.join(path_source,Rrs_0673p75_filename)
+        filepah = os.path.join(path_source,rhow_0673p75_filename)
         nc_f8 = Dataset(filepah,'r')
-        Rrs_0673p75 = nc_f8.variables['Oa09_reflectance'][:]
+        rhow_0673p75 = nc_f8.variables['Oa09_reflectance'][:]
         nc_f8.close()
         
-        filepah = os.path.join(path_source,Rrs_0865p00_filename)
+        filepah = os.path.join(path_source,rhow_0865p00_filename)
         nc_f9 = Dataset(filepah,'r')
-        Rrs_0865p00 = nc_f9.variables['Oa17_reflectance'][:]
+        rhow_0865p00 = nc_f9.variables['Oa17_reflectance'][:]
         nc_f9.close()
         
-        filepah = os.path.join(path_source,Rrs_1020p50_filename)
+        filepah = os.path.join(path_source,rhow_1020p50_filename)
         nc_f10 = Dataset(filepah,'r')
-        Rrs_1020p50 = nc_f10.variables['Oa21_reflectance'][:]
+        rhow_1020p50 = nc_f10.variables['Oa21_reflectance'][:]
         nc_f10.close()
         
+        filepah = os.path.join(path_source,AOT_0865p50_filename)
+        nc_f11 = Dataset(filepah,'r')
+        AOT_0865p50 = nc_f11.variables['T865'][:]
+        nc_f11.close()
         #%% Calculate BRDF
         ws0, ws1, sza, saa, vza, vaa = extract_wind_and_angles(path_source,in_situ_lat,in_situ_lon)
         
@@ -245,51 +251,87 @@ def extract_box(path_source,path_output,in_situ_lat,in_situ_lon):
         vza_value[:] = vza
         vaa_value = fmb.createVariable('vaa_value',  'f4', ('angles_and_wind'), fill_value=-999, zlib=True, complevel=6) 
         vaa_value[:] = vaa
-
         
         latitude = fmb.createVariable('latitude',  'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6) 
         latitude[:] = lat[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
         
         longitude = fmb.createVariable('longitude',  'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
         longitude[:] = lon[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
-        
-        Rrs_0412p50_fq=fmb.createVariable('Rrs_0412p50_fq', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
-        Rrs_0412p50_fq[:] = ma.array(Rrs_0412p50[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]*BRDF0)
-        Rrs_0412p50_fq.description = 'Rrs(0412.50) brdf-corrected'
-        
-        Rrs_0442p50_fq=fmb.createVariable('Rrs_0442p50_fq', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
-        Rrs_0442p50_fq[:] = ma.array(Rrs_0442p50[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]*BRDF1)
-        Rrs_0442p50_fq.description = 'Rrs(0442.50) brdf-corrected'
-        
-        Rrs_0490p00_fq=fmb.createVariable('Rrs_0490p00_fq', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
-        Rrs_0490p00_fq[:] = ma.array(Rrs_0490p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]*BRDF2)
-        Rrs_0490p00_fq.description = 'Rrs(0490.00) brdf-corrected'
-        
-        Rrs_0510p00_fq=fmb.createVariable('Rrs_0510p00_fq', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
-        Rrs_0510p00_fq[:] = ma.array(Rrs_0510p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]*BRDF3)
-        Rrs_0510p00_fq.description = 'Rrs(0510.00) brdf-corrected'
-        
-        Rrs_0560p00_fq=fmb.createVariable('Rrs_0560p00_fq', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
-        Rrs_0560p00_fq[:] = ma.array(Rrs_0560p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]*BRDF4)
-        Rrs_0560p00_fq.description = 'Rrs(0560.00) brdf-corrected'
 
-        Rrs_0620p00_fq=fmb.createVariable('Rrs_0620p00_fq', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
-        Rrs_0620p00_fq[:] = ma.array(Rrs_0620p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]*BRDF5)
-        Rrs_0620p00_fq.description = 'Rrs(0620.00) brdf-corrected'
+        # NOT BRDF-corrected
+        rhow_0412p50_box=fmb.createVariable('rhow_0412p50', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
+        rhow_0412p50_box[:] = ma.array(rhow_0412p50[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y])
+        rhow_0412p50_box.description = 'rhow(0412.50) NOT brdf-corrected'
         
-        Rrs_0665p00_fq=fmb.createVariable('Rrs_0665p00_fq', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
-        Rrs_0665p00_fq[:] = ma.array(Rrs_0665p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]*BRDF6)
-        Rrs_0665p00_fq.description = 'Rrs(0665.00) brdf-corrected'
+        rhow_0442p50_box=fmb.createVariable('rhow_0442p50', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
+        rhow_0442p50_box[:] = ma.array(rhow_0442p50[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y])
+        rhow_0442p50_box.description = 'rhow(0442.50) NOT brdf-corrected'
         
-        Rrs_0673p75_box=fmb.createVariable('Rrs_0673p75_box', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
-        Rrs_0673p75_box[:] = ma.array(Rrs_0673p75[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y])
+        rhow_0490p00_box=fmb.createVariable('rhow_0490p00', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
+        rhow_0490p00_box[:] = ma.array(rhow_0490p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y])
+        rhow_0490p00_box.description = 'rhow(0490.00) NOT brdf-corrected'
         
-        Rrs_0865p00_box=fmb.createVariable('Rrs_0865p00_box', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
-        Rrs_0865p00_box[:] = ma.array(Rrs_0865p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y])
+        rhow_0510p00_box=fmb.createVariable('rhow_0510p00', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
+        rhow_0510p00_box[:] = ma.array(rhow_0510p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y])
+        rhow_0510p00_box.description = 'rhow(0510.00) NOT brdf-corrected'
         
-        Rrs_1020p50_box=fmb.createVariable('Rrs_1020p50_box', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
-        Rrs_1020p50_box[:] = ma.array(Rrs_1020p50[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y])
+        rhow_0560p00_box=fmb.createVariable('rhow_0560p00', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
+        rhow_0560p00_box[:] = ma.array(rhow_0560p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y])
+        rhow_0560p00_box.description = 'rhow(0560.00) NOT brdf-corrected'
 
+        rhow_0620p00_box=fmb.createVariable('rhow_0620p00', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
+        rhow_0620p00_box[:] = ma.array(rhow_0620p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y])
+        rhow_0620p00_box.description = 'rhow(0620.00) NOT brdf-corrected'
+        
+        rhow_0665p00_box=fmb.createVariable('rhow_0665p00', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
+        rhow_0665p00_box[:] = ma.array(rhow_0665p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y])
+        rhow_0665p00_box.description = 'rhow(0665.00) NOT brdf-corrected'
+
+        rhow_0673p75_box=fmb.createVariable('rhow_0673p75', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
+        rhow_0673p75_box[:] = ma.array(rhow_0673p75[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y])
+        rhow_0673p75_box.description = 'rhow(0673.75) NOT brdf-corrected'
+        
+        rhow_0865p00_box=fmb.createVariable('rhow_0865p00', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
+        rhow_0865p00_box[:] = ma.array(rhow_0865p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y])
+        rhow_0865p00_box.description = 'rhow(0865.00) NOT brdf-corrected'
+        
+        rhow_1020p50_box=fmb.createVariable('rhow_1020p50', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
+        rhow_1020p50_box[:] = ma.array(rhow_1020p50[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y])
+        rhow_1020p50_box.description = 'rhow(1020.50) NOT brdf-corrected'
+        
+        # BRDF-corrected
+        rhow_0412p50_fq=fmb.createVariable('rhow_0412p50_fq', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
+        rhow_0412p50_fq[:] = ma.array(rhow_0412p50[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]*BRDF0)
+        rhow_0412p50_fq.description = 'rhow(0412.50) brdf-corrected'
+        
+        rhow_0442p50_fq=fmb.createVariable('rhow_0442p50_fq', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
+        rhow_0442p50_fq[:] = ma.array(rhow_0442p50[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]*BRDF1)
+        rhow_0442p50_fq.description = 'rhow(0442.50) brdf-corrected'
+        
+        rhow_0490p00_fq=fmb.createVariable('rhow_0490p00_fq', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
+        rhow_0490p00_fq[:] = ma.array(rhow_0490p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]*BRDF2)
+        rhow_0490p00_fq.description = 'rhow(0490.00) brdf-corrected'
+        
+        rhow_0510p00_fq=fmb.createVariable('rhow_0510p00_fq', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
+        rhow_0510p00_fq[:] = ma.array(rhow_0510p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]*BRDF3)
+        rhow_0510p00_fq.description = 'rhow(0510.00) brdf-corrected'
+        
+        rhow_0560p00_fq=fmb.createVariable('rhow_0560p00_fq', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
+        rhow_0560p00_fq[:] = ma.array(rhow_0560p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]*BRDF4)
+        rhow_0560p00_fq.description = 'rhow(0560.00) brdf-corrected'
+
+        rhow_0620p00_fq=fmb.createVariable('rhow_0620p00_fq', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
+        rhow_0620p00_fq[:] = ma.array(rhow_0620p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]*BRDF5)
+        rhow_0620p00_fq.description = 'rhow(0620.00) brdf-corrected'
+        
+        rhow_0665p00_fq=fmb.createVariable('rhow_0665p00_fq', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
+        rhow_0665p00_fq[:] = ma.array(rhow_0665p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]*BRDF6)
+        rhow_0665p00_fq.description = 'rhow(0665.00) brdf-corrected'
+        
+        AOT_0865p50_box=fmb.createVariable('AOT_0865p50', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
+        AOT_0865p50_box[:] = ma.array(AOT_0865p50[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y])
+        AOT_0865p50_box.description = 'Aerosol optical thickness'
+        
         fq_0 = fmb.createVariable('fq_0', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
         fq_0[:] = ma.array(BRDF0)
 
@@ -380,6 +422,14 @@ def main():
             except:
                 print("Unexpected error:", sys.exc_info())
             path_to_unzip = os.path.join(output_dir,zipfilename[:-4])   # without the .zip ending
+            
+            if not os.path.exists(path_to_unzip):
+                if os.path.exists(path_to_unzip+'.SEN3'):
+                    path_to_unzip = path_to_unzip+'.SEN3'
+                else:
+                    print('dir '+path_to_unzip+' does NOT exist!')
+                    continue    
+            
 #            print(path_to_unzip)
             created_flag = extract_box(path_source=path_to_unzip,path_output=output_dir,in_situ_lat=lat_Venise,in_situ_lon=lon_Venise)
             if not created_flag:
