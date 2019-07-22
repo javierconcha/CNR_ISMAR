@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """
 Created on Thu Jul  4 17:45:45 2019
 Description: Extract box around  and save it as netCDF file. This is for one case only.

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: ascii -*-
+# coding: utf-8
 """
 Created on Wed Jan 23 18:21:01 2019
 Modified by Javier on July 15 2019

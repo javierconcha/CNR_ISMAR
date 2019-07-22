@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """
 Created on Mon Jul  8 16:41:12 2019
 
@@ -102,6 +102,7 @@ def extract_box(path_source,path_output,in_situ_lat,in_situ_lon):
     rhow_1020p50_filename = 'Oa21_reflectance.nc'
     
     AOT_0865p50_filename = 'w_aer.nc'
+    WQSF_filename = 'wqsf.nc'
     
     filepah = os.path.join(path_source,coordinates_filename)
     nc_f0 = Dataset(filepah,'r')
@@ -175,6 +176,11 @@ def extract_box(path_source,path_output,in_situ_lat,in_situ_lon):
         nc_f11 = Dataset(filepah,'r')
         AOT_0865p50 = nc_f11.variables['T865'][:]
         nc_f11.close()
+
+        filepah = os.path.join(path_source,WQSF_filename)
+        nc_f12 = Dataset(filepah,'r')
+        WQSF = nc_f12.variables['WQSF'][:]
+        nc_f12.close()
         #%% Calculate BRDF
         ws0, ws1, sza, saa, vza, vaa = extract_wind_and_angles(path_source,in_situ_lat,in_situ_lon)
         
@@ -331,6 +337,10 @@ def extract_box(path_source,path_output,in_situ_lat,in_situ_lon):
         AOT_0865p50_box=fmb.createVariable('AOT_0865p50', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
         AOT_0865p50_box[:] = ma.array(AOT_0865p50[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y])
         AOT_0865p50_box.description = 'Aerosol optical thickness'
+
+        WQSF_box=fmb.createVariable('WQSF', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
+        WQSF_box[:] = ma.array(WQSF[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y])
+        WQSF_box.description = 'OLCI Level 2 WATER Product, Classification, Quality and Science Flags Data Set'
         
         fq_0 = fmb.createVariable('fq_0', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
         fq_0[:] = ma.array(BRDF0)
@@ -373,13 +383,14 @@ def main():
         path_main = '/home/Javier.Concha/Val_Prot/'
         path_source = '/DataArchive/OC/OLCI/sources_baseline_2.23/'
         listname = 'OLCI_list_uniq.txt' #'OLCI_list_uniq.txt '
-        path_to_list = os.path.join(path_main,'codes',listname)
-        
+        path_to_list = os.path.join(path_main,'codes',listname)        
     elif host == 'mac':
         path_main = '/Users/javier/Desktop/Javier/2019_ROMA/CNR_Research/HYPERNETS_Validation_Protocols/python_scripts'
         path_source = os.path.join(path_main,'data/source')
         listname = 'OLCI_list_test.txt' #'OLCI_list_uniq.txt '
         path_to_list = os.path.join(path_main,listname)
+    else:
+        print('Error: host flag is not either mac or vm')
     
     #Venise location: N 45o 18' 50", E 12o 30' 29"
     lat_Venise = convert_DMS_to_decimal(45,18,50,'N')
