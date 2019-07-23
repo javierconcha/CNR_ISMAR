@@ -126,7 +126,7 @@ def create_mask(flag_file):
 		| (flag_file & CLOUD_MARGIN)\
 		| (flag_file & SNOW_ICE)\
 		| (flag_file & SUSPECT)\
-		| (flag_file & HISOLZEN)\
+#		| (flag_file & HISOLZEN)\
 		| (flag_file & SATURATED)\
 		| (flag_file & HIGHGLINT)\
 		| (flag_file & WHITECAPS)\
@@ -139,7 +139,8 @@ def create_mask(flag_file):
 		# | (flag_file & RWNEG_O7)\
 		# | (flag_file & RWNEG_O8)\
 		)]=1
-    return flag_mask
+    flag_mask = np.int64(flag_mask)
+    return flag_mask 
 #%%	
 def main():
 	print('This is the main() of the apply_flags_OLCI.py')

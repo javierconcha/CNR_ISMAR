@@ -12,3 +12,24 @@ to create a movie:
 
 shapely Tutorial:
 https://automating-gis-processes.github.io/CSC18/lessons/L4/point-in-polygon.html
+------------------------------------------------------------
+2019-05-13 Mon
+from port installation:
+--->  Some of the ports you installed have notes:
+  hdf5 has the following notes:
+    Mac users may need to set the environment variable "HDF5_USE_FILE_LOCKING" to the
+    five-character string "FALSE" when accessing network mounted files.  This is an
+    application run-time setting, not a configure or build setting.  Otherwise errors such
+    as "unable to open file" or "HDF5 error" may be  encountered.
+  libidn has the following notes:
+    Please be aware that GNU libidn2 is the successor of GNU libidn. It comes with IDNA
+    2008  
+    and TR46 implementations and also provides a compatibility layer for GNU libidn.
+  libpsl has the following notes:
+    libpsl API documentation is provided by the port 'libpsl-docs'.
+  netcdf has the following notes:
+    As of version 4.2 c++ and fortran interfaces are separate ports, netcdf-cxx and
+    netcdf-fortran, respectively.
+  wget has the following notes:
+    To customize wget, you can copy /opt/local/etc/wgetrc.sample to /opt/local/etc/wgetrc
+    and then make changes.

@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import os
 from netCDF4 import Dataset
 import numpy as np
+import numpy.ma as ma
 import subprocess
 import matplotlib.pyplot as plt
 import sys
@@ -266,7 +267,7 @@ with open(path_to_list,'r') as file:
         vza = nc_f1.variables['vza_value'][:]
         
         # Zibordi et al. 2018
-        print('Zibordi et al. 2018')
+        print('--Zibordi et al. 2018')
         delta_time = 2# float in hours       
         time_diff = ins_time - sat_stop_time
         dt_hour = [i.total_seconds()/(60*60) for i in time_diff] # time diffence between in situ measurements and sat in hours
@@ -290,17 +291,19 @@ with open(path_to_list,'r') as file:
             rhow_0490p00_fq_box = rhow_0490p00_fq[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
             rhow_0560p00_fq_box = rhow_0560p00_fq[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
             rhow_0665p00_fq_box = rhow_0665p00_fq[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+
+            AOT_0865p50_box = AOT_0865p50[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
             
             flags_mask = OLCI_flags.create_mask(WQSF[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y])
             print(flags_mask)
             
-            if sza<=70 and vza<=56 and not flags_mask.any():
+            if sza<=70 and vza<=56 and not flags_mask.any(): # if any of the pixels if flagged, Fails validation criteria because all have to be valid in Zibordi 2018
                 Lwn_560 = rhow_0560p00_fq_box*F0_0560p00/np.pi
                 Lwn_560_CV = Lwn_560.std()/Lwn_560.mean()    
                 
-                AOT_865p5_CV = AOT_0865p50.std()/AOT_0865p50.mean()
+                AOT_0865p50_CV = AOT_0865p50_box.std()/AOT_0865p50_box.mean()
                 
-                if Lwn_560_CV <= 0.2 and AOT_865p5_CV <= 0.2:
+                if Lwn_560_CV <= 0.2 and AOT_0865p50_CV <= 0.2:
                     # Rrs 0412p50
                     print('412.5')
                     if rhow_0412p50_fq_box.mask.any() == True or np.isnan(rhow_0412p50_fq_box).any() == True:
@@ -337,86 +340,179 @@ with open(path_to_list,'r') as file:
                         matchups_Lwn_0665p00_fq_sat_zi.append(rhow_0665p00_fq_box.mean()*F0_0665p00/np.pi)
                         matchups_Lwn_0665p00_fq_ins_zi.append(Lwn_fonQ[idx_min,5]) # 667.9    
                 else:
-                    print('CV exceeds criteria: CV[Lwn(560)]='+str(Lwn_560_CV)+'; CV[AOT(865.5)]='+str(AOT_865p5_CV))
+                    print('CV exceeds criteria: CV[Lwn(560)]='+str(Lwn_560_CV)+'; CV[AOT(865.5)]='+str(AOT_0865p50_CV))
             else:
                 print('Angles exceeds criteria: sza='+str(sza)+'; vza='+str(vza)+'; OR some pixels are flagged!')
         else:
             print('Not matchups per '+year_str+' '+doy_str)
 
-#         # Bailey and Werdell 2006 
-#         print('Bailey and Werdell 2006')
-#         delta_time = 3# float in hours       
-#         time_diff = ins_time - sat_stop_time
-#         dt_hour = [i.total_seconds()/(60*60) for i in time_diff] # time diffence between in situ measurements and sat in hours
-#         idx_min = np.argmin(np.abs(dt_hour))
-#         matchup_idx_vec = np.abs(dt_hour) <= delta_time 
+         # Bailey and Werdell 2006 
+        print('--Bailey and Werdell 2006')
+        delta_time = 3# float in hours       
+        time_diff = ins_time - sat_stop_time
+        dt_hour = [i.total_seconds()/(60*60) for i in time_diff] # time diffence between in situ measurements and sat in hours
+        idx_min = np.argmin(np.abs(dt_hour))
+        matchup_idx_vec = np.abs(dt_hour) <= delta_time 
 
-#         nday = sum(matchup_idx_vec)
-#         if nday >=1:
-#             print(str(nday)+' matchups per '+year_str+' '+doy_str)
-# #            print(Lwn_fonQ[idx_min,:])
-# #            print(Exact_wavelengths[idx_min,:])
+        nday = sum(matchup_idx_vec)
+        if nday >=1:
+            print(str(nday)+' matchups per '+year_str+' '+doy_str)
+ #           print(Lwn_fonQ[idx_min,:])
+ #           print(Exact_wavelengths[idx_min,:])
             
             
-#             center_px = int(len(rhow_0412p50_fq)/2 + 0.5)
-#             size_box = 5
-#             start_idx_x = int(center_px-int(size_box/2))
-#             stop_idx_x = int(center_px+int(size_box/2)+1)
-#             start_idx_y = int(center_px-int(size_box/2))
-#             stop_idx_y = int(center_px+int(size_box/2)+1)
-#             rhow_0412p50_fq_box = rhow_0412p50_fq[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
-#             rhow_0442p50_fq_box = rhow_0442p50_fq[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
-#             rhow_0490p00_fq_box = rhow_0490p00_fq[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
-#             rhow_0560p00_fq_box = rhow_0560p00_fq[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
-#             rhow_0665p00_fq_box = rhow_0665p00_fq[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
-#             if sza<=75 and vza<=60:
-#                 Lwn_560 = rhow_0560p00_fq_box*F0_0560p00/np.pi
-#                 Lwn_560_CV = Lwn_560.std()/Lwn_560.mean()    
+            center_px = int(len(rhow_0412p50_fq)/2 + 0.5)
+            size_box = 5
+            NTP = size_box*size_box # Number Total Pixels, excluding land pixels, Bailey and Werdell 2006
+            start_idx_x = int(center_px-int(size_box/2))
+            stop_idx_x = int(center_px+int(size_box/2)+1)
+            start_idx_y = int(center_px-int(size_box/2))
+            stop_idx_y = int(center_px+int(size_box/2)+1)
+            rhow_0412p50_fq_box = rhow_0412p50_fq[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+            rhow_0442p50_fq_box = rhow_0442p50_fq[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+            rhow_0490p00_fq_box = rhow_0490p00_fq[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+            rhow_0560p00_fq_box = rhow_0560p00_fq[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+            rhow_0665p00_fq_box = rhow_0665p00_fq[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+
+            AOT_0865p50_box = AOT_0865p50[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+            
+            print(rhow_0412p50_fq_box)
+            print(rhow_0412p50_fq_box.mask)
+            
+            flags_mask = OLCI_flags.create_mask(WQSF[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y])
+            print(flags_mask)
+            
+            NGP = np.count_nonzero(flags_mask == 0) # Number Good Pixels, Bailey and Werdell 2006
+            
+            if sza<=75 and vza<=60 and NGP>NTP/2+1:
+
+                # if nan, change mask
+                rhow_0412p50_fq_box = ma.masked_invalid(rhow_0412p50_fq_box)
+                rhow_0442p50_fq_box = ma.masked_invalid(rhow_0442p50_fq_box)
+                rhow_0490p00_fq_box = ma.masked_invalid(rhow_0490p00_fq_box)
+                rhow_0560p00_fq_box = ma.masked_invalid(rhow_0560p00_fq_box)
+                rhow_0665p00_fq_box = ma.masked_invalid(rhow_0665p00_fq_box)
+                AOT_0865p50_box = ma.masked_invalid(AOT_0865p50_box)
+
+                NGP_rhow_0412p50 = np.count_nonzero(rhow_0412p50_fq_box.mask == 0)
+                NGP_rhow_0442p50 = np.count_nonzero(rhow_0442p50_fq_box.mask == 0)
+                NGP_rhow_0490p00 = np.count_nonzero(rhow_0490p00_fq_box.mask == 0)
+                NGP_rhow_0560p00 = np.count_nonzero(rhow_0560p00_fq_box.mask == 0)
+                NGP_rhow_0665p00 = np.count_nonzero(rhow_0665p00_fq_box.mask == 0)
+                NGP_AOT_0865p50 = np.count_nonzero(AOT_0865p50_box.mask == 0)
+
+                mean_unfiltered_rhow_0412p50 = rhow_0412p50_fq_box.mean()
+                mean_unfiltered_rhow_0442p50 = rhow_0442p50_fq_box.mean()
+                mean_unfiltered_rhow_0490p00 = rhow_0490p00_fq_box.mean()
+                mean_unfiltered_rhow_0560p00 = rhow_0560p00_fq_box.mean()
+                mean_unfiltered_rhow_0665p00 = rhow_0665p00_fq_box.mean()
+                mean_unfiltered_AOT_0865p50 = AOT_0865p50_box.mean()
+
+                std_unfiltered_rhow_0412p50 = rhow_0412p50_fq_box.std()
+                std_unfiltered_rhow_0442p50 = rhow_0442p50_fq_box.std()
+                std_unfiltered_rhow_0490p00 = rhow_0490p00_fq_box.std()
+                std_unfiltered_rhow_0560p00 = rhow_0560p00_fq_box.std()
+                std_unfiltered_rhow_0665p00 = rhow_0665p00_fq_box.std()
+                std_unfiltered_AOT_0865p50 = AOT_0865p50_box.std()
+
+                # mask values that are not within +/- 1.5*std of mean\
                 
-#                 AOT_865p5_CV = AOT_0865p50.std()/AOT_0865p50.mean()
+                rhow_0412p50_fq_box = ma.masked_outside(rhow_0412p50_fq_box,mean_unfiltered_rhow_0412p50\
+                    -1.5*std_unfiltered_rhow_0412p50\
+                    , mean_unfiltered_rhow_0412p50\
+                    +1.5*std_unfiltered_rhow_0412p50)
+                rhow_0442p50_fq_box = ma.masked_outside(rhow_0442p50_fq_box,mean_unfiltered_rhow_0442p50\
+                    -1.5*std_unfiltered_rhow_0442p50\
+                    , mean_unfiltered_rhow_0442p50\
+                    +1.5*std_unfiltered_rhow_0442p50)
+                rhow_0490p00_fq_box = ma.masked_outside(rhow_0490p00_fq_box,mean_unfiltered_rhow_0490p00\
+                    -1.5*std_unfiltered_rhow_0490p00\
+                    , mean_unfiltered_rhow_0490p00\
+                    +1.5*std_unfiltered_rhow_0490p00)
+                rhow_0560p00_fq_box = ma.masked_outside(rhow_0560p00_fq_box,mean_unfiltered_rhow_0560p00\
+                    -1.5*std_unfiltered_rhow_0560p00\
+                    , mean_unfiltered_rhow_0560p00\
+                    +1.5*std_unfiltered_rhow_0560p00)
+                rhow_0665p00_fq_box = ma.masked_outside(rhow_0665p00_fq_box,mean_unfiltered_rhow_0665p00\
+                    -1.5*std_unfiltered_rhow_0665p00\
+                    , mean_unfiltered_rhow_0665p00\
+                    +1.5*std_unfiltered_rhow_0665p00)
+                AOT_0865p50_box = ma.masked_outside(AOT_0865p50_box,mean_unfiltered_AOT_0865p50\
+                    -1.5*std_unfiltered_AOT_0865p50\
+                    , mean_unfiltered_AOT_0865p50\
+                    +1.5*std_unfiltered_AOT_0865p50)
+
+                mean_filtered_rhow_0412p50 = rhow_0412p50_fq_box.mean()
+                mean_filtered_rhow_0442p50 = rhow_0442p50_fq_box.mean()
+                mean_filtered_rhow_0490p00 = rhow_0490p00_fq_box.mean()
+                mean_filtered_rhow_0560p00 = rhow_0560p00_fq_box.mean()
+                mean_filtered_rhow_0665p00 = rhow_0665p00_fq_box.mean()
+                mean_filtered_AOT_0865p50  = AOT_0865p50_box.mean()
+
+                std_filtered_rhow_0412p50 = rhow_0412p50_fq_box.std()
+                std_filtered_rhow_0442p50 = rhow_0442p50_fq_box.std()
+                std_filtered_rhow_0490p00 = rhow_0490p00_fq_box.std()
+                std_filtered_rhow_0560p00 = rhow_0560p00_fq_box.std()
+                std_filtered_rhow_0665p00 = rhow_0665p00_fq_box.std()
+                std_filtered_AOT_0865p50  = AOT_0865p50_box.std()
+
+                CV_filtered_rhow_0412p50 = std_filtered_rhow_0412p50/mean_filtered_rhow_0412p50
+                CV_filtered_rhow_0442p50 = std_filtered_rhow_0442p50/mean_filtered_rhow_0442p50
+                CV_filtered_rhow_0490p00 = std_filtered_rhow_0490p00/mean_filtered_rhow_0490p00
+                CV_filtered_rhow_0560p00 = std_filtered_rhow_0560p00/mean_filtered_rhow_0560p00
+                CV_filtered_rhow_0665p00 = std_filtered_rhow_0665p00/mean_filtered_rhow_0665p00
+                CV_filtered_AOT_0865p50  = std_filtered_AOT_0865p50/mean_filtered_AOT_0865p50  
                 
-#                 if Lwn_560_CV <= 0.2 and AOT_865p5_CV <= 0.2:
-#                     # Rrs 0412p50
-#                     print('412.5')
-#                     if rhow_0412p50_fq_box.mask.any() == True or np.isnan(rhow_0412p50_fq_box).any() == True:
-#                         print('At least one element in sat product is invalid!')
-#                     else:
-#                         matchups_Lwn_0412p50_fq_sat_zi.append(rhow_0412p50_fq_box.mean()*F0_0412p50/np.pi)
-#                         matchups_Lwn_0412p50_fq_ins_zi.append(Lwn_fonQ[idx_min,0]) # 412,
-#                     # Rrs 0442p50
-#                     print('442.5')
-#                     if rhow_0442p50_fq_box.mask.any() == True or np.isnan(rhow_0442p50_fq_box).any() == True:
-#                         print('At least one element in sat product is invalid!')
-#                     else:
-#                         matchups_Lwn_0442p50_fq_sat_zi.append(rhow_0442p50_fq_box.mean()*F0_0442p50/np.pi)
-#                         matchups_Lwn_0442p50_fq_ins_zi.append(Lwn_fonQ[idx_min,1]) # 441.8
-#                     # Rrs 0490p00
-#                     print('490.0')
-#                     if rhow_0490p00_fq_box.mask.any() == True or np.isnan(rhow_0490p00_fq_box).any() == True:
-#                         print('At least one element in sat product is invalid!')
-#                     else:
-#                         matchups_Lwn_0490p00_fq_sat_zi.append(rhow_0490p00_fq_box.mean()*F0_0490p00/np.pi)
-#                         matchups_Lwn_0490p00_fq_ins_zi.append(Lwn_fonQ[idx_min,2]) # 488.5
-#                     # Rrs 0560p00
-#                     print('560.0')
-#                     if rhow_0560p00_fq_box.mask.any() == True or np.isnan(rhow_0560p00_fq_box).any() == True:
-#                         print('At least one element in sat product is invalid!')
-#                     else:
-#                         matchups_Lwn_0560p00_fq_sat_zi.append(rhow_0560p00_fq_box.mean()*F0_0560p00/np.pi)
-#                         matchups_Lwn_0560p00_fq_ins_zi.append(Lwn_fonQ[idx_min,4]) # 551,
-#                     # Rrs 0665p00
-#                     print('665.0')
-#                     if rhow_0665p00_fq_box.mask.any() == True or np.isnan(rhow_0665p00_fq_box).any() == True:
-#                         print('At least one element in sat product is invalid!')
-#                     else:
-#                         matchups_Lwn_0665p00_fq_sat_zi.append(rhow_0665p00_fq_box.mean()*F0_0665p00/np.pi)
-#                         matchups_Lwn_0665p00_fq_ins_zi.append(Lwn_fonQ[idx_min,5]) # 667.9    
-#                 else:
-#                     print('CV exceeds criteria: CV[Lwn(560)]='+str(Lwn_560_CV)+'; CV[AOT(865.5)]='+str(AOT_865p5_CV))
-#             else:
-#                 print('Angles exceeds criteria: sza='+str(sza)+'; vza='+str(vza))
-#         else:
-#             print('Not matchups per '+year_str+' '+doy_str)            
+                CVs = [CV_filtered_rhow_0412p50, CV_filtered_rhow_0442p50,\
+                                     CV_filtered_rhow_0490p00, CV_filtered_rhow_0560p00,\
+                                     CV_filtered_AOT_0865p50]
+                print(CVs)
+                MedianCV = np.nanmedian(CVs)
+
+                print('Median CV='+str(MedianCV))
+               
+                if MedianCV <= 0.15:
+                    # Rrs 0412p50
+                    print('412.5')
+                    if NGP_rhow_0412p50<NTP/2+1:
+                        print('Exceeded: NGP_rhow_0412p50='+str(NGP_rhow_0412p50))
+                    else:
+                        matchups_Lwn_0412p50_fq_sat_ba.append(mean_filtered_rhow_0412p50*F0_0412p50/np.pi)
+                        matchups_Lwn_0412p50_fq_ins_ba.append(Lwn_fonQ[idx_min,0]) # 412,
+                    # Rrs 0442p50
+                    print('442.5')
+                    if NGP_rhow_0442p50<NTP/2+1:
+                        print('Exceeded: NGP_rhow_0442p50='+str(NGP_rhow_0442p50))
+                    else:
+                        matchups_Lwn_0442p50_fq_sat_ba.append(mean_filtered_rhow_0442p50*F0_0442p50/np.pi)
+                        matchups_Lwn_0442p50_fq_ins_ba.append(Lwn_fonQ[idx_min,1]) # 441.8
+                    # Rrs 0490p00
+                    print('490.0')
+                    if NGP_rhow_0490p00<NTP/2+1:
+                        print('Exceeded: NGP_rhow_0490p00='+str(NGP_rhow_0490p00))
+                    else:
+                        matchups_Lwn_0490p00_fq_sat_ba.append(mean_filtered_rhow_0490p00*F0_0490p00/np.pi)
+                        matchups_Lwn_0490p00_fq_ins_ba.append(Lwn_fonQ[idx_min,2]) # 488.5
+                    # Rrs 0560p00
+                    print('560.0')
+                    if NGP_rhow_0560p00<NTP/2+1:
+                        print('Exceeded: NGP_rhow_0560p00='+str(NGP_rhow_0560p00))
+                    else:
+                        matchups_Lwn_0560p00_fq_sat_ba.append(mean_filtered_rhow_0560p00*F0_0560p00/np.pi)
+                        matchups_Lwn_0560p00_fq_ins_ba.append(Lwn_fonQ[idx_min,4]) # 551,
+                    # Rrs 0665p00
+                    print('665.0')
+                    if NGP_rhow_0665p00<NTP/2+1:
+                        print('Exceeded: NGP_rhow_0665p00='+str(NGP_rhow_0665p00))
+                    else:
+                        matchups_Lwn_0665p00_fq_sat_ba.append(mean_filtered_rhow_0665p00*F0_0665p00/np.pi)
+                        matchups_Lwn_0665p00_fq_ins_ba.append(Lwn_fonQ[idx_min,5]) # 667.9    
+                else:
+                    print('Meadian CV exceeds criteria: Median[CV]='+str(MedianCV))
+            else:
+                print('Angles exceeds criteria: sza='+str(sza)+'; vza='+str(vza)+'; OR NGP='+str(NGP)+'< NTP/2+1='+str(NTP/2+1)+'!')
+        else:
+            print('Not matchups per '+year_str+' '+doy_str)            
 
 #%% plots   
 plot_scatter(matchups_Lwn_0412p50_fq_ins_zi,matchups_Lwn_0412p50_fq_sat_zi,'412.5',min_val=-0.50,max_val=2.50) 
@@ -424,6 +520,12 @@ plot_scatter(matchups_Lwn_0442p50_fq_ins_zi,matchups_Lwn_0442p50_fq_sat_zi,'442.
 plot_scatter(matchups_Lwn_0490p00_fq_ins_zi,matchups_Lwn_0490p00_fq_sat_zi,'490.0',min_val= 0.00,max_val=4.00) 
 plot_scatter(matchups_Lwn_0560p00_fq_ins_zi,matchups_Lwn_0560p00_fq_sat_zi,'560.0',min_val= 0.00,max_val=4.00) 
 plot_scatter(matchups_Lwn_0665p00_fq_ins_zi,matchups_Lwn_0665p00_fq_sat_zi,'665.0',min_val=-0.20,max_val=0.80) 
+#%% plots   
+plot_scatter(matchups_Lwn_0412p50_fq_ins_ba,matchups_Lwn_0412p50_fq_sat_ba,'412.5',min_val=-0.50,max_val=2.50) 
+plot_scatter(matchups_Lwn_0442p50_fq_ins_ba,matchups_Lwn_0442p50_fq_sat_ba,'442.5',min_val=-0.50,max_val=3.50) 
+plot_scatter(matchups_Lwn_0490p00_fq_ins_ba,matchups_Lwn_0490p00_fq_sat_ba,'490.0',min_val= 0.00,max_val=4.00) 
+plot_scatter(matchups_Lwn_0560p00_fq_ins_ba,matchups_Lwn_0560p00_fq_sat_ba,'560.0',min_val= 0.00,max_val=4.00) 
+plot_scatter(matchups_Lwn_0665p00_fq_ins_ba,matchups_Lwn_0665p00_fq_sat_ba,'665.0',min_val=-0.20,max_val=0.80) 
 #%%
 #if __name__ == '__main__':
 #    main()   
