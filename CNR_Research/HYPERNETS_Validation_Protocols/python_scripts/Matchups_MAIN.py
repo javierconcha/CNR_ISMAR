@@ -123,7 +123,7 @@ def get_F0(wl,path_main):
 def rmse(predictions, targets):
     return np.sqrt(((np.asarray(predictions) - np.asarray(targets)) ** 2).mean())       
 #%%
-def plot_scatter(x,y,str1,min_val,max_val):           
+def plot_scatter(x,y,str1,path_out,prot_name,min_val,max_val):           
     plt.figure()
     #plt.errorbar(x, y, xerr=e_x, yerr=e_y, fmt='or')
     plt.plot(x, y,'or')
@@ -166,6 +166,11 @@ def plot_scatter(x,y,str1,min_val,max_val):
         
     plt.text(0.05, 0.65, str0,horizontalalignment='left', fontsize=12,transform=plt.gca().transAxes)
     
+    ofname = 'scatter_matchups_'+str1+'_'+prot_name+'.pdf'
+    ofname = os.path.join(path_out,ofname)
+    
+    plt.savefig(ofname, dpi=300)
+    
     plt.show()   
 #%%
 #def main():
@@ -173,6 +178,7 @@ def plot_scatter(x,y,str1,min_val,max_val):
 print('Main Code!')
 
 path_main = '/Users/javier/Desktop/Javier/2019_ROMA/CNR_Research/HYPERNETS_Validation_Protocols/python_scripts/'
+path_out = os.path.join(path_main,'Figures')
 path = os.path.join(path_main,'netcdf_file')
 filename = 'Venise_20_201601001_201812031.nc'
 filename_insitu = os.path.join(path,filename)
@@ -515,17 +521,19 @@ with open(path_to_list,'r') as file:
             print('Not matchups per '+year_str+' '+doy_str)            
 
 #%% plots   
-plot_scatter(matchups_Lwn_0412p50_fq_ins_zi,matchups_Lwn_0412p50_fq_sat_zi,'412.5',min_val=-0.50,max_val=2.50) 
-plot_scatter(matchups_Lwn_0442p50_fq_ins_zi,matchups_Lwn_0442p50_fq_sat_zi,'442.5',min_val=-0.50,max_val=3.50) 
-plot_scatter(matchups_Lwn_0490p00_fq_ins_zi,matchups_Lwn_0490p00_fq_sat_zi,'490.0',min_val= 0.00,max_val=4.00) 
-plot_scatter(matchups_Lwn_0560p00_fq_ins_zi,matchups_Lwn_0560p00_fq_sat_zi,'560.0',min_val= 0.00,max_val=4.00) 
-plot_scatter(matchups_Lwn_0665p00_fq_ins_zi,matchups_Lwn_0665p00_fq_sat_zi,'665.0',min_val=-0.20,max_val=0.80) 
-#%% plots   
-plot_scatter(matchups_Lwn_0412p50_fq_ins_ba,matchups_Lwn_0412p50_fq_sat_ba,'412.5',min_val=-0.50,max_val=2.50) 
-plot_scatter(matchups_Lwn_0442p50_fq_ins_ba,matchups_Lwn_0442p50_fq_sat_ba,'442.5',min_val=-0.50,max_val=3.50) 
-plot_scatter(matchups_Lwn_0490p00_fq_ins_ba,matchups_Lwn_0490p00_fq_sat_ba,'490.0',min_val= 0.00,max_val=4.00) 
-plot_scatter(matchups_Lwn_0560p00_fq_ins_ba,matchups_Lwn_0560p00_fq_sat_ba,'560.0',min_val= 0.00,max_val=4.00) 
-plot_scatter(matchups_Lwn_0665p00_fq_ins_ba,matchups_Lwn_0665p00_fq_sat_ba,'665.0',min_val=-0.20,max_val=0.80) 
-#%%
+prot_name = 'zi'
+plot_scatter(matchups_Lwn_0412p50_fq_ins_zi,matchups_Lwn_0412p50_fq_sat_zi,'412.5',path_out,prot_name,min_val=-0.50,max_val=2.50) 
+plot_scatter(matchups_Lwn_0442p50_fq_ins_zi,matchups_Lwn_0442p50_fq_sat_zi,'442.5',path_out,prot_name,min_val=-0.50,max_val=3.50) 
+plot_scatter(matchups_Lwn_0490p00_fq_ins_zi,matchups_Lwn_0490p00_fq_sat_zi,'490.0',path_out,prot_name,min_val= 0.00,max_val=4.00) 
+plot_scatter(matchups_Lwn_0560p00_fq_ins_zi,matchups_Lwn_0560p00_fq_sat_zi,'560.0',path_out,prot_name,min_val= 0.00,max_val=4.00) 
+plot_scatter(matchups_Lwn_0665p00_fq_ins_zi,matchups_Lwn_0665p00_fq_sat_zi,'665.0',path_out,prot_name,min_val=-0.20,max_val=0.80) 
+#% plots  
+prot_name = 'ba' 
+plot_scatter(matchups_Lwn_0412p50_fq_ins_ba,matchups_Lwn_0412p50_fq_sat_ba,'412.5',path_out,prot_name,min_val=-0.50,max_val=2.50) 
+plot_scatter(matchups_Lwn_0442p50_fq_ins_ba,matchups_Lwn_0442p50_fq_sat_ba,'442.5',path_out,prot_name,min_val=-0.50,max_val=3.50) 
+plot_scatter(matchups_Lwn_0490p00_fq_ins_ba,matchups_Lwn_0490p00_fq_sat_ba,'490.0',path_out,prot_name,min_val= 0.00,max_val=4.00) 
+plot_scatter(matchups_Lwn_0560p00_fq_ins_ba,matchups_Lwn_0560p00_fq_sat_ba,'560.0',path_out,prot_name,min_val= 0.00,max_val=4.00) 
+plot_scatter(matchups_Lwn_0665p00_fq_ins_ba,matchups_Lwn_0665p00_fq_sat_ba,'665.0',path_out,prot_name,min_val=-0.20,max_val=0.80) 
+##%%
 #if __name__ == '__main__':
 #    main()   
