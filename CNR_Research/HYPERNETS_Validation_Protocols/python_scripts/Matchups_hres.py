@@ -37,24 +37,120 @@ Location=WaveCIS_Site_CSI_6,Latitude=28.866667,Longitude=-90.483333,Elevation[m]
 '''
 import sys
 import os
+import glob
 from datetime import datetime
+from netCDF4 import Dataset
+import numpy as np
+import numpy.ma as ma
 
 sys.path.insert(0,'/Users/javier/Desktop/Javier/2019_ROMA/CNR_Research/HYPERNETS_Validation_Protocols/python_scripts')
 import Matchups_MAIN
+import create_extract
+
+def get_lat_lon_ins(station_name):
+    if station_name == 'Galata_Platform':
+        Latitude=43.044624
+        Longitude=28.193190
+    if station_name == 'Gustav_Dalen_Tower':
+        Latitude=58.594170
+        Longitude=17.466830
+    if station_name == 'Helsinki_Lighthouse':
+        Latitude=59.948970
+        Longitude=24.926360
+    if station_name == 'Lake_Erie':
+        Latitude=41.825600
+        Longitude=-83.193600
+    if station_name == 'LISCO':
+        Latitude=40.954517
+        Longitude=-73.341767
+    if station_name == 'Palgrunden':
+        Latitude=58.755333
+        Longitude=13.151500
+    if station_name == 'Thornton_C-power':
+        Latitude=51.532500
+        Longitude=2.955278
+    if station_name == 'USC_SEAPRISM':
+        Latitude=33.563710
+        Longitude=-118.117820
+    if station_name == 'USC_SEAPRISM_2':
+        Latitude=33.563710
+        Longitude=-118.117820
+    if station_name == 'Venise':
+        Latitude=45.313900
+        Longitude=12.508300
+    if station_name == 'WaveCIS_Site_CSI_6':
+        Latitude=28.866667
+        Longitude=-90.483333
+    return Latitude, Longitude
+
 
 #%%
-path_main = '/Users/javier/Desktop/Javier/2019_ROMA/CNR_Research/HYPERNETS_Validation_Protocols/python_scripts/Quinten_data/'
+path_main = '/Users/javier/Desktop/Javier/2019_ROMA/CNR_Research/HYPERNETS_Validation_Protocols/python_scripts/'
+path_out = os.path.join(path_main,'Figures')
+path_data = '/Users/javier/Desktop/Javier/2019_ROMA/CNR_Research/HYPERNETS_Validation_Protocols/python_scripts/Quinten_data/'
 sensor_name = 'S2A'
-path_to_list = os.path.join(path_main,sensor_name,'aeronet_list.txt')    
+path_to_list = os.path.join(path_data,sensor_name,'aeronet_list_test.txt') 
+
+# Solar spectral irradiance F0 in uW/cm^2/nm 
+F0_0444p00 = Matchups_MAIN.get_F0(444.0,path_main)
+F0_0497p00 = Matchups_MAIN.get_F0(497.0,path_main)
+F0_0560p00 = Matchups_MAIN.get_F0(560.0,path_main)
+F0_0664p00 = Matchups_MAIN.get_F0(664.0,path_main) 
+
+matchups_Lwn_0444p00_fq_ins_ba = []
+matchups_Lwn_0497p00_fq_ins_ba = []
+matchups_Lwn_0560p00_fq_ins_ba = []
+matchups_Lwn_0664p00_fq_ins_ba = []
+
+matchups_Lwn_0444p00_fq_sat_ba = []
+matchups_Lwn_0497p00_fq_sat_ba = []
+matchups_Lwn_0560p00_fq_sat_ba = []
+matchups_Lwn_0664p00_fq_sat_ba = []
+   
 with open(path_to_list,'r') as file_list:
     for cnt, file_name in enumerate(file_list):
         folder_name = file_name.split('/')[1]
         station_name = folder_name[:-15]
-        print(folder_name)
-        print(station_name)
-#        with open(os.path.join(path_main,sensor_name,folder_name), 'r') as file:
+        year_str = folder_name.split('_')[-3]
+        month_str = folder_name.split('_')[-2]
+        day_str = folder_name.split('_')[-1]
         
-        with open(os.path.join(path_main,sensor_name,file_name[2:-1]), 'r') as file:
+        # sat data
+        path_to_nc = glob.glob(os.path.join(path_data,sensor_name,folder_name)+'/*.nc')[0]
+         
+        nc_f0 = Dataset(path_to_nc,'r')
+        
+        date_format = "%Y-%m-%dT%H:%M:%S.%fZ" 
+        sat_time = datetime.strptime(nc_f0.isodate, date_format)
+        
+        lat = nc_f0.variables['lat'][:]
+        lon = nc_f0.variables['lon'][:]
+        
+        in_situ_lat, in_situ_lon = get_lat_lon_ins(station_name)
+        
+        r, c = create_extract.find_row_column_from_lat_lon(lat,lon,in_situ_lat,in_situ_lon)
+
+        rhos_0444p00 =  nc_f0.variables['rhos_444'][:]
+        rhos_0497p00 =  nc_f0.variables['rhos_497'][:]
+        rhos_0560p00 =  nc_f0.variables['rhos_560'][:]
+        rhos_0664p00 =  nc_f0.variables['rhos_664'][:]
+        rhos_0704p00 =  nc_f0.variables['rhos_704'][:]
+        rhos_0740p00 =  nc_f0.variables['rhos_740'][:]
+        rhos_0782p00 =  nc_f0.variables['rhos_782'][:]
+        rhos_0835p00 =  nc_f0.variables['rhos_835'][:]
+        rhos_0865p00 =  nc_f0.variables['rhos_865'][:]
+        rhos_1614p00 =  nc_f0.variables['rhos_1614'][:]
+        rhos_2202p00 =  nc_f0.variables['rhos_2202'][:]
+        
+        rhot_1614p00 =  nc_f0.variables['rhot_1614'][:]
+        
+        sza = nc_f0.THS
+        vza = nc_f0.THV
+                
+        nc_f0.close()
+
+        # in situ data        
+        with open(os.path.join(path_data,sensor_name,file_name[2:-1]), 'r') as file:
             ins_time = []
             # Date
             line_num_date = 3-1
@@ -71,7 +167,161 @@ with open(path_to_list,'r') as file_list:
                 date_and_time_str = str_list_date[1:][i]+' '+str_list_time[1:][i]
                 date_format = "%d/%m/%Y %H:%M:%S"
                 ins_time.append(datetime.strptime(date_and_time_str, date_format))
-            print(ins_time)
+
+
+        # Bailey and Werdell 2006 
+        print('--Bailey and Werdell 2006')
+        delta_time = 3# float in hours   
+        ins_time = np.array(ins_time)
+        time_diff = ins_time - sat_time
+        dt_hour = [i.total_seconds()/(60*60) for i in time_diff] # time diffence between in situ measurements and sat in hours
+        idx_min = np.argmin(np.abs(dt_hour))
+        matchup_idx_vec = np.abs(dt_hour) <= delta_time 
+        
+        Lwn_fq_00442p00 = float(ins_all_lines[112-1][:-1].replace('=',',').split(',')[idx_min+1]) 
+        Lwn_fq_00491p00 = float(ins_all_lines[113-1][:-1].replace('=',',').split(',')[idx_min+1]) 
+        Lwn_fq_00551p00 = float(ins_all_lines[115-1][:-1].replace('=',',').split(',')[idx_min+1]) 
+        Lwn_fq_00668p00 = float(ins_all_lines[116-1][:-1].replace('=',',').split(',')[idx_min+1]) 
+
+        nday = sum(matchup_idx_vec)
+        if nday >=1:
+            print(str(nday)+' matchups for '+folder_name)
+            
+            size_box = 5
+            NTP = size_box*size_box # Number Total Pixels, excluding land pixels, Bailey and Werdell 2006
+            start_idx_x = (r-int(size_box/2))
+            stop_idx_x = (r+int(size_box/2)+1)
+            start_idx_y = (c-int(size_box/2))
+            stop_idx_y = (c+int(size_box/2)+1)
+
+            rhos_0444p00_box = rhos_0444p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+            rhos_0497p00_box = rhos_0497p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+            rhos_0560p00_box = rhos_0560p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+            rhos_0664p00_box = rhos_0664p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+            rhos_0704p00_box = rhos_0704p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+            rhos_0740p00_box = rhos_0740p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+            rhos_0782p00_box = rhos_0782p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+            rhos_0835p00_box = rhos_0835p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+            rhos_0865p00_box = rhos_0865p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+            rhos_1614p00_box = rhos_1614p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+            rhos_2202p00_box = rhos_2202p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]  
+
+            rhot_1614p00_box = rhot_1614p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y] 
+            
+            print(rhot_1614p00_box)
+            print(rhot_1614p00_box.mask)
+            flags_mask = rhot_1614p00_box>0.0215
+            print(flags_mask)
+            rhos_0444p00_box.mask =  rhos_0444p00_box.mask or flags_mask 
+            print(rhos_0444p00_box)
+            
+            if sza<=75 and vza<=60 and rhot_1614p00_box.mean()<=0.01:
+                # if nan, change mask            
+                rhos_0444p00_box = ma.masked_invalid(rhos_0444p00_box)
+                rhos_0497p00_box = ma.masked_invalid(rhos_0497p00_box)
+                rhos_0560p00_box = ma.masked_invalid(rhos_0560p00_box)
+                rhos_0664p00_box = ma.masked_invalid(rhos_0664p00_box)
+
+                NGP_rhos_0444p00 = np.count_nonzero(rhos_0444p00_box.mask == 0)
+                NGP_rhos_0497p00 = np.count_nonzero(rhos_0497p00_box.mask == 0)
+                NGP_rhos_0560p00 = np.count_nonzero(rhos_0560p00_box.mask == 0)
+                NGP_rhos_0664p00 = np.count_nonzero(rhos_0664p00_box.mask == 0)
+
+                mean_unfiltered_rhos_0444p00 = rhos_0444p00_box.mean()
+                mean_unfiltered_rhos_0497p00 = rhos_0497p00_box.mean()
+                mean_unfiltered_rhos_0560p00 = rhos_0560p00_box.mean()
+                mean_unfiltered_rhos_0664p00 = rhos_0664p00_box.mean()
+ 
+                std_unfiltered_rhos_0444p00 = rhos_0444p00_box.std()
+                std_unfiltered_rhos_0497p00 = rhos_0497p00_box.std()
+                std_unfiltered_rhos_0560p00 = rhos_0560p00_box.std()
+                std_unfiltered_rhos_0664p00 = rhos_0664p00_box.std()
+
+                # mask values that are not within +/- 1.5*std of mean\               
+                rhos_0444p00_box = ma.masked_outside(rhos_0444p00_box,mean_unfiltered_rhos_0444p00\
+                    -1.5*std_unfiltered_rhos_0444p00\
+                    , mean_unfiltered_rhos_0444p00\
+                    +1.5*std_unfiltered_rhos_0444p00)
+                rhos_0497p00_box = ma.masked_outside(rhos_0497p00_box,mean_unfiltered_rhos_0497p00\
+                    -1.5*std_unfiltered_rhos_0497p00\
+                    , mean_unfiltered_rhos_0497p00\
+                    +1.5*std_unfiltered_rhos_0497p00)
+                rhos_0560p00_box = ma.masked_outside(rhos_0560p00_box,mean_unfiltered_rhos_0560p00\
+                    -1.5*std_unfiltered_rhos_0560p00\
+                    , mean_unfiltered_rhos_0560p00\
+                    +1.5*std_unfiltered_rhos_0560p00)
+                rhos_0664p00_box = ma.masked_outside(rhos_0664p00_box,mean_unfiltered_rhos_0664p00\
+                    -1.5*std_unfiltered_rhos_0664p00\
+                    , mean_unfiltered_rhos_0664p00\
+                    +1.5*std_unfiltered_rhos_0664p00)
+
+                mean_filtered_rhos_0444p00 = rhos_0444p00_box.mean()
+                mean_filtered_rhos_0497p00 = rhos_0497p00_box.mean()
+                mean_filtered_rhos_0560p00 = rhos_0560p00_box.mean()
+                mean_filtered_rhos_0664p00 = rhos_0664p00_box.mean()
+
+                std_filtered_rhos_0444p00 = rhos_0444p00_box.std()
+                std_filtered_rhos_0497p00 = rhos_0497p00_box.std()
+                std_filtered_rhos_0560p00 = rhos_0560p00_box.std()
+                std_filtered_rhos_0664p00 = rhos_0664p00_box.std()
+
+                CV_filtered_rhos_0444p00 = std_filtered_rhos_0444p00/mean_filtered_rhos_0444p00
+                CV_filtered_rhos_0497p00 = std_filtered_rhos_0497p00/mean_filtered_rhos_0497p00
+                CV_filtered_rhos_0560p00 = std_filtered_rhos_0560p00/mean_filtered_rhos_0560p00
+                CV_filtered_rhos_0664p00 = std_filtered_rhos_0664p00/mean_filtered_rhos_0664p00
+                
+                CVs = [CV_filtered_rhos_0444p00,CV_filtered_rhos_0497p00, CV_filtered_rhos_0560p00]
+                print(CVs)
+                MedianCV = np.nanmedian(CVs)
+
+                print('Median CV={:.4f}'.format(MedianCV))
+               
+                if MedianCV <= 0.15:
+                    # Rrs 0444p00
+                    print('444.0')
+                    if NGP_rhos_0444p00<NTP/2+1:
+                        print('Exceeded: NGP_rhos_0444p00={:.0f}'.format(NGP_rhos_0444p00))
+                    else:
+                        matchups_Lwn_0444p00_fq_sat_ba.append(mean_filtered_rhos_0444p00*F0_0444p00/np.pi)
+                        matchups_Lwn_0444p00_fq_ins_ba.append(Lwn_fq_00442p00)
+                    # Rrs 0497p00
+                    print('497.0')
+                    if NGP_rhos_0497p00<NTP/2+1:
+                        print('Exceeded: NGP_rhos_0497p00={:.0f}'.format(NGP_rhos_0497p00))
+                    else:
+                        matchups_Lwn_0497p00_fq_sat_ba.append(mean_filtered_rhos_0497p00*F0_0497p00/np.pi)
+                        matchups_Lwn_0497p00_fq_ins_ba.append(Lwn_fq_00491p00)
+                    # Rrs 0560p00
+                    print('560.0')
+                    if NGP_rhos_0560p00<NTP/2+1:
+                        print('Exceeded: NGP_rhos_0560p00={:.0f}'.format(NGP_rhos_0560p00))
+                    else:
+                        matchups_Lwn_0560p00_fq_sat_ba.append(mean_filtered_rhos_0560p00*F0_0560p00/np.pi)
+                        matchups_Lwn_0560p00_fq_ins_ba.append(Lwn_fq_00551p00)
+                    # Rrs 0664p00
+                    print('664.0')
+                    if NGP_rhos_0664p00<NTP/2+1:
+                        print('Exceeded: NGP_rhos_0664p00={:.0f}'.format(NGP_rhos_0664p00))
+                    else:
+                        matchups_Lwn_0664p00_fq_sat_ba.append(mean_filtered_rhos_0664p00*F0_0664p00/np.pi)
+                        matchups_Lwn_0664p00_fq_ins_ba.append(Lwn_fq_00668p00+1)  
+                else:
+                    print('Median CV exceeds criteria: Median[CV]={:.4f}'.format(MedianCV))
+            else:
+                print('Angles exceeds criteria: sza={:.2f}'.format(sza)+'; vza={:.2f}'.format(vza)+'; OR mean of rhot_1614={:.4f}'.format(rhot_1614p00_box.mean())+'>0.01!')
+#                print('Angles exceeds criteria: sza='+str(sza)+'; vza='+str(vza)+'; OR NGP='+str(NGP)+'< NTP/2+1='+str(NTP/2+1)+'!')
+        else:
+            print('Not matchups for '+folder_name) 
+
+#%% plots  
+prot_name = 'ba' 
+Matchups_MAIN.plot_scatter(matchups_Lwn_0444p00_fq_ins_ba,matchups_Lwn_0444p00_fq_sat_ba,'444.0',path_out,prot_name,sensor_name,min_val=-0.50,max_val=3.50) 
+Matchups_MAIN.plot_scatter(matchups_Lwn_0497p00_fq_ins_ba,matchups_Lwn_0497p00_fq_sat_ba,'497.0',path_out,prot_name,sensor_name,min_val= 0.00,max_val=4.00) 
+Matchups_MAIN.plot_scatter(matchups_Lwn_0560p00_fq_ins_ba,matchups_Lwn_0560p00_fq_sat_ba,'560.0',path_out,prot_name,sensor_name,min_val= 0.00,max_val=4.00) 
+Matchups_MAIN.plot_scatter(matchups_Lwn_0664p00_fq_ins_ba,matchups_Lwn_0664p00_fq_sat_ba,'664.0',path_out,prot_name,sensor_name,min_val=-0.20,max_val=1.50) 
+
+
+#            print(ins_time)
             
 
 #%% aeronet_daily.log example
