@@ -31,7 +31,8 @@ from datetime import datetime
 from scipy import stats
 
 # to import apply_flags_OLCI.py
-sys.path.insert(0,'/home/Javier.Concha/Val_Prot/codes')
+path_main = '/Users/javier.concha/Desktop/Javier/2019_ROMA/CNR_Research/HYPERNETS_Validation_Protocols/python_scripts/'
+sys.path.insert(0,path_main)
 import apply_flags_OLCI as OLCI_flags
 
 create_list_flag = 0
@@ -176,8 +177,6 @@ def plot_scatter(x,y,str1,path_out,prot_name,sensor_name,min_val,max_val):
 def main():
     """business logic for when running this module as the primary one!"""
     print('Main Code!')
-    
-    path_main = '/Users/javier/Desktop/Javier/2019_ROMA/CNR_Research/HYPERNETS_Validation_Protocols/python_scripts/'
     path_out = os.path.join(path_main,'Figures')
     path = os.path.join(path_main,'netcdf_file')
     filename = 'Venise_20_201601001_201812031.nc'

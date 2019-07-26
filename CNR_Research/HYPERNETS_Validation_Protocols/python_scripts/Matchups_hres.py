@@ -43,7 +43,7 @@ from netCDF4 import Dataset
 import numpy as np
 import numpy.ma as ma
 
-sys.path.insert(0,'/Users/javier/Desktop/Javier/2019_ROMA/CNR_Research/HYPERNETS_Validation_Protocols/python_scripts')
+sys.path.insert(0,'/Users/javier.concha/Desktop/Javier/2019_ROMA/CNR_Research/HYPERNETS_Validation_Protocols/python_scripts')
 import Matchups_MAIN
 import create_extract
 
@@ -85,11 +85,11 @@ def get_lat_lon_ins(station_name):
 
 
 #%%
-path_main = '/Users/javier/Desktop/Javier/2019_ROMA/CNR_Research/HYPERNETS_Validation_Protocols/python_scripts/'
+path_main = '/Users/javier.concha/Desktop/Javier/2019_ROMA/CNR_Research/HYPERNETS_Validation_Protocols/python_scripts/'
 path_out = os.path.join(path_main,'Figures')
-path_data = '/Users/javier/Desktop/Javier/2019_ROMA/CNR_Research/HYPERNETS_Validation_Protocols/python_scripts/Quinten_data/'
+path_data = '/Users/javier.concha/Desktop/Javier/2019_ROMA/CNR_Research/HYPERNETS_Validation_Protocols/python_scripts/Quinten_data/'
 sensor_name = 'S2A'
-path_to_list = os.path.join(path_data,sensor_name,'aeronet_list_test.txt') 
+path_to_list = os.path.join(path_data,sensor_name,'aeronet_list.txt') 
 
 # Solar spectral irradiance F0 in uW/cm^2/nm 
 F0_0444p00 = Matchups_MAIN.get_F0(444.0,path_main)
@@ -106,6 +106,24 @@ matchups_Lwn_0444p00_fq_sat_ba = []
 matchups_Lwn_0497p00_fq_sat_ba = []
 matchups_Lwn_0560p00_fq_sat_ba = []
 matchups_Lwn_0664p00_fq_sat_ba = []
+
+matchups_Lwn_0444p00_fq_ins_pa = []
+matchups_Lwn_0497p00_fq_ins_pa = []
+matchups_Lwn_0560p00_fq_ins_pa = []
+matchups_Lwn_0664p00_fq_ins_pa = []
+
+matchups_Lwn_0444p00_fq_sat_pa = []
+matchups_Lwn_0497p00_fq_sat_pa = []
+matchups_Lwn_0560p00_fq_sat_pa = []
+matchups_Lwn_0664p00_fq_sat_pa = []
+
+donut_mask = np.array([[False,False,False,False,False,False,False],\
+              [False,False,False,False,False,False,False],\
+              [False,False,True,True,True,False,False],\
+              [False,False,True,True,True,False,False],\
+              [False,False,True,True,True,False,False],\
+              [False,False,False,False,False,False,False],\
+              [False,False,False,False,False,False,False]])
    
 with open(path_to_list,'r') as file_list:
     for cnt, file_name in enumerate(file_list):
@@ -168,7 +186,6 @@ with open(path_to_list,'r') as file_list:
                 date_format = "%d/%m/%Y %H:%M:%S"
                 ins_time.append(datetime.strptime(date_and_time_str, date_format))
 
-
         # Bailey and Werdell 2006 
         print('--Bailey and Werdell 2006')
         delta_time = 3# float in hours   
@@ -178,10 +195,10 @@ with open(path_to_list,'r') as file_list:
         idx_min = np.argmin(np.abs(dt_hour))
         matchup_idx_vec = np.abs(dt_hour) <= delta_time 
         
-        Lwn_fq_00442p00 = float(ins_all_lines[112-1][:-1].replace('=',',').split(',')[idx_min+1]) 
-        Lwn_fq_00491p00 = float(ins_all_lines[113-1][:-1].replace('=',',').split(',')[idx_min+1]) 
-        Lwn_fq_00551p00 = float(ins_all_lines[115-1][:-1].replace('=',',').split(',')[idx_min+1]) 
-        Lwn_fq_00668p00 = float(ins_all_lines[116-1][:-1].replace('=',',').split(',')[idx_min+1]) 
+        Lwn_fq_0442p00 = float(ins_all_lines[112-1][:-1].replace('=',',').split(',')[idx_min+1]) 
+        Lwn_fq_0491p00 = float(ins_all_lines[113-1][:-1].replace('=',',').split(',')[idx_min+1]) 
+        Lwn_fq_00551p0 = float(ins_all_lines[115-1][:-1].replace('=',',').split(',')[idx_min+1]) 
+        Lwn_fq_0668p00 = float(ins_all_lines[116-1][:-1].replace('=',',').split(',')[idx_min+1]) 
 
         nday = sum(matchup_idx_vec)
         if nday >=1:
@@ -205,17 +222,20 @@ with open(path_to_list,'r') as file_list:
             rhos_0865p00_box = rhos_0865p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
             rhos_1614p00_box = rhos_1614p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
             rhos_2202p00_box = rhos_2202p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]  
-
+            
+            # for cloud screening
             rhot_1614p00_box = rhot_1614p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y] 
             
-            print(rhot_1614p00_box)
-            print(rhot_1614p00_box.mask)
             flags_mask = rhot_1614p00_box>0.0215
-            print(flags_mask)
-            rhos_0444p00_box.mask =  rhos_0444p00_box.mask or flags_mask 
-            print(rhos_0444p00_box)
             
-            if sza<=75 and vza<=60 and rhot_1614p00_box.mean()<=0.01:
+            rhos_0444p00_box.mask =  rhos_0444p00_box.mask or flags_mask 
+            rhos_0497p00_box.mask =  rhos_0497p00_box.mask or flags_mask
+            rhos_0560p00_box.mask =  rhos_0560p00_box.mask or flags_mask
+            rhos_0664p00_box.mask =  rhos_0664p00_box.mask or flags_mask
+            
+            NGP = np.count_nonzero(flags_mask == 0) # Number Good Pixels, Bailey and Werdell 2006
+                
+            if sza<=75 and vza<=60 and NGP>NTP/2+1 and rhot_1614p00_box.mean()<=0.01:
                 # if nan, change mask            
                 rhos_0444p00_box = ma.masked_invalid(rhos_0444p00_box)
                 rhos_0497p00_box = ma.masked_invalid(rhos_0497p00_box)
@@ -283,32 +303,183 @@ with open(path_to_list,'r') as file_list:
                         print('Exceeded: NGP_rhos_0444p00={:.0f}'.format(NGP_rhos_0444p00))
                     else:
                         matchups_Lwn_0444p00_fq_sat_ba.append(mean_filtered_rhos_0444p00*F0_0444p00/np.pi)
-                        matchups_Lwn_0444p00_fq_ins_ba.append(Lwn_fq_00442p00)
+                        matchups_Lwn_0444p00_fq_ins_ba.append(Lwn_fq_0442p00)
                     # Rrs 0497p00
                     print('497.0')
                     if NGP_rhos_0497p00<NTP/2+1:
                         print('Exceeded: NGP_rhos_0497p00={:.0f}'.format(NGP_rhos_0497p00))
                     else:
                         matchups_Lwn_0497p00_fq_sat_ba.append(mean_filtered_rhos_0497p00*F0_0497p00/np.pi)
-                        matchups_Lwn_0497p00_fq_ins_ba.append(Lwn_fq_00491p00)
+                        matchups_Lwn_0497p00_fq_ins_ba.append(Lwn_fq_0491p00)
                     # Rrs 0560p00
                     print('560.0')
                     if NGP_rhos_0560p00<NTP/2+1:
                         print('Exceeded: NGP_rhos_0560p00={:.0f}'.format(NGP_rhos_0560p00))
                     else:
                         matchups_Lwn_0560p00_fq_sat_ba.append(mean_filtered_rhos_0560p00*F0_0560p00/np.pi)
-                        matchups_Lwn_0560p00_fq_ins_ba.append(Lwn_fq_00551p00)
+                        matchups_Lwn_0560p00_fq_ins_ba.append(Lwn_fq_00551p0)
                     # Rrs 0664p00
                     print('664.0')
                     if NGP_rhos_0664p00<NTP/2+1:
                         print('Exceeded: NGP_rhos_0664p00={:.0f}'.format(NGP_rhos_0664p00))
                     else:
                         matchups_Lwn_0664p00_fq_sat_ba.append(mean_filtered_rhos_0664p00*F0_0664p00/np.pi)
-                        matchups_Lwn_0664p00_fq_ins_ba.append(Lwn_fq_00668p00+1)  
+                        matchups_Lwn_0664p00_fq_ins_ba.append(Lwn_fq_0668p00)  
                 else:
                     print('Median CV exceeds criteria: Median[CV]={:.4f}'.format(MedianCV))
             else:
-                print('Angles exceeds criteria: sza={:.2f}'.format(sza)+'; vza={:.2f}'.format(vza)+'; OR mean of rhot_1614={:.4f}'.format(rhot_1614p00_box.mean())+'>0.01!')
+                print('Angles exceeds criteria: sza={:.2f}'.format(sza)+'; vza={:.2f}'.format(vza)+\
+                    '; OR mean of rhot_1614={:.4f}'.format(rhot_1614p00_box.mean())+'>0.01!\n'+\
+                    '; OR NGP={:.0f}'.format(NGP)+'< NTP/2+1={:.0f}'.format(NTP/2+1)+'!')
+#                print('Angles exceeds criteria: sza='+str(sza)+'; vza='+str(vza)+'; OR NGP='+str(NGP)+'< NTP/2+1='+str(NTP/2+1)+'!')
+        else:
+            print('Not matchups for '+folder_name) 
+
+        # Pahlevan based on Bailey and Werdell 2006 
+        print('--Pahlevan based on Bailey and Werdell 2006')
+        delta_time = 0.5# float in hours   
+        ins_time = np.array(ins_time)
+        time_diff = ins_time - sat_time
+        dt_hour = [i.total_seconds()/(60*60) for i in time_diff] # time diffence between in situ measurements and sat in hours
+        idx_min = np.argmin(np.abs(dt_hour))
+        matchup_idx_vec = np.abs(dt_hour) <= delta_time 
+
+        Lwn_fq_0442p00 = float(ins_all_lines[112-1][:-1].replace('=',',').split(',')[idx_min+1]) 
+        Lwn_fq_0491p00 = float(ins_all_lines[113-1][:-1].replace('=',',').split(',')[idx_min+1]) 
+        Lwn_fq_00551p0 = float(ins_all_lines[115-1][:-1].replace('=',',').split(',')[idx_min+1]) 
+        Lwn_fq_0668p00 = float(ins_all_lines[116-1][:-1].replace('=',',').split(',')[idx_min+1])        
+
+        nday = sum(matchup_idx_vec)
+        if nday >=1:
+            print(str(nday)+' matchups for '+folder_name)
+            
+            size_box = 7
+            NTP = size_box*size_box # Number Total Pixels, excluding land pixels, Bailey and Werdell 2006
+            start_idx_x = (r-int(size_box/2))
+            stop_idx_x = (r+int(size_box/2)+1)
+            start_idx_y = (c-int(size_box/2))
+            stop_idx_y = (c+int(size_box/2)+1)
+
+            rhos_0444p00_box = rhos_0444p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+            rhos_0497p00_box = rhos_0497p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+            rhos_0560p00_box = rhos_0560p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+            rhos_0664p00_box = rhos_0664p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+            rhos_0704p00_box = rhos_0704p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+            rhos_0740p00_box = rhos_0740p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+            rhos_0782p00_box = rhos_0782p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+            rhos_0835p00_box = rhos_0835p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+            rhos_0865p00_box = rhos_0865p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+            rhos_1614p00_box = rhos_1614p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+            rhos_2202p00_box = rhos_2202p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]  
+            
+            # for cloud screening
+            rhot_1614p00_box = rhot_1614p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y] 
+            
+            flags_mask = rhot_1614p00_box>0.0215
+            
+            rhos_0444p00_box.mask =  rhos_0444p00_box.mask | flags_mask | donut_mask 
+            rhos_0497p00_box.mask =  rhos_0497p00_box.mask | flags_mask | donut_mask
+            rhos_0560p00_box.mask =  rhos_0560p00_box.mask | flags_mask | donut_mask
+            rhos_0664p00_box.mask =  rhos_0664p00_box.mask | flags_mask | donut_mask
+            
+            NGP = np.count_nonzero(flags_mask == 0) # Number Good Pixels, Bailey and Werdell 2006
+                
+            if sza<=75 and vza<=60 and NGP>NTP/2+1 and rhot_1614p00_box.mean()<=0.01:
+                # if nan, change mask            
+                rhos_0444p00_box = ma.masked_invalid(rhos_0444p00_box)
+                rhos_0497p00_box = ma.masked_invalid(rhos_0497p00_box)
+                rhos_0560p00_box = ma.masked_invalid(rhos_0560p00_box)
+                rhos_0664p00_box = ma.masked_invalid(rhos_0664p00_box)
+
+                NGP_rhos_0444p00 = np.count_nonzero(rhos_0444p00_box.mask == 0)
+                NGP_rhos_0497p00 = np.count_nonzero(rhos_0497p00_box.mask == 0)
+                NGP_rhos_0560p00 = np.count_nonzero(rhos_0560p00_box.mask == 0)
+                NGP_rhos_0664p00 = np.count_nonzero(rhos_0664p00_box.mask == 0)
+
+                mean_unfiltered_rhos_0444p00 = rhos_0444p00_box.mean()
+                mean_unfiltered_rhos_0497p00 = rhos_0497p00_box.mean()
+                mean_unfiltered_rhos_0560p00 = rhos_0560p00_box.mean()
+                mean_unfiltered_rhos_0664p00 = rhos_0664p00_box.mean()
+ 
+                std_unfiltered_rhos_0444p00 = rhos_0444p00_box.std()
+                std_unfiltered_rhos_0497p00 = rhos_0497p00_box.std()
+                std_unfiltered_rhos_0560p00 = rhos_0560p00_box.std()
+                std_unfiltered_rhos_0664p00 = rhos_0664p00_box.std()
+
+                # mask values that are not within +/- 1.5*std of mean\               
+                rhos_0444p00_box = ma.masked_outside(rhos_0444p00_box,mean_unfiltered_rhos_0444p00\
+                    -1.5*std_unfiltered_rhos_0444p00\
+                    , mean_unfiltered_rhos_0444p00\
+                    +1.5*std_unfiltered_rhos_0444p00)
+                rhos_0497p00_box = ma.masked_outside(rhos_0497p00_box,mean_unfiltered_rhos_0497p00\
+                    -1.5*std_unfiltered_rhos_0497p00\
+                    , mean_unfiltered_rhos_0497p00\
+                    +1.5*std_unfiltered_rhos_0497p00)
+                rhos_0560p00_box = ma.masked_outside(rhos_0560p00_box,mean_unfiltered_rhos_0560p00\
+                    -1.5*std_unfiltered_rhos_0560p00\
+                    , mean_unfiltered_rhos_0560p00\
+                    +1.5*std_unfiltered_rhos_0560p00)
+                rhos_0664p00_box = ma.masked_outside(rhos_0664p00_box,mean_unfiltered_rhos_0664p00\
+                    -1.5*std_unfiltered_rhos_0664p00\
+                    , mean_unfiltered_rhos_0664p00\
+                    +1.5*std_unfiltered_rhos_0664p00)
+
+                mean_filtered_rhos_0444p00 = rhos_0444p00_box.mean()
+                mean_filtered_rhos_0497p00 = rhos_0497p00_box.mean()
+                mean_filtered_rhos_0560p00 = rhos_0560p00_box.mean()
+                mean_filtered_rhos_0664p00 = rhos_0664p00_box.mean()
+
+                std_filtered_rhos_0444p00 = rhos_0444p00_box.std()
+                std_filtered_rhos_0497p00 = rhos_0497p00_box.std()
+                std_filtered_rhos_0560p00 = rhos_0560p00_box.std()
+                std_filtered_rhos_0664p00 = rhos_0664p00_box.std()
+
+                CV_filtered_rhos_0444p00 = std_filtered_rhos_0444p00/mean_filtered_rhos_0444p00
+                CV_filtered_rhos_0497p00 = std_filtered_rhos_0497p00/mean_filtered_rhos_0497p00
+                CV_filtered_rhos_0560p00 = std_filtered_rhos_0560p00/mean_filtered_rhos_0560p00
+                CV_filtered_rhos_0664p00 = std_filtered_rhos_0664p00/mean_filtered_rhos_0664p00
+                
+                CVs = [CV_filtered_rhos_0444p00,CV_filtered_rhos_0497p00, CV_filtered_rhos_0560p00]
+                print(CVs)
+                MedianCV = np.nanmedian(CVs)
+
+                print('Median CV={:.4f}'.format(MedianCV))
+               
+                if MedianCV <= 0.15:
+                    # Rrs 0444p00
+                    print('444.0')
+                    if NGP_rhos_0444p00<NTP/2+1:
+                        print('Exceeded: NGP_rhos_0444p00={:.0f}'.format(NGP_rhos_0444p00))
+                    else:
+                        matchups_Lwn_0444p00_fq_sat_pa.append(mean_filtered_rhos_0444p00*F0_0444p00/np.pi)
+                        matchups_Lwn_0444p00_fq_ins_pa.append(Lwn_fq_0442p00)
+                    # Rrs 0497p00
+                    print('497.0')
+                    if NGP_rhos_0497p00<NTP/2+1:
+                        print('Exceeded: NGP_rhos_0497p00={:.0f}'.format(NGP_rhos_0497p00))
+                    else:
+                        matchups_Lwn_0497p00_fq_sat_pa.append(mean_filtered_rhos_0497p00*F0_0497p00/np.pi)
+                        matchups_Lwn_0497p00_fq_ins_pa.append(Lwn_fq_0491p00)
+                    # Rrs 0560p00
+                    print('560.0')
+                    if NGP_rhos_0560p00<NTP/2+1:
+                        print('Exceeded: NGP_rhos_0560p00={:.0f}'.format(NGP_rhos_0560p00))
+                    else:
+                        matchups_Lwn_0560p00_fq_sat_pa.append(mean_filtered_rhos_0560p00*F0_0560p00/np.pi)
+                        matchups_Lwn_0560p00_fq_ins_pa.append(Lwn_fq_00551p0)
+                    # Rrs 0664p00
+                    print('664.0')
+                    if NGP_rhos_0664p00<NTP/2+1:
+                        print('Exceeded: NGP_rhos_0664p00={:.0f}'.format(NGP_rhos_0664p00))
+                    else:
+                        matchups_Lwn_0664p00_fq_sat_pa.append(mean_filtered_rhos_0664p00*F0_0664p00/np.pi)
+                        matchups_Lwn_0664p00_fq_ins_pa.append(Lwn_fq_0668p00)  
+                else:
+                    print('Median CV exceeds criteria: Median[CV]={:.4f}'.format(MedianCV))
+            else:
+                print('Angles exceeds criteria: sza={:.2f}'.format(sza)+'; vza={:.2f}'.format(vza)+\
+                    '; OR mean of rhot_1614={:.4f}'.format(rhot_1614p00_box.mean())+'>0.01!\n'+\
+                    '; OR NGP={:.0f}'.format(NGP)+'< NTP/2+1={:.0f}'.format(NTP/2+1)+'!')
 #                print('Angles exceeds criteria: sza='+str(sza)+'; vza='+str(vza)+'; OR NGP='+str(NGP)+'< NTP/2+1='+str(NTP/2+1)+'!')
         else:
             print('Not matchups for '+folder_name) 
@@ -319,6 +490,13 @@ Matchups_MAIN.plot_scatter(matchups_Lwn_0444p00_fq_ins_ba,matchups_Lwn_0444p00_f
 Matchups_MAIN.plot_scatter(matchups_Lwn_0497p00_fq_ins_ba,matchups_Lwn_0497p00_fq_sat_ba,'497.0',path_out,prot_name,sensor_name,min_val= 0.00,max_val=4.00) 
 Matchups_MAIN.plot_scatter(matchups_Lwn_0560p00_fq_ins_ba,matchups_Lwn_0560p00_fq_sat_ba,'560.0',path_out,prot_name,sensor_name,min_val= 0.00,max_val=4.00) 
 Matchups_MAIN.plot_scatter(matchups_Lwn_0664p00_fq_ins_ba,matchups_Lwn_0664p00_fq_sat_ba,'664.0',path_out,prot_name,sensor_name,min_val=-0.20,max_val=1.50) 
+
+#%% plots  
+prot_name = 'pa' 
+Matchups_MAIN.plot_scatter(matchups_Lwn_0444p00_fq_ins_pa,matchups_Lwn_0444p00_fq_sat_pa,'444.0',path_out,prot_name,sensor_name,min_val=-0.50,max_val=3.50) 
+Matchups_MAIN.plot_scatter(matchups_Lwn_0497p00_fq_ins_pa,matchups_Lwn_0497p00_fq_sat_pa,'497.0',path_out,prot_name,sensor_name,min_val= 0.00,max_val=4.00) 
+Matchups_MAIN.plot_scatter(matchups_Lwn_0560p00_fq_ins_pa,matchups_Lwn_0560p00_fq_sat_pa,'560.0',path_out,prot_name,sensor_name,min_val= 0.00,max_val=4.00) 
+Matchups_MAIN.plot_scatter(matchups_Lwn_0664p00_fq_ins_pa,matchups_Lwn_0664p00_fq_sat_pa,'664.0',path_out,prot_name,sensor_name,min_val=-0.20,max_val=1.50) 
 
 
 #            print(ins_time)

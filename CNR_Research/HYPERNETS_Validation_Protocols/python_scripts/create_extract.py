@@ -33,7 +33,7 @@ host = 'mac'
 
 # to import brdf_mario.py
 if host == 'mac':
-    sys.path.insert(0,'/Users/javier/Desktop/Javier/2019_ROMA/CNR_Research/HYPERNETS_Validation_Protocols/python_scripts')
+    sys.path.insert(0,'/Users/javier.concha/Desktop/Javier/2019_ROMA/CNR_Research/HYPERNETS_Validation_Protocols/python_scripts')
 elif host == 'vm':
     sys.path.insert(0,'/home/Javier.Concha/Val_Prot/codes')
 import brdf_mario as brdf
@@ -385,7 +385,7 @@ def main():
         listname = 'OLCI_list_uniq.txt' #'OLCI_list_uniq.txt '
         path_to_list = os.path.join(path_main,'codes',listname)        
     elif host == 'mac':
-        path_main = '/Users/javier/Desktop/Javier/2019_ROMA/CNR_Research/HYPERNETS_Validation_Protocols/python_scripts'
+        path_main = '/Users/javier.concha/Desktop/Javier/2019_ROMA/CNR_Research/HYPERNETS_Validation_Protocols/python_scripts'
         path_source = os.path.join(path_main,'data/source')
         listname = 'OLCI_list_test.txt' #'OLCI_list_uniq.txt '
         path_to_list = os.path.join(path_main,listname)
