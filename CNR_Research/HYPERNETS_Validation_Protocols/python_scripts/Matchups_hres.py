@@ -42,6 +42,7 @@ from datetime import datetime
 from netCDF4 import Dataset
 import numpy as np
 import numpy.ma as ma
+import matplotlib.pyplot as plt
 
 sys.path.insert(0,'/Users/javier.concha/Desktop/Javier/2019_ROMA/CNR_Research/HYPERNETS_Validation_Protocols/python_scripts')
 import Matchups_MAIN
@@ -486,18 +487,90 @@ with open(path_to_list,'r') as file_list:
 
 #%% plots  
 prot_name = 'ba' 
-Matchups_MAIN.plot_scatter(matchups_Lwn_0444p00_fq_ins_ba,matchups_Lwn_0444p00_fq_sat_ba,'444.0',path_out,prot_name,sensor_name,min_val=-0.50,max_val=3.50) 
-Matchups_MAIN.plot_scatter(matchups_Lwn_0497p00_fq_ins_ba,matchups_Lwn_0497p00_fq_sat_ba,'497.0',path_out,prot_name,sensor_name,min_val= 0.00,max_val=4.00) 
-Matchups_MAIN.plot_scatter(matchups_Lwn_0560p00_fq_ins_ba,matchups_Lwn_0560p00_fq_sat_ba,'560.0',path_out,prot_name,sensor_name,min_val= 0.00,max_val=4.00) 
-Matchups_MAIN.plot_scatter(matchups_Lwn_0664p00_fq_ins_ba,matchups_Lwn_0664p00_fq_sat_ba,'664.0',path_out,prot_name,sensor_name,min_val=-0.20,max_val=1.50) 
+sensor_name = 'S2A'
+rmse_val_0444p00_ba, Median_abs_rel_diff_0444p00_ba, Median_rel_diff_0444p00_ba, r_sqr_0444p00_ba = Matchups_MAIN.plot_scatter(matchups_Lwn_0444p00_fq_ins_ba,matchups_Lwn_0444p00_fq_sat_ba,'444.0',path_out,prot_name,sensor_name,min_val=-0.50,max_val=3.50) 
+rmse_val_0497p00_ba, Median_abs_rel_diff_0497p00_ba, Median_rel_diff_0497p00_ba, r_sqr_0497p00_ba = Matchups_MAIN.plot_scatter(matchups_Lwn_0497p00_fq_ins_ba,matchups_Lwn_0497p00_fq_sat_ba,'497.0',path_out,prot_name,sensor_name,min_val= 0.00,max_val=4.00) 
+rmse_val_0560p00_ba, Median_abs_rel_diff_0560p00_ba, Median_rel_diff_0560p00_ba, r_sqr_0560p00_ba = Matchups_MAIN.plot_scatter(matchups_Lwn_0560p00_fq_ins_ba,matchups_Lwn_0560p00_fq_sat_ba,'560.0',path_out,prot_name,sensor_name,min_val= 0.00,max_val=4.00) 
+rmse_val_0664p00_ba, Median_abs_rel_diff_0664p00_ba, Median_rel_diff_0664p00_ba, r_sqr_0664p00_ba = Matchups_MAIN.plot_scatter(matchups_Lwn_0664p00_fq_ins_ba,matchups_Lwn_0664p00_fq_sat_ba,'664.0',path_out,prot_name,sensor_name,min_val=-0.20,max_val=1.50) 
 
 #%% plots  
 prot_name = 'pa' 
-Matchups_MAIN.plot_scatter(matchups_Lwn_0444p00_fq_ins_pa,matchups_Lwn_0444p00_fq_sat_pa,'444.0',path_out,prot_name,sensor_name,min_val=-0.50,max_val=3.50) 
-Matchups_MAIN.plot_scatter(matchups_Lwn_0497p00_fq_ins_pa,matchups_Lwn_0497p00_fq_sat_pa,'497.0',path_out,prot_name,sensor_name,min_val= 0.00,max_val=4.00) 
-Matchups_MAIN.plot_scatter(matchups_Lwn_0560p00_fq_ins_pa,matchups_Lwn_0560p00_fq_sat_pa,'560.0',path_out,prot_name,sensor_name,min_val= 0.00,max_val=4.00) 
-Matchups_MAIN.plot_scatter(matchups_Lwn_0664p00_fq_ins_pa,matchups_Lwn_0664p00_fq_sat_pa,'664.0',path_out,prot_name,sensor_name,min_val=-0.20,max_val=1.50) 
+sensor_name = 'S2A'
+rmse_val_0444p00_pa, Median_abs_rel_diff_0444p00_pa, Median_rel_diff_0444p00_pa, r_sqr_0444p00_pa = Matchups_MAIN.plot_scatter(matchups_Lwn_0444p00_fq_ins_pa,matchups_Lwn_0444p00_fq_sat_pa,'444.0',path_out,prot_name,sensor_name,min_val=-0.50,max_val=3.50) 
+rmse_val_0497p00_pa, Median_abs_rel_diff_0497p00_pa, Median_rel_diff_0497p00_pa, r_sqr_0497p00_pa = Matchups_MAIN.plot_scatter(matchups_Lwn_0497p00_fq_ins_pa,matchups_Lwn_0497p00_fq_sat_pa,'497.0',path_out,prot_name,sensor_name,min_val= 0.00,max_val=4.00) 
+rmse_val_0560p00_pa, Median_abs_rel_diff_0560p00_pa, Median_rel_diff_0560p00_pa, r_sqr_0560p00_pa = Matchups_MAIN.plot_scatter(matchups_Lwn_0560p00_fq_ins_pa,matchups_Lwn_0560p00_fq_sat_pa,'560.0',path_out,prot_name,sensor_name,min_val= 0.00,max_val=4.00) 
+rmse_val_0664p00_pa, Median_abs_rel_diff_0664p00_pa, Median_rel_diff_0664p00_pa, r_sqr_0664p00_pa = Matchups_MAIN.plot_scatter(matchups_Lwn_0664p00_fq_ins_pa,matchups_Lwn_0664p00_fq_sat_pa,'664.0',path_out,prot_name,sensor_name,min_val=-0.20,max_val=1.50) 
 
+#%%
+# rmse
+rmse_ba = [rmse_val_0444p00_ba,rmse_val_0497p00_ba,rmse_val_0560p00_ba,rmse_val_0664p00_ba]
+rmse_pa = [rmse_val_0444p00_pa,rmse_val_0497p00_pa,rmse_val_0560p00_pa,rmse_val_0664p00_pa]
+wv = [444.0,497.0,560.0,664.0]
+plt.figure()
+plt.plot(wv,rmse_ba,'-o')
+plt.plot(wv,rmse_pa,'-o')
+plt.xlabel('$Wavelength [nm]$')
+plt.ylabel('$rmse$')
+plt.legend(['Bailey and Werdell','Pahlevan'])
+plt.show()
+
+ofname = 'S2A_rmse.pdf'
+ofname = os.path.join(path_out,ofname)   
+plt.savefig(ofname, dpi=300)
+
+# Median_abs_rel_diff
+Median_abs_rel_diff_ba = [Median_abs_rel_diff_0444p00_ba,Median_abs_rel_diff_0497p00_ba,\
+    Median_abs_rel_diff_0560p00_ba,Median_abs_rel_diff_0664p00_ba]
+Median_abs_rel_diff_pa = [Median_abs_rel_diff_0444p00_pa,Median_abs_rel_diff_0497p00_pa,\
+    Median_abs_rel_diff_0560p00_pa,Median_abs_rel_diff_0664p00_pa]
+wv = [444.0,497.0,560.0,664.0]
+plt.figure()
+plt.plot(wv,Median_abs_rel_diff_ba,'-o')
+plt.plot(wv,Median_abs_rel_diff_pa,'-o')
+plt.xlabel('$Wavelength [nm]$')
+plt.ylabel('$|\psi|_m$ [%]')
+plt.legend(['Bailey and Werdell','Pahlevan'])
+plt.show()
+
+ofname = 'S2A_Median_abs_rel_diff.pdf'
+ofname = os.path.join(path_out,ofname)   
+plt.savefig(ofname, dpi=300)
+
+# Median_rel_diff
+Median_rel_diff_ba = [Median_rel_diff_0444p00_ba,Median_rel_diff_0497p00_ba,\
+    Median_rel_diff_0560p00_ba,Median_rel_diff_0664p00_ba]
+Median_rel_diff_pa = [Median_rel_diff_0444p00_pa,Median_rel_diff_0497p00_pa,\
+    Median_rel_diff_0560p00_pa,Median_rel_diff_0664p00_pa]
+wv = [444.0,497.0,560.0,664.0]
+plt.figure()
+plt.plot(wv,Median_rel_diff_ba,'-o')
+plt.plot(wv,Median_rel_diff_pa,'-o')
+plt.xlabel('$Wavelength [nm]$')
+plt.ylabel('$\psi_m$ [%]')
+plt.legend(['Bailey and Werdell','Pahlevan'])
+plt.show()    
+
+ofname = 'S2A_Median_rel_diff.pdf'
+ofname = os.path.join(path_out,ofname)   
+plt.savefig(ofname, dpi=300)
+
+# r_sqr
+r_sqr_ba = [r_sqr_0444p00_ba,r_sqr_0497p00_ba,\
+    r_sqr_0560p00_ba,r_sqr_0664p00_ba]
+r_sqr_pa = [r_sqr_0444p00_pa,r_sqr_0497p00_pa,\
+    r_sqr_0560p00_pa,r_sqr_0664p00_pa]
+wv = [444.0,497.0,560.0,664.0]
+plt.figure()
+plt.plot(wv,r_sqr_ba,'-o')
+plt.plot(wv,r_sqr_pa,'-o')
+plt.xlabel('$Wavelength [nm]$')
+plt.ylabel('$r^2$')
+plt.legend(['Bailey and Werdell','Pahlevan'])
+plt.show()    
+
+ofname = 'S2A_r_sqr.pdf'
+ofname = os.path.join(path_out,ofname)   
+plt.savefig(ofname, dpi=300)  
 
 #            print(ins_time)
             

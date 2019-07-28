@@ -173,6 +173,7 @@ def plot_scatter(x,y,str1,path_out,prot_name,sensor_name,min_val,max_val):
     plt.savefig(ofname, dpi=300)
     
     plt.show()   
+    return rmse_val, Median_abs_rel_diff, Median_rel_diff, r_value**2
 #%%
 def main():
     """business logic for when running this module as the primary one!"""
@@ -522,18 +523,94 @@ def main():
     #%% plots   
     prot_name = 'zi'
     sensor_name = 'OLCI'
-    plot_scatter(matchups_Lwn_0412p50_fq_ins_zi,matchups_Lwn_0412p50_fq_sat_zi,'412.5',path_out,prot_name,sensor_name,min_val=-0.50,max_val=2.50) 
-    plot_scatter(matchups_Lwn_0442p50_fq_ins_zi,matchups_Lwn_0442p50_fq_sat_zi,'442.5',path_out,prot_name,sensor_name,min_val=-0.50,max_val=3.50) 
-    plot_scatter(matchups_Lwn_0490p00_fq_ins_zi,matchups_Lwn_0490p00_fq_sat_zi,'490.0',path_out,prot_name,sensor_name,min_val= 0.00,max_val=4.00) 
-    plot_scatter(matchups_Lwn_0560p00_fq_ins_zi,matchups_Lwn_0560p00_fq_sat_zi,'560.0',path_out,prot_name,sensor_name,min_val= 0.00,max_val=4.00) 
-    plot_scatter(matchups_Lwn_0665p00_fq_ins_zi,matchups_Lwn_0665p00_fq_sat_zi,'665.0',path_out,prot_name,sensor_name,min_val=-0.20,max_val=0.80) 
+    rmse_val_0412p50_zi, Median_abs_rel_diff_0412p50_zi, Median_rel_diff_0412p50_zi, r_sqr_0412p50_zi = plot_scatter(matchups_Lwn_0412p50_fq_ins_zi,matchups_Lwn_0412p50_fq_sat_zi,'412.5',path_out,prot_name,sensor_name,min_val=-0.50,max_val=2.50) 
+    rmse_val_0442p50_zi, Median_abs_rel_diff_0442p50_zi, Median_rel_diff_0442p50_zi, r_sqr_0442p50_zi = plot_scatter(matchups_Lwn_0442p50_fq_ins_zi,matchups_Lwn_0442p50_fq_sat_zi,'442.5',path_out,prot_name,sensor_name,min_val=-0.50,max_val=3.50) 
+    rmse_val_0490p00_zi, Median_abs_rel_diff_0490p00_zi, Median_rel_diff_0490p00_zi, r_sqr_0490p00_zi = plot_scatter(matchups_Lwn_0490p00_fq_ins_zi,matchups_Lwn_0490p00_fq_sat_zi,'490.0',path_out,prot_name,sensor_name,min_val= 0.00,max_val=4.00) 
+    rmse_val_0560p00_zi, Median_abs_rel_diff_0560p00_zi, Median_rel_diff_0560p00_zi, r_sqr_0560p00_zi = plot_scatter(matchups_Lwn_0560p00_fq_ins_zi,matchups_Lwn_0560p00_fq_sat_zi,'560.0',path_out,prot_name,sensor_name,min_val= 0.00,max_val=4.00) 
+    rmse_val_0665p00_zi, Median_abs_rel_diff_0665p00_zi, Median_rel_diff_0665p00_zi, r_sqr_0665p00_zi = plot_scatter(matchups_Lwn_0665p00_fq_ins_zi,matchups_Lwn_0665p00_fq_sat_zi,'665.0',path_out,prot_name,sensor_name,min_val=-0.20,max_val=0.80) 
+
+    
+
     #% plots  
     prot_name,sensor_name = 'ba' 
-    plot_scatter(matchups_Lwn_0412p50_fq_ins_ba,matchups_Lwn_0412p50_fq_sat_ba,'412.5',path_out,prot_name,sensor_name,min_val=-0.50,max_val=2.50) 
-    plot_scatter(matchups_Lwn_0442p50_fq_ins_ba,matchups_Lwn_0442p50_fq_sat_ba,'442.5',path_out,prot_name,sensor_name,min_val=-0.50,max_val=3.50) 
-    plot_scatter(matchups_Lwn_0490p00_fq_ins_ba,matchups_Lwn_0490p00_fq_sat_ba,'490.0',path_out,prot_name,sensor_name,min_val= 0.00,max_val=4.00) 
-    plot_scatter(matchups_Lwn_0560p00_fq_ins_ba,matchups_Lwn_0560p00_fq_sat_ba,'560.0',path_out,prot_name,sensor_name,min_val= 0.00,max_val=4.00) 
-    plot_scatter(matchups_Lwn_0665p00_fq_ins_ba,matchups_Lwn_0665p00_fq_sat_ba,'665.0',path_out,prot_name,sensor_name,min_val=-0.20,max_val=0.80) 
-##%%
+    sensor_name = 'OLCI'
+    rmse_val_0412p50_ba, Median_abs_rel_diff_0412p50_ba, Median_rel_diff_0412p50_ba, r_sqr_0412p50_ba = plot_scatter(matchups_Lwn_0412p50_fq_ins_ba,matchups_Lwn_0412p50_fq_sat_ba,'412.5',path_out,prot_name,sensor_name,min_val=-0.50,max_val=2.50) 
+    rmse_val_0442p50_ba, Median_abs_rel_diff_0442p50_ba, Median_rel_diff_0442p50_ba, r_sqr_0442p50_ba = plot_scatter(matchups_Lwn_0442p50_fq_ins_ba,matchups_Lwn_0442p50_fq_sat_ba,'442.5',path_out,prot_name,sensor_name,min_val=-0.50,max_val=3.50) 
+    rmse_val_0490p00_ba, Median_abs_rel_diff_0490p00_ba, Median_rel_diff_0490p00_ba, r_sqr_0490p00_ba = plot_scatter(matchups_Lwn_0490p00_fq_ins_ba,matchups_Lwn_0490p00_fq_sat_ba,'490.0',path_out,prot_name,sensor_name,min_val= 0.00,max_val=4.00) 
+    rmse_val_0560p00_ba, Median_abs_rel_diff_0560p00_ba, Median_rel_diff_0560p00_ba, r_sqr_0560p00_ba = plot_scatter(matchups_Lwn_0560p00_fq_ins_ba,matchups_Lwn_0560p00_fq_sat_ba,'560.0',path_out,prot_name,sensor_name,min_val= 0.00,max_val=4.00) 
+    rmse_val_0665p00_ba, Median_abs_rel_diff_0665p00_ba, Median_rel_diff_0665p00_ba, r_sqr_0665p00_ba = plot_scatter(matchups_Lwn_0665p00_fq_ins_ba,matchups_Lwn_0665p00_fq_sat_ba,'665.0',path_out,prot_name,sensor_name,min_val=-0.20,max_val=0.80) 
+
+    #%%
+    # rmse
+    rmse_zi = [rmse_val_0412p50_zi,rmse_val_0442p50_zi,rmse_val_0490p00_zi,rmse_val_0560p00_zi,rmse_val_0665p00_zi]
+    rmse_ba = [rmse_val_0412p50_ba,rmse_val_0442p50_ba,rmse_val_0490p00_ba,rmse_val_0560p00_ba,rmse_val_0665p00_ba]
+    wv = [412.5,442.5,490.0,560.0,665.0]
+    plt.figure()
+    plt.plot(wv,rmse_zi,'-o')
+    plt.plot(wv,rmse_ba,'-o')
+    plt.xlabel('$Wavelength [nm]$')
+    plt.ylabel('$rmse$')
+    plt.legend(['Zibordi','Bailey and Werdell'])
+    plt.show()
+
+    ofname = 'OLCI_rmse.pdf'
+    ofname = os.path.join(path_out,ofname)   
+    plt.savefig(ofname, dpi=300)
+
+    # Median_abs_rel_diff
+    Median_abs_rel_diff_zi = [Median_abs_rel_diff_0412p50_zi,Median_abs_rel_diff_0442p50_zi,Median_abs_rel_diff_0490p00_zi,\
+        Median_abs_rel_diff_0560p00_zi,Median_abs_rel_diff_0665p00_zi]
+    Median_abs_rel_diff_ba = [Median_abs_rel_diff_0412p50_ba,Median_abs_rel_diff_0442p50_ba,Median_abs_rel_diff_0490p00_ba,\
+        Median_abs_rel_diff_0560p00_ba,Median_abs_rel_diff_0665p00_ba]
+    wv = [412.5,442.5,490.0,560.0,665.0]
+    plt.figure()
+    plt.plot(wv,Median_abs_rel_diff_zi,'-o')
+    plt.plot(wv,Median_abs_rel_diff_ba,'-o')
+    plt.xlabel('$Wavelength [nm]$')
+    plt.ylabel('$|\psi|_m$ [%]')
+    plt.legend(['Zibordi','Bailey and Werdell'])
+    plt.show()
+
+    ofname = 'OLCI_Median_abs_rel_diff.pdf'
+    ofname = os.path.join(path_out,ofname)   
+    plt.savefig(ofname, dpi=300)
+
+    # Median_rel_diff
+    Median_rel_diff_zi = [Median_rel_diff_0412p50_zi,Median_rel_diff_0442p50_zi,Median_rel_diff_0490p00_zi,\
+        Median_rel_diff_0560p00_zi,Median_rel_diff_0665p00_zi]
+    Median_rel_diff_ba = [Median_rel_diff_0412p50_ba,Median_rel_diff_0442p50_ba,Median_rel_diff_0490p00_ba,\
+        Median_rel_diff_0560p00_ba,Median_rel_diff_0665p00_ba]
+    wv = [412.5,442.5,490.0,560.0,665.0]
+    plt.figure()
+    plt.plot(wv,Median_rel_diff_zi,'-o')
+    plt.plot(wv,Median_rel_diff_ba,'-o')
+    plt.xlabel('$Wavelength [nm]$')
+    plt.ylabel('$\psi_m$ [%]')
+    plt.legend(['Zibordi','Bailey and Werdell'])
+    plt.show()    
+
+    ofname = 'OLCI_Median_rel_diff.pdf'
+    ofname = os.path.join(path_out,ofname)   
+    plt.savefig(ofname, dpi=300)
+
+    # r_sqr
+    r_sqr_zi = [r_sqr_0412p50_zi,r_sqr_0442p50_zi,r_sqr_0490p00_zi,\
+        r_sqr_0560p00_zi,r_sqr_0665p00_zi]
+    r_sqr_ba = [r_sqr_0412p50_ba,r_sqr_0442p50_ba,r_sqr_0490p00_ba,\
+        r_sqr_0560p00_ba,r_sqr_0665p00_ba]
+    wv = [412.5,442.5,490.0,560.0,665.0]
+    plt.figure()
+    plt.plot(wv,r_sqr_zi,'-o')
+    plt.plot(wv,r_sqr_ba,'-o')
+    plt.xlabel('$Wavelength [nm]$')
+    plt.ylabel('$r^2$')
+    plt.legend(['Zibordi','Bailey and Werdell'])
+    plt.show()    
+
+    ofname = 'OLCI_r_sqr.pdf'
+    ofname = os.path.join(path_out,ofname)   
+    plt.savefig(ofname, dpi=300)    
+
+#%%
 if __name__ == '__main__':
     main()   
