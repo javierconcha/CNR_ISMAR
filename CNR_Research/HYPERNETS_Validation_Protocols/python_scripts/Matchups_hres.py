@@ -118,6 +118,16 @@ matchups_Lwn_0497p00_fq_sat_pa = []
 matchups_Lwn_0560p00_fq_sat_pa = []
 matchups_Lwn_0664p00_fq_sat_pa = []
 
+matchups_Lwn_0444p00_fq_ins_va = []
+matchups_Lwn_0497p00_fq_ins_va = []
+matchups_Lwn_0560p00_fq_ins_va = []
+matchups_Lwn_0664p00_fq_ins_va = []
+
+matchups_Lwn_0444p00_fq_sat_va = []
+matchups_Lwn_0497p00_fq_sat_va = []
+matchups_Lwn_0560p00_fq_sat_va = []
+matchups_Lwn_0664p00_fq_sat_va = []
+
 donut_mask = np.array([[False,False,False,False,False,False,False],\
               [False,False,False,False,False,False,False],\
               [False,False,True,True,True,False,False],\
@@ -485,73 +495,173 @@ with open(path_to_list,'r') as file_list:
         else:
             print('Not matchups for '+folder_name) 
 
+        # Vanhellemot
+        print('--Vanhellemot')
+
+        # in situ from aeronet_i.log
+        # in_situ_lat, in_situ_lon = get_lat_lon_ins(station_name)
+        
+        # r, c = create_extract.find_row_column_from_lat_lon(lat,lon,in_situ_lat,in_situ_lon)
+
+        # in situ data        
+        # with open(os.path.join(path_data,sensor_name,file_name[2:-1]), 'r') as file:
+        #     ins_time = []
+        #     # Date
+        #     line_num_date = 3-1
+        #     line_num_time = 4-1
+        #     ins_all_lines = file.readlines()
+        #     line_date = ins_all_lines[line_num_date]   
+        #     line_time = ins_all_lines[line_num_time] 
+            
+        #     str_list_date = line_date[:-1].replace('=',',').split(',')
+        #     str_list_time = line_time[:-1].replace('=',',').split(',')
+            
+        #     n_ins = len(str_list_date)-1
+        #     for i in range(n_ins):
+        #         date_and_time_str = str_list_date[1:][i]+' '+str_list_time[1:][i]
+        #         date_format = "%d/%m/%Y %H:%M:%S"
+        #         ins_time.append(datetime.strptime(date_and_time_str, date_format))
+
+        # delta_time = 2.0# float in hours   
+        # ins_time = np.array(ins_time)
+        # time_diff = ins_time - sat_time
+        # dt_hour = [i.total_seconds()/(60*60) for i in time_diff] # time diffence between in situ measurements and sat in hours
+        # idx_min = np.argmin(np.abs(dt_hour))
+        # matchup_idx_vec = np.abs(dt_hour) <= delta_time 
+
+        # from aeronet_i.log
+        # 109  Lwn_f/Q(412)=0.5564285789473684
+        # 110  Lwn_f/Q(441)=0.7373514736842104
+        # 111  Lwn_f/Q(489)=0.9496013157894736
+        # 112  Lwn_f/Q(530)=0.7502892631578948
+        # 113  Lwn_f/Q(551)=0.5632072105263157
+        # 114  Lwn_f/Q(668)=0.06371473684210528
+        # 115  Lwn_f/Q(869)=-0.004366210526315784
+        # 116  Lwn_f/Q(1018)=-0.0016966842105263127
+
+        ins_file_path = os.path.join(path_data,sensor_name,folder_name)+'/aeronet_i.log'
+
+        with open(ins_file_path, 'r') as file:
+            ins_all_lines = file.readlines()
+            Lwn_fq_0442p00 = float(ins_all_lines[110-1][:-1].split('=')[1]) 
+            Lwn_fq_0491p00 = float(ins_all_lines[111-1][:-1].split('=')[1]) 
+            Lwn_fq_00551p0 = float(ins_all_lines[113-1][:-1].split('=')[1]) 
+            Lwn_fq_0668p00 = float(ins_all_lines[114-1][:-1].split('=')[1])   
+
+        # from l2_dsf_new.log
+        # 90  kernel_rho_t=0.136428374656
+        # 96    kernel_wave_s=444,497,560,664,704,740,782,835,865,1614,2202
+        #.      0             1   2   3   4   5   6   7   8   9   10   11  
+        # 97  kernel_rho_s=0.0171095194906,...
+        # 98  kernel_sdev_s=0.000584191352004,...
+
+        sat_file_path = os.path.join(path_data,sensor_name,folder_name)+'/l2_dsf_new.log'  
+
+        with open(sat_file_path, 'r') as file:
+            ins_all_lines = file.readlines()
+            mean_filtered_rhot_1614p00 = float(ins_all_lines[90-1][:-1].replace('=',',').split(',')[10]) 
+            mean_filtered_rhos_0444p00 = float(ins_all_lines[97-1][:-1].replace('=',',').split(',')[1]) 
+            mean_filtered_rhos_0497p00 = float(ins_all_lines[97-1][:-1].replace('=',',').split(',')[2])
+            mean_filtered_rhos_0560p00 = float(ins_all_lines[97-1][:-1].replace('=',',').split(',')[3])
+            mean_filtered_rhos_0664p00 = float(ins_all_lines[97-1][:-1].replace('=',',').split(',')[4])
+
+        if sza<=75 and vza<=60 and mean_filtered_rhot_1614p00<=0.01:
+            matchups_Lwn_0444p00_fq_sat_va.append(mean_filtered_rhos_0444p00*F0_0444p00/np.pi)
+            matchups_Lwn_0444p00_fq_ins_va.append(Lwn_fq_0442p00)  
+
+            matchups_Lwn_0497p00_fq_sat_va.append(mean_filtered_rhos_0497p00*F0_0497p00/np.pi)
+            matchups_Lwn_0497p00_fq_ins_va.append(Lwn_fq_0491p00) 
+
+            matchups_Lwn_0560p00_fq_sat_va.append(mean_filtered_rhos_0560p00*F0_0560p00/np.pi)
+            matchups_Lwn_0560p00_fq_ins_va.append(Lwn_fq_00551p0) 
+
+            matchups_Lwn_0664p00_fq_sat_va.append(mean_filtered_rhos_0664p00*F0_0664p00/np.pi)
+            matchups_Lwn_0664p00_fq_ins_va.append(Lwn_fq_0668p00) 
+                  
+
 #%% plots  
 prot_name = 'ba' 
 sensor_name = 'S2A'
-rmse_val_0444p00_ba, Median_abs_rel_diff_0444p00_ba, Median_rel_diff_0444p00_ba, r_sqr_0444p00_ba = Matchups_MAIN.plot_scatter(matchups_Lwn_0444p00_fq_ins_ba,matchups_Lwn_0444p00_fq_sat_ba,'444.0',path_out,prot_name,sensor_name,min_val=-0.50,max_val=3.50) 
-rmse_val_0497p00_ba, Median_abs_rel_diff_0497p00_ba, Median_rel_diff_0497p00_ba, r_sqr_0497p00_ba = Matchups_MAIN.plot_scatter(matchups_Lwn_0497p00_fq_ins_ba,matchups_Lwn_0497p00_fq_sat_ba,'497.0',path_out,prot_name,sensor_name,min_val= 0.00,max_val=4.00) 
-rmse_val_0560p00_ba, Median_abs_rel_diff_0560p00_ba, Median_rel_diff_0560p00_ba, r_sqr_0560p00_ba = Matchups_MAIN.plot_scatter(matchups_Lwn_0560p00_fq_ins_ba,matchups_Lwn_0560p00_fq_sat_ba,'560.0',path_out,prot_name,sensor_name,min_val= 0.00,max_val=4.00) 
-rmse_val_0664p00_ba, Median_abs_rel_diff_0664p00_ba, Median_rel_diff_0664p00_ba, r_sqr_0664p00_ba = Matchups_MAIN.plot_scatter(matchups_Lwn_0664p00_fq_ins_ba,matchups_Lwn_0664p00_fq_sat_ba,'664.0',path_out,prot_name,sensor_name,min_val=-0.20,max_val=1.50) 
+rmse_val_0444p00_ba, mean_abs_rel_diff_0444p00_ba, mean_rel_diff_0444p00_ba, r_sqr_0444p00_ba = Matchups_MAIN.plot_scatter(matchups_Lwn_0444p00_fq_ins_ba,matchups_Lwn_0444p00_fq_sat_ba,'444.0',path_out,prot_name,sensor_name,min_val=-0.50,max_val=3.50) 
+rmse_val_0497p00_ba, mean_abs_rel_diff_0497p00_ba, mean_rel_diff_0497p00_ba, r_sqr_0497p00_ba = Matchups_MAIN.plot_scatter(matchups_Lwn_0497p00_fq_ins_ba,matchups_Lwn_0497p00_fq_sat_ba,'497.0',path_out,prot_name,sensor_name,min_val= 0.00,max_val=4.00) 
+rmse_val_0560p00_ba, mean_abs_rel_diff_0560p00_ba, mean_rel_diff_0560p00_ba, r_sqr_0560p00_ba = Matchups_MAIN.plot_scatter(matchups_Lwn_0560p00_fq_ins_ba,matchups_Lwn_0560p00_fq_sat_ba,'560.0',path_out,prot_name,sensor_name,min_val= 0.00,max_val=4.00) 
+rmse_val_0664p00_ba, mean_abs_rel_diff_0664p00_ba, mean_rel_diff_0664p00_ba, r_sqr_0664p00_ba = Matchups_MAIN.plot_scatter(matchups_Lwn_0664p00_fq_ins_ba,matchups_Lwn_0664p00_fq_sat_ba,'664.0',path_out,prot_name,sensor_name,min_val=-0.20,max_val=1.50) 
 
 #%% plots  
 prot_name = 'pa' 
 sensor_name = 'S2A'
-rmse_val_0444p00_pa, Median_abs_rel_diff_0444p00_pa, Median_rel_diff_0444p00_pa, r_sqr_0444p00_pa = Matchups_MAIN.plot_scatter(matchups_Lwn_0444p00_fq_ins_pa,matchups_Lwn_0444p00_fq_sat_pa,'444.0',path_out,prot_name,sensor_name,min_val=-0.50,max_val=3.50) 
-rmse_val_0497p00_pa, Median_abs_rel_diff_0497p00_pa, Median_rel_diff_0497p00_pa, r_sqr_0497p00_pa = Matchups_MAIN.plot_scatter(matchups_Lwn_0497p00_fq_ins_pa,matchups_Lwn_0497p00_fq_sat_pa,'497.0',path_out,prot_name,sensor_name,min_val= 0.00,max_val=4.00) 
-rmse_val_0560p00_pa, Median_abs_rel_diff_0560p00_pa, Median_rel_diff_0560p00_pa, r_sqr_0560p00_pa = Matchups_MAIN.plot_scatter(matchups_Lwn_0560p00_fq_ins_pa,matchups_Lwn_0560p00_fq_sat_pa,'560.0',path_out,prot_name,sensor_name,min_val= 0.00,max_val=4.00) 
-rmse_val_0664p00_pa, Median_abs_rel_diff_0664p00_pa, Median_rel_diff_0664p00_pa, r_sqr_0664p00_pa = Matchups_MAIN.plot_scatter(matchups_Lwn_0664p00_fq_ins_pa,matchups_Lwn_0664p00_fq_sat_pa,'664.0',path_out,prot_name,sensor_name,min_val=-0.20,max_val=1.50) 
+rmse_val_0444p00_pa, mean_abs_rel_diff_0444p00_pa, mean_rel_diff_0444p00_pa, r_sqr_0444p00_pa = Matchups_MAIN.plot_scatter(matchups_Lwn_0444p00_fq_ins_pa,matchups_Lwn_0444p00_fq_sat_pa,'444.0',path_out,prot_name,sensor_name,min_val=-0.50,max_val=3.50) 
+rmse_val_0497p00_pa, mean_abs_rel_diff_0497p00_pa, mean_rel_diff_0497p00_pa, r_sqr_0497p00_pa = Matchups_MAIN.plot_scatter(matchups_Lwn_0497p00_fq_ins_pa,matchups_Lwn_0497p00_fq_sat_pa,'497.0',path_out,prot_name,sensor_name,min_val= 0.00,max_val=4.00) 
+rmse_val_0560p00_pa, mean_abs_rel_diff_0560p00_pa, mean_rel_diff_0560p00_pa, r_sqr_0560p00_pa = Matchups_MAIN.plot_scatter(matchups_Lwn_0560p00_fq_ins_pa,matchups_Lwn_0560p00_fq_sat_pa,'560.0',path_out,prot_name,sensor_name,min_val= 0.00,max_val=4.00) 
+rmse_val_0664p00_pa, mean_abs_rel_diff_0664p00_pa, mean_rel_diff_0664p00_pa, r_sqr_0664p00_pa = Matchups_MAIN.plot_scatter(matchups_Lwn_0664p00_fq_ins_pa,matchups_Lwn_0664p00_fq_sat_pa,'664.0',path_out,prot_name,sensor_name,min_val=-0.20,max_val=1.50) 
+
+#%% plots  
+prot_name = 'va' 
+sensor_name = 'S2A'
+rmse_val_0444p00_va, mean_abs_rel_diff_0444p00_va, mean_rel_diff_0444p00_va, r_sqr_0444p00_va = Matchups_MAIN.plot_scatter(matchups_Lwn_0444p00_fq_ins_va,matchups_Lwn_0444p00_fq_sat_va,'444.0',path_out,prot_name,sensor_name,min_val=-0.50,max_val=3.50) 
+rmse_val_0497p00_va, mean_abs_rel_diff_0497p00_va, mean_rel_diff_0497p00_va, r_sqr_0497p00_va = Matchups_MAIN.plot_scatter(matchups_Lwn_0497p00_fq_ins_va,matchups_Lwn_0497p00_fq_sat_va,'497.0',path_out,prot_name,sensor_name,min_val= 0.00,max_val=4.00) 
+rmse_val_0560p00_va, mean_abs_rel_diff_0560p00_va, mean_rel_diff_0560p00_va, r_sqr_0560p00_va = Matchups_MAIN.plot_scatter(matchups_Lwn_0560p00_fq_ins_va,matchups_Lwn_0560p00_fq_sat_va,'560.0',path_out,prot_name,sensor_name,min_val= 0.00,max_val=4.00) 
+rmse_val_0664p00_va, mean_abs_rel_diff_0664p00_va, mean_rel_diff_0664p00_va, r_sqr_0664p00_va = Matchups_MAIN.plot_scatter(matchups_Lwn_0664p00_fq_ins_va,matchups_Lwn_0664p00_fq_sat_va,'664.0',path_out,prot_name,sensor_name,min_val=-0.20,max_val=1.50) 
 
 #%%
 # rmse
 rmse_ba = [rmse_val_0444p00_ba,rmse_val_0497p00_ba,rmse_val_0560p00_ba,rmse_val_0664p00_ba]
 rmse_pa = [rmse_val_0444p00_pa,rmse_val_0497p00_pa,rmse_val_0560p00_pa,rmse_val_0664p00_pa]
+rmse_va = [rmse_val_0444p00_va,rmse_val_0497p00_va,rmse_val_0560p00_va,rmse_val_0664p00_va]
 wv = [444.0,497.0,560.0,664.0]
 plt.figure()
 plt.plot(wv,rmse_ba,'-o')
 plt.plot(wv,rmse_pa,'-o')
-plt.xlabel('$Wavelength [nm]$')
-plt.ylabel('$rmse$')
-plt.legend(['Bailey and Werdell','Pahlevan'])
+plt.plot(wv,rmse_va,'-o')
+plt.xlabel('Wavelength [nm]')
+plt.ylabel('rmse')
+plt.legend(['Bailey and Werdell','Pahlevan','Vanhellemont'])
 plt.show()
 
 ofname = 'S2A_rmse.pdf'
-ofname = os.path.join(path_out,ofname)   
+ofname = os.path.join(path_out,'source',ofname)   
 plt.savefig(ofname, dpi=300)
 
-# Median_abs_rel_diff
-Median_abs_rel_diff_ba = [Median_abs_rel_diff_0444p00_ba,Median_abs_rel_diff_0497p00_ba,\
-    Median_abs_rel_diff_0560p00_ba,Median_abs_rel_diff_0664p00_ba]
-Median_abs_rel_diff_pa = [Median_abs_rel_diff_0444p00_pa,Median_abs_rel_diff_0497p00_pa,\
-    Median_abs_rel_diff_0560p00_pa,Median_abs_rel_diff_0664p00_pa]
+# mean_abs_rel_diff
+mean_abs_rel_diff_ba = [mean_abs_rel_diff_0444p00_ba,mean_abs_rel_diff_0497p00_ba,\
+    mean_abs_rel_diff_0560p00_ba,mean_abs_rel_diff_0664p00_ba]
+mean_abs_rel_diff_pa = [mean_abs_rel_diff_0444p00_pa,mean_abs_rel_diff_0497p00_pa,\
+    mean_abs_rel_diff_0560p00_pa,mean_abs_rel_diff_0664p00_pa]
+mean_abs_rel_diff_va = [mean_abs_rel_diff_0444p00_va,mean_abs_rel_diff_0497p00_va,\
+    mean_abs_rel_diff_0560p00_va,mean_abs_rel_diff_0664p00_va]    
 wv = [444.0,497.0,560.0,664.0]
 plt.figure()
-plt.plot(wv,Median_abs_rel_diff_ba,'-o')
-plt.plot(wv,Median_abs_rel_diff_pa,'-o')
-plt.xlabel('$Wavelength [nm]$')
-plt.ylabel('$|\psi|_m$ [%]')
-plt.legend(['Bailey and Werdell','Pahlevan'])
+plt.plot(wv,mean_abs_rel_diff_ba,'-o')
+plt.plot(wv,mean_abs_rel_diff_pa,'-o')
+plt.plot(wv,mean_abs_rel_diff_va,'-o')
+plt.xlabel('Wavelength [nm]')
+plt.ylabel('MAPD [%]')
+plt.legend(['Bailey and Werdell','Pahlevan','Vanhellemont'])
 plt.show()
 
-ofname = 'S2A_Median_abs_rel_diff.pdf'
-ofname = os.path.join(path_out,ofname)   
+ofname = 'S2A_mean_abs_rel_diff.pdf'
+ofname = os.path.join(path_out,'source',ofname)   
 plt.savefig(ofname, dpi=300)
 
-# Median_rel_diff
-Median_rel_diff_ba = [Median_rel_diff_0444p00_ba,Median_rel_diff_0497p00_ba,\
-    Median_rel_diff_0560p00_ba,Median_rel_diff_0664p00_ba]
-Median_rel_diff_pa = [Median_rel_diff_0444p00_pa,Median_rel_diff_0497p00_pa,\
-    Median_rel_diff_0560p00_pa,Median_rel_diff_0664p00_pa]
+# mean_rel_diff
+mean_rel_diff_ba = [mean_rel_diff_0444p00_ba,mean_rel_diff_0497p00_ba,\
+    mean_rel_diff_0560p00_ba,mean_rel_diff_0664p00_ba]
+mean_rel_diff_pa = [mean_rel_diff_0444p00_pa,mean_rel_diff_0497p00_pa,\
+    mean_rel_diff_0560p00_pa,mean_rel_diff_0664p00_pa]
+mean_rel_diff_va = [mean_rel_diff_0444p00_va,mean_rel_diff_0497p00_va,\
+    mean_rel_diff_0560p00_va,mean_rel_diff_0664p00_va]    
 wv = [444.0,497.0,560.0,664.0]
 plt.figure()
-plt.plot(wv,Median_rel_diff_ba,'-o')
-plt.plot(wv,Median_rel_diff_pa,'-o')
-plt.xlabel('$Wavelength [nm]$')
-plt.ylabel('$\psi_m$ [%]')
-plt.legend(['Bailey and Werdell','Pahlevan'])
+plt.plot(wv,mean_rel_diff_ba,'-o')
+plt.plot(wv,mean_rel_diff_pa,'-o')
+plt.plot(wv,mean_rel_diff_va,'-o')
+plt.xlabel('Wavelength [nm]')
+plt.ylabel('MPD [%]')
+plt.legend(['Bailey and Werdell','Pahlevan','Vanhellemont'])
 plt.show()    
 
-ofname = 'S2A_Median_rel_diff.pdf'
-ofname = os.path.join(path_out,ofname)   
+ofname = 'S2A_mean_rel_diff.pdf'
+ofname = os.path.join(path_out,'source',ofname)   
 plt.savefig(ofname, dpi=300)
 
 # r_sqr
@@ -559,17 +669,20 @@ r_sqr_ba = [r_sqr_0444p00_ba,r_sqr_0497p00_ba,\
     r_sqr_0560p00_ba,r_sqr_0664p00_ba]
 r_sqr_pa = [r_sqr_0444p00_pa,r_sqr_0497p00_pa,\
     r_sqr_0560p00_pa,r_sqr_0664p00_pa]
+r_sqr_va = [r_sqr_0444p00_va,r_sqr_0497p00_va,\
+    r_sqr_0560p00_va,r_sqr_0664p00_va]    
 wv = [444.0,497.0,560.0,664.0]
 plt.figure()
 plt.plot(wv,r_sqr_ba,'-o')
 plt.plot(wv,r_sqr_pa,'-o')
-plt.xlabel('$Wavelength [nm]$')
+plt.plot(wv,r_sqr_va,'-o')
+plt.xlabel('Wavelength [nm]')
 plt.ylabel('$r^2$')
-plt.legend(['Bailey and Werdell','Pahlevan'])
+plt.legend(['Bailey and Werdell','Pahlevan','Vanhellemont'])
 plt.show()    
 
 ofname = 'S2A_r_sqr.pdf'
-ofname = os.path.join(path_out,ofname)   
+ofname = os.path.join(path_out,'source',ofname)   
 plt.savefig(ofname, dpi=300)  
 
 #            print(ins_time)

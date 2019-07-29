@@ -1,0 +1,99 @@
+\documentclass[preview]{standalone}
+
+\standaloneenv{my}
+
+%%% MY PACKAGES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{graphicx}
+% \usepackage[outdir=./]{epstopdf}
+\usepackage{epstopdf}
+\epstopdfsetup{update} % only regenerate pdf files when eps file is newer
+\usepackage{amsmath,epsfig}
+
+\usepackage{tikz} % for flow charts
+  \usetikzlibrary{shapes,arrows,positioning,shadows,calc}
+  % \usetikzlibrary{external}
+  % \tikzexternalize[prefix=Figures/]
+
+% \usepackage[nostamp]{draftwatermark}
+% \SetWatermarkLightness{0.8}
+% \SetWatermarkScale{4}
+
+\usepackage[percent]{overpic}
+\usepackage{morefloats} % for the error "Too many unprocessed floats"
+
+\usepackage{multirow}
+
+\usepackage{float}
+\usepackage{hyperref}
+%%% END MY PACKAGES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+\tiny
+    \begin{minipage}[c]{0.29\linewidth}
+      \centering
+      \begin{overpic}[trim=0 0 0 0,clip,height=3.0cm]{./scatter_matchups_444p0_S2A_ba.pdf} 
+      \put (20,70) {\colorbox{white}{Bailey and Werdell}} 
+      \end{overpic}
+    \end{minipage}   
+    \begin{minipage}[c]{0.29\linewidth}
+      \centering
+      \begin{overpic}[trim=0 0 0 0,clip,height=3.0cm]{./scatter_matchups_444p0_S2A_pa.pdf} 
+      \put (20,70) {\colorbox{white}{Pahlevan}} 
+      \end{overpic}
+    \end{minipage}  
+    \begin{minipage}[c]{0.29\linewidth}
+      \centering
+      \begin{overpic}[trim=0 0 0 0,clip,height=3.0cm]{./scatter_matchups_444p0_S2A_va.pdf} 
+      \put (20,70) {\colorbox{white}{Vanhellemont}} 
+      \end{overpic}
+    \end{minipage}      
+
+    \begin{minipage}[c]{0.29\linewidth}
+      \centering
+      \begin{overpic}[trim=0 0 0 0,clip,height=3.0cm]{./scatter_matchups_497p0_S2A_ba.pdf} 
+      \end{overpic}
+    \end{minipage}   
+    \begin{minipage}[c]{0.29\linewidth}
+      \centering
+      \begin{overpic}[trim=0 0 0 0,clip,height=3.0cm]{./scatter_matchups_497p0_S2A_pa.pdf} 
+      \end{overpic}
+    \end{minipage} 
+    \begin{minipage}[c]{0.29\linewidth}
+      \centering
+      \begin{overpic}[trim=0 0 0 0,clip,height=3.0cm]{./scatter_matchups_497p0_S2A_va.pdf} 
+      \end{overpic}
+    \end{minipage}       
+
+    \begin{minipage}[c]{0.29\linewidth}
+      \centering
+      \begin{overpic}[trim=0 0 0 0,clip,height=3.0cm]{./scatter_matchups_560p0_S2A_ba.pdf} 
+      \end{overpic}
+    \end{minipage}  
+    \begin{minipage}[c]{0.29\linewidth}
+      \centering
+      \begin{overpic}[trim=0 0 0 0,clip,height=3.0cm]{./scatter_matchups_560p0_S2A_pa.pdf} 
+      \end{overpic}
+    \end{minipage}  
+    \begin{minipage}[c]{0.29\linewidth}
+      \centering
+      \begin{overpic}[trim=0 0 0 0,clip,height=3.0cm]{./scatter_matchups_560p0_S2A_va.pdf} 
+      \end{overpic}
+    \end{minipage}       
+
+    \begin{minipage}[c]{0.29\linewidth}
+      \centering
+      \begin{overpic}[trim=0 0 0 0,clip,height=3.0cm]{./scatter_matchups_664p0_S2A_ba.pdf} 
+      \end{overpic}
+    \end{minipage}  
+    \begin{minipage}[c]{0.29\linewidth}
+      \centering
+      \begin{overpic}[trim=0 0 0 0,clip,height=3.0cm]{./scatter_matchups_664p0_S2A_pa.pdf} 
+      \end{overpic}
+    \end{minipage} 
+    \begin{minipage}[c]{0.29\linewidth}
+      \centering
+      \begin{overpic}[trim=0 0 0 0,clip,height=3.0cm]{./scatter_matchups_664p0_S2A_va.pdf} 
+      \end{overpic}
+    \end{minipage}              
+
+\end{document}
