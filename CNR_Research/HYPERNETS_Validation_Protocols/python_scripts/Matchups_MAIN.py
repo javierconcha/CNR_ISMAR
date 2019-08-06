@@ -141,7 +141,7 @@ def plot_scatter(x,y,str1,path_out,prot_name,sensor_name,min_val,max_val):
     plt.plot([xmin,xmax], line)
     # plt.legend(['1:1','Regression Line'])
     plt.xlabel('$L^{PRS}_{WN}$')
-    plt.ylabel('$L^{'+sensor_name+'}_{LW}$')
+    plt.ylabel('$L^{'+sensor_name+'}_{WN}$')
     if (xmin<0 or ymin<0):
         plt.plot([xmin,xmax],[0, 0],'--k',linewidth = 0.7)  
     
@@ -551,7 +551,7 @@ def main():
     plt.plot(wv,rmse_ba,'-o')
     plt.xlabel('Wavelength [nm]')
     plt.ylabel('$rmse$')
-    plt.legend(['Zibordi','Bailey and Werdell'])
+    # plt.legend(['Zibordi, Mèlin and Berthon (2018)','Bailey and Werdell (2006)'])
     plt.show()
 
     ofname = 'OLCI_rmse.pdf'
@@ -569,7 +569,7 @@ def main():
     plt.plot(wv,mean_abs_rel_diff_ba,'-o')
     plt.xlabel('Wavelength [nm]')
     plt.ylabel('MAPD [%]')
-    plt.legend(['Zibordi','Bailey and Werdell'])
+    # plt.legend(['Zibordi','Bailey and Werdell'])
     plt.show()
 
     ofname = 'OLCI_mean_abs_rel_diff.pdf'
@@ -587,7 +587,7 @@ def main():
     plt.plot(wv,mean_rel_diff_ba,'-o')
     plt.xlabel('Wavelength [nm]')
     plt.ylabel('MPD [%]')
-    plt.legend(['Zibordi','Bailey and Werdell'])
+    # plt.legend(['Zibordi','Bailey and Werdell'])
     plt.show()    
 
     ofname = 'OLCI_mean_rel_diff.pdf'
@@ -605,7 +605,7 @@ def main():
     plt.plot(wv,r_sqr_ba,'-o')
     plt.xlabel('Wavelength [nm]')
     plt.ylabel('$r^2$')
-    plt.legend(['Zibordi','Bailey and Werdell'])
+    plt.legend(['Zibordi, Mèlin and Berthon (2018)','Bailey and Werdell (2006)'])
     plt.show()    
 
     ofname = 'OLCI_r_sqr.pdf'

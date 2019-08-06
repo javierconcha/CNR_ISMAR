@@ -206,10 +206,16 @@ with open(path_to_list,'r') as file_list:
         idx_min = np.argmin(np.abs(dt_hour))
         matchup_idx_vec = np.abs(dt_hour) <= delta_time 
         
-        Lwn_fq_0442p00 = float(ins_all_lines[112-1][:-1].replace('=',',').split(',')[idx_min+1]) 
-        Lwn_fq_0491p00 = float(ins_all_lines[113-1][:-1].replace('=',',').split(',')[idx_min+1]) 
-        Lwn_fq_00551p0 = float(ins_all_lines[115-1][:-1].replace('=',',').split(',')[idx_min+1]) 
-        Lwn_fq_0668p00 = float(ins_all_lines[116-1][:-1].replace('=',',').split(',')[idx_min+1]) 
+#           104	Lwn(442)=0.285881,0.295781,0.288577,0.269275,0.233640,0.196600
+#   105	Lwn(491)=0.532647,0.578646,0.523528,0.501363,0.397166,0.397819
+#   106	Lwn(530)=0.759344,0.803289,0.810068,0.715048,0.648792,0.641661
+#   107	Lwn(551)=0.855308,0.897261,0.892521,0.827199,0.776998,0.742645
+#   108	Lwn(668)=0.246346,0.269323,0.275534,0.258861,0.244163,0.249685
+        
+        Lwn_fq_0442p00 = float(ins_all_lines[104-1][:-1].replace('=',',').split(',')[idx_min+1]) 
+        Lwn_fq_0491p00 = float(ins_all_lines[105-1][:-1].replace('=',',').split(',')[idx_min+1]) 
+        Lwn_fq_00551p0 = float(ins_all_lines[107-1][:-1].replace('=',',').split(',')[idx_min+1]) 
+        Lwn_fq_0668p00 = float(ins_all_lines[108-1][:-1].replace('=',',').split(',')[idx_min+1]) 
 
         nday = sum(matchup_idx_vec)
         if nday >=1:
@@ -355,10 +361,10 @@ with open(path_to_list,'r') as file_list:
         idx_min = np.argmin(np.abs(dt_hour))
         matchup_idx_vec = np.abs(dt_hour) <= delta_time 
 
-        Lwn_fq_0442p00 = float(ins_all_lines[112-1][:-1].replace('=',',').split(',')[idx_min+1]) 
-        Lwn_fq_0491p00 = float(ins_all_lines[113-1][:-1].replace('=',',').split(',')[idx_min+1]) 
-        Lwn_fq_00551p0 = float(ins_all_lines[115-1][:-1].replace('=',',').split(',')[idx_min+1]) 
-        Lwn_fq_0668p00 = float(ins_all_lines[116-1][:-1].replace('=',',').split(',')[idx_min+1])        
+        Lwn_fq_0442p00 = float(ins_all_lines[104-1][:-1].replace('=',',').split(',')[idx_min+1]) 
+        Lwn_fq_0491p00 = float(ins_all_lines[105-1][:-1].replace('=',',').split(',')[idx_min+1]) 
+        Lwn_fq_00551p0 = float(ins_all_lines[107-1][:-1].replace('=',',').split(',')[idx_min+1]) 
+        Lwn_fq_0668p00 = float(ins_all_lines[108-1][:-1].replace('=',',').split(',')[idx_min+1])        
 
         nday = sum(matchup_idx_vec)
         if nday >=1:
@@ -529,7 +535,15 @@ with open(path_to_list,'r') as file_list:
         # idx_min = np.argmin(np.abs(dt_hour))
         # matchup_idx_vec = np.abs(dt_hour) <= delta_time 
 
-        # from aeronet_i.log
+   #      # from aeronet_i.log
+   #         101  Lwn(412)=0.5702557894736842
+   # 102  Lwn(441)=0.7611690526315789
+   # 103  Lwn(489)=0.9938783157894736
+   # 104  Lwn(530)=0.7793456842105263
+   # 105  Lwn(551)=0.5839507894736842
+   # 106  Lwn(668)=0.06526310526315791
+   # 107  Lwn(869)=-0.004366210526315784
+   # 108  Lwn(1018)=-0.0016966842105263127
         # 109  Lwn_f/Q(412)=0.5564285789473684
         # 110  Lwn_f/Q(441)=0.7373514736842104
         # 111  Lwn_f/Q(489)=0.9496013157894736
@@ -543,10 +557,10 @@ with open(path_to_list,'r') as file_list:
 
         with open(ins_file_path, 'r') as file:
             ins_all_lines = file.readlines()
-            Lwn_fq_0442p00 = float(ins_all_lines[110-1][:-1].split('=')[1]) 
-            Lwn_fq_0491p00 = float(ins_all_lines[111-1][:-1].split('=')[1]) 
-            Lwn_fq_00551p0 = float(ins_all_lines[113-1][:-1].split('=')[1]) 
-            Lwn_fq_0668p00 = float(ins_all_lines[114-1][:-1].split('=')[1])   
+            Lwn_fq_0442p00 = float(ins_all_lines[102-1][:-1].split('=')[1]) 
+            Lwn_fq_0491p00 = float(ins_all_lines[103-1][:-1].split('=')[1]) 
+            Lwn_fq_00551p0 = float(ins_all_lines[105-1][:-1].split('=')[1]) 
+            Lwn_fq_0668p00 = float(ins_all_lines[106-1][:-1].split('=')[1])   
 
         # from l2_dsf_new.log
         # 90  kernel_rho_t=0.136428374656
@@ -581,7 +595,7 @@ with open(path_to_list,'r') as file_list:
 
 #%% plots  
 prot_name = 'ba' 
-sensor_name = 'S2A'
+sensor_name = 'MSI'
 rmse_val_0444p00_ba, mean_abs_rel_diff_0444p00_ba, mean_rel_diff_0444p00_ba, r_sqr_0444p00_ba = Matchups_MAIN.plot_scatter(matchups_Lwn_0444p00_fq_ins_ba,matchups_Lwn_0444p00_fq_sat_ba,'444.0',path_out,prot_name,sensor_name,min_val=-0.50,max_val=3.50) 
 rmse_val_0497p00_ba, mean_abs_rel_diff_0497p00_ba, mean_rel_diff_0497p00_ba, r_sqr_0497p00_ba = Matchups_MAIN.plot_scatter(matchups_Lwn_0497p00_fq_ins_ba,matchups_Lwn_0497p00_fq_sat_ba,'497.0',path_out,prot_name,sensor_name,min_val= 0.00,max_val=4.00) 
 rmse_val_0560p00_ba, mean_abs_rel_diff_0560p00_ba, mean_rel_diff_0560p00_ba, r_sqr_0560p00_ba = Matchups_MAIN.plot_scatter(matchups_Lwn_0560p00_fq_ins_ba,matchups_Lwn_0560p00_fq_sat_ba,'560.0',path_out,prot_name,sensor_name,min_val= 0.00,max_val=4.00) 
@@ -589,7 +603,7 @@ rmse_val_0664p00_ba, mean_abs_rel_diff_0664p00_ba, mean_rel_diff_0664p00_ba, r_s
 
 #%% plots  
 prot_name = 'pa' 
-sensor_name = 'S2A'
+sensor_name = 'MSI'
 rmse_val_0444p00_pa, mean_abs_rel_diff_0444p00_pa, mean_rel_diff_0444p00_pa, r_sqr_0444p00_pa = Matchups_MAIN.plot_scatter(matchups_Lwn_0444p00_fq_ins_pa,matchups_Lwn_0444p00_fq_sat_pa,'444.0',path_out,prot_name,sensor_name,min_val=-0.50,max_val=3.50) 
 rmse_val_0497p00_pa, mean_abs_rel_diff_0497p00_pa, mean_rel_diff_0497p00_pa, r_sqr_0497p00_pa = Matchups_MAIN.plot_scatter(matchups_Lwn_0497p00_fq_ins_pa,matchups_Lwn_0497p00_fq_sat_pa,'497.0',path_out,prot_name,sensor_name,min_val= 0.00,max_val=4.00) 
 rmse_val_0560p00_pa, mean_abs_rel_diff_0560p00_pa, mean_rel_diff_0560p00_pa, r_sqr_0560p00_pa = Matchups_MAIN.plot_scatter(matchups_Lwn_0560p00_fq_ins_pa,matchups_Lwn_0560p00_fq_sat_pa,'560.0',path_out,prot_name,sensor_name,min_val= 0.00,max_val=4.00) 
@@ -597,7 +611,7 @@ rmse_val_0664p00_pa, mean_abs_rel_diff_0664p00_pa, mean_rel_diff_0664p00_pa, r_s
 
 #%% plots  
 prot_name = 'va' 
-sensor_name = 'S2A'
+sensor_name = 'MSI'
 rmse_val_0444p00_va, mean_abs_rel_diff_0444p00_va, mean_rel_diff_0444p00_va, r_sqr_0444p00_va = Matchups_MAIN.plot_scatter(matchups_Lwn_0444p00_fq_ins_va,matchups_Lwn_0444p00_fq_sat_va,'444.0',path_out,prot_name,sensor_name,min_val=-0.50,max_val=3.50) 
 rmse_val_0497p00_va, mean_abs_rel_diff_0497p00_va, mean_rel_diff_0497p00_va, r_sqr_0497p00_va = Matchups_MAIN.plot_scatter(matchups_Lwn_0497p00_fq_ins_va,matchups_Lwn_0497p00_fq_sat_va,'497.0',path_out,prot_name,sensor_name,min_val= 0.00,max_val=4.00) 
 rmse_val_0560p00_va, mean_abs_rel_diff_0560p00_va, mean_rel_diff_0560p00_va, r_sqr_0560p00_va = Matchups_MAIN.plot_scatter(matchups_Lwn_0560p00_fq_ins_va,matchups_Lwn_0560p00_fq_sat_va,'560.0',path_out,prot_name,sensor_name,min_val= 0.00,max_val=4.00) 
@@ -615,7 +629,7 @@ plt.plot(wv,rmse_pa,'-o')
 plt.plot(wv,rmse_va,'-o')
 plt.xlabel('Wavelength [nm]')
 plt.ylabel('rmse')
-plt.legend(['Bailey and Werdell','Pahlevan','Vanhellemont'])
+plt.legend(['Bailey and Werdell (2006)','Ilori, Pahlevan and Knudby (2019)','Vanhellemont (2019)'])
 plt.show()
 
 ofname = 'S2A_rmse.pdf'
@@ -636,7 +650,7 @@ plt.plot(wv,mean_abs_rel_diff_pa,'-o')
 plt.plot(wv,mean_abs_rel_diff_va,'-o')
 plt.xlabel('Wavelength [nm]')
 plt.ylabel('MAPD [%]')
-plt.legend(['Bailey and Werdell','Pahlevan','Vanhellemont'])
+# plt.legend(['Bailey and Werdell','Pahlevan','Vanhellemont'])
 plt.show()
 
 ofname = 'S2A_mean_abs_rel_diff.pdf'
@@ -657,7 +671,7 @@ plt.plot(wv,mean_rel_diff_pa,'-o')
 plt.plot(wv,mean_rel_diff_va,'-o')
 plt.xlabel('Wavelength [nm]')
 plt.ylabel('MPD [%]')
-plt.legend(['Bailey and Werdell','Pahlevan','Vanhellemont'])
+# plt.legend(['Bailey and Werdell','Pahlevan','Vanhellemont'])
 plt.show()    
 
 ofname = 'S2A_mean_rel_diff.pdf'
@@ -678,7 +692,7 @@ plt.plot(wv,r_sqr_pa,'-o')
 plt.plot(wv,r_sqr_va,'-o')
 plt.xlabel('Wavelength [nm]')
 plt.ylabel('$r^2$')
-plt.legend(['Bailey and Werdell','Pahlevan','Vanhellemont'])
+# plt.legend(['Bailey and Werdell','Pahlevan','Vanhellemont'])
 plt.show()    
 
 ofname = 'S2A_r_sqr.pdf'
