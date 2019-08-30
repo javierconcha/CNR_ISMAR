@@ -158,8 +158,14 @@ def plot_scatter(x,y,str1,path_out,prot_name,sensor_name,min_val,max_val):
         #  the mean of absolute (unsigned) percent differences
     mean_abs_rel_diff = np.mean(np.abs(rel_diff))
     
-    str0 = '{}\nN={:d}\nrmse={:,.2f}\nMAPD={:,.0f}%\nMPD={:,.0f}%\n$r^2$={:,.2f}'\
-    .format(str1,\
+    str2 = str1
+    
+    if str1[-2:]=='.0':
+        str2 = str2[:-2]
+        
+    
+    str0 = '{}nm\nN={:d}\nrmse={:,.2f}\nMAPD={:,.0f}%\nMPD={:,.0f}%\n$r^2$={:,.2f}'\
+    .format(str2,\
             N,\
             rmse_val,\
             mean_abs_rel_diff,\

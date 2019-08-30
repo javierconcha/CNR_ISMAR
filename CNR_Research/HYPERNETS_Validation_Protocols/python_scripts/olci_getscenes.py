@@ -34,6 +34,8 @@ import datetime
 main_path = '/Users/javier.concha/Desktop/Javier/2019_Roma/CNR_Research/HYPERNETS_Validation_Protocols/python_scripts/'
 #%%
 def olci_get(date,lat1,lat2,lon1,lon2):
+    
+    
     if (date-datetime.datetime(2017,11,29)).total_seconds()<0:
         site="codarep.eumetsat.int"
     else:
@@ -51,7 +53,12 @@ def olci_get(date,lat1,lat2,lon1,lon2):
     location_str = lon1_str+','+lat1_str+':'+lon2_str+','+lat2_str #"12.0,44.0:14.0,46.00"
     print(location_str)
     
-    csv_f = main_path+'/csv_file/'+datestart.replace('-','')+"_"+dateend.replace('-','')+'.csv'
+    csv_f = main_path+'csv_file/'+datestart.replace('-','')+"_"+dateend.replace('-','')+'.csv'
+    
+    print('csv_f:')
+    print(csv_f)
+    
+    os.system('rm -r /Users/javier.concha/dhusget_tmp/')
     
     cmd = './dhusget.sh -u jaconcha -p a1b2c3d4 '+\
     '-d '+site+' -m Sentinel-3 -i OLCI -T OL_2_WFR___ '+\
@@ -63,24 +70,25 @@ def olci_get(date,lat1,lat2,lon1,lon2):
     print(cmd)
     
     os.system(cmd)
-#    os.system( "-d "+site+" -m Sentinel-3 -i OLCI -T OL_2_WFR___ -S "+\
-#              datestart+"T00:00:00Z -E "+dateend+"T23:59:59Z -c "+location_str+" -F"+"'timeliness:"+\
-#    '"Non Time Critical"'+"'"+" -C /Users/javier.concha/Desktop/Javier/2019_Roma/CNR_Research/HYPERNETS_Validation_Protocols/python_scripts/csv_file/"+
-#    datestart.replace('-','')+"_"+dateend.replace('-','')+".csv -L /Users/javier.concha/dhusget_tmp/")
-    #os.system('rm '+'/home/Marco.Bracaglia/progetti/VGOCS/OLCI/xml_file/'+datestart.replace(':','')+"_"+dateend.replace(':','')+'.xml')
 
     file_list = []
-    i = 0
+#    i = 0
     with open(csv_f) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         for row in csv_reader:
-            if i==0 or i%2==0:
-                file_olci=row[0]
-                file_list.append(file_olci)
-                i+=1
+            if row[0][0:3] == 'S3A':
+                file_list.append(row[0])
+                
+    
+#            if i==0 or i%2==0:
+#                file_olci=row[0]
+#                file_list.append(file_olci)
+#                i+=1
 #    print (file_list)
 #    os.system('rm '+csv_f)
     os.system('rm -r /Users/javier.concha/dhusget_tmp/')
+    
+    
 
     return file_list    
 
