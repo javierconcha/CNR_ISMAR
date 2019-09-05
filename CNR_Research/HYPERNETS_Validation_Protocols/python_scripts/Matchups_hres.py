@@ -50,13 +50,13 @@ import Matchups_MAIN
 import create_extract
 
 def get_lat_lon_ins(station_name):
-    if station_name == 'Galata_Platform':
+    if station_name == 'Galata_Platform': # Black Sea
         Latitude=43.044624
         Longitude=28.193190
-    if station_name == 'Gustav_Dalen_Tower':
+    if station_name == 'Gustav_Dalen_Tower': # Baltic Sea
         Latitude=58.594170
         Longitude=17.466830
-    if station_name == 'Helsinki_Lighthouse':
+    if station_name == 'Helsinki_Lighthouse': # Baltic Sea
         Latitude=59.948970
         Longitude=24.926360
     if station_name == 'Lake_Erie':
@@ -77,13 +77,13 @@ def get_lat_lon_ins(station_name):
     if station_name == 'USC_SEAPRISM_2':
         Latitude=33.563710
         Longitude=-118.117820
-    if station_name == 'Venise':
+    if station_name == 'Venise': # Adriatic Sea
         Latitude=45.313900
         Longitude=12.508300
     if station_name == 'WaveCIS_Site_CSI_6':
         Latitude=28.866667
         Longitude=-90.483333
-    if station_name == 'Gloria':
+    if station_name == 'Gloria': # Black Sea
         Latitude=44.599970
         Longitude=29.359670
     return Latitude, Longitude
