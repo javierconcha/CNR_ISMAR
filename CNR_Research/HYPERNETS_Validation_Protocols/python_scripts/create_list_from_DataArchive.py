@@ -28,8 +28,7 @@ import Matchups_hres
 import subprocess
 import sys
 import zipfile
-
-host = 'mac' # 'mac' or 'vm'
+import argparse
 
 def contain_location(path_source,in_situ_lat,in_situ_lon):
     ## open netcdf file  
@@ -52,24 +51,33 @@ def contain_location(path_source,in_situ_lat,in_situ_lon):
     return contain_flag
         
 #%%
-print('Main Code!')
 def main():
     """business logic for when running this module as the primary one!"""
     print('Main Code!')
     
-    if host == 'vm': 
+    if sys.platform == 'linux': 
         path_main = '/home/Javier.Concha/Val_Prot/codes/'
         path_source = '/DataArchive/OC/OLCI/sources/'     
-    elif host == 'mac':
+    elif sys.platform == 'darwin':
         path_main = '/Users/javier.concha/Desktop/Javier/2019_ROMA/CNR_Research/HYPERNETS_Validation_Protocols/python_scripts/'
         path_source = os.path.join(path_main,'data/source/')
     else:
         print('Error: host flag is not either mac or vm')
    
+    station_list = ['Venise','Galata_Platform','Gloria','Helsinki_Lighthouse','Gustav_Dalen_Tower']
+    parser = argparse.ArgumentParser(description="This is example of using args")
+    parser.add_argument("-s", "--station" , help="The Aeronet OC station", type=str,choices=station_list)
+    args = parser.parse_args()
+    
+    if args.station:
+        station_name  = args.station
+    else:
+        station_name = 'Venise'
+    print('The station name is: '+station_name)    
+    
     # open in situ data for specific AOC site
     path = os.path.join(path_main,'netcdf_file')
     
-    station_name = 'Venise'
     if station_name == 'Venise':
         filename = 'Venise_20_201601001_201909011.nc'
     elif station_name == 'Galata_Platform':
