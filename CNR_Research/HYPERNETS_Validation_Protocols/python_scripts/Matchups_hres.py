@@ -53,39 +53,41 @@ def get_lat_lon_ins(station_name):
     if station_name == 'Galata_Platform': # Black Sea
         Latitude=43.044624
         Longitude=28.193190
-    if station_name == 'Gustav_Dalen_Tower': # Baltic Sea
+    elif station_name == 'Gustav_Dalen_Tower': # Baltic Sea
         Latitude=58.594170
         Longitude=17.466830
-    if station_name == 'Helsinki_Lighthouse': # Baltic Sea
+    elif station_name == 'Helsinki_Lighthouse': # Baltic Sea
         Latitude=59.948970
         Longitude=24.926360
-    if station_name == 'Lake_Erie':
+    elif station_name == 'Lake_Erie':
         Latitude=41.825600
         Longitude=-83.193600
-    if station_name == 'LISCO':
+    elif station_name == 'LISCO':
         Latitude=40.954517
         Longitude=-73.341767
-    if station_name == 'Palgrunden':
+    elif station_name == 'Palgrunden':
         Latitude=58.755333
         Longitude=13.151500
-    if station_name == 'Thornton_C-power':
+    elif station_name == 'Thornton_C-power':
         Latitude=51.532500
         Longitude=2.955278
-    if station_name == 'USC_SEAPRISM':
+    elif station_name == 'USC_SEAPRISM':
         Latitude=33.563710
         Longitude=-118.117820
-    if station_name == 'USC_SEAPRISM_2':
+    elif station_name == 'USC_SEAPRISM_2':
         Latitude=33.563710
         Longitude=-118.117820
-    if station_name == 'Venise': # Adriatic Sea
+    elif station_name == 'Venise': # Adriatic Sea
         Latitude=45.313900
         Longitude=12.508300
-    if station_name == 'WaveCIS_Site_CSI_6':
+    elif station_name == 'WaveCIS_Site_CSI_6':
         Latitude=28.866667
         Longitude=-90.483333
-    if station_name == 'Gloria': # Black Sea
+    elif station_name == 'Gloria': # Black Sea
         Latitude=44.599970
         Longitude=29.359670
+    else:
+        print('ERROR: station not found: '+station_name)
     return Latitude, Longitude
 
 

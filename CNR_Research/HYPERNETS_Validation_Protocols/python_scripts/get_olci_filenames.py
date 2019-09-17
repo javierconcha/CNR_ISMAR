@@ -34,6 +34,7 @@ from scipy import stats
 
 import olci_getscenes
 import Matchups_hres
+import argparse
 
 path_main = '/Users/javier.concha/Desktop/Javier/2019_Roma/CNR_Research/HYPERNETS_Validation_Protocols/python_scripts/'
 
@@ -42,7 +43,16 @@ print('Main Code!')
 path_out = os.path.join(path_main,'Figures')
 path = os.path.join(path_main,'netcdf_file')
 
-station_name = 'Gustav_Dalen_Tower'
+station_list = ['Venise','Galata_Platform','Gloria','Helsinki_Lighthouse','Gustav_Dalen_Tower']
+parser = argparse.ArgumentParser(description="Get filenames from EUMETSAT servers based on the in situ data in netcdf file.")
+parser.add_argument("-s", "--station" , help="The Aeronet OC station", type=str,choices=station_list)
+args = parser.parse_args()
+
+if args.station:
+    station_name  = args.station
+else:
+    station_name = 'Venise'
+print('The station name is: '+station_name)   
 
 if station_name == 'Venise':
     filename = 'Venise_20_201604026_201908031.nc'

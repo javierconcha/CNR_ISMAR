@@ -2,7 +2,7 @@
 # coding: utf-8
 """
 Created on Wed Sep  4 18:38:15 2019
-
+Create list of OLCI WFR files from DataArchive in the virtual machine.
 @author: javier.concha
 """
 """
@@ -65,7 +65,7 @@ def main():
         print('Error: host flag is not either mac or vm')
    
     station_list = ['Venise','Galata_Platform','Gloria','Helsinki_Lighthouse','Gustav_Dalen_Tower']
-    parser = argparse.ArgumentParser(description="This is example of using args")
+    parser = argparse.ArgumentParser(description="Create list of OLCI WFR files from DataArchive in the virtual machine.")
     parser.add_argument("-s", "--station" , help="The Aeronet OC station", type=str,choices=station_list)
     args = parser.parse_args()
     
