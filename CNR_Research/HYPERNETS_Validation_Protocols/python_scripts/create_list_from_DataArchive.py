@@ -23,12 +23,12 @@ import os
 from netCDF4 import Dataset
 import numpy as np
 import datetime
-#import olci_getscenes
-import Matchups_hres
 import subprocess
 import sys
 import zipfile
 import argparse
+
+import common_functions
 
 def contain_location(path_source,in_situ_lat,in_situ_lon):
     ## open netcdf file  
@@ -79,15 +79,15 @@ def main():
     path = os.path.join(path_main,'netcdf_file')
     
     if station_name == 'Venise':
-        filename = 'Venise_20_201601001_201909011.nc'
+        filename = 'Venise_20V3_20160101_20190918.nc'
     elif station_name == 'Galata_Platform':
-        filename = 'Galata_Platform_20_201601001_201909011.nc'
+        filename = 'Galata_Platform_20V3_20160101_20190918.nc'
     elif station_name == 'Gloria':
-        filename = 'Gloria_20_201601001_201909011.nc'
+        filename = 'Gloria_20V3_20160101_20190918.nc'
     elif station_name == 'Helsinki_Lighthouse':
-        filename = 'Helsinki_Lighthouse_20_201601001_201909011.nc'
+        filename = 'Helsinki_Lighthouse_20V3_20160101_20190918.nc'
     elif station_name == 'Gustav_Dalen_Tower':
-        filename = 'Gustav_Dalen_Tower_20_201601001_201909011.nc'
+        filename = 'Gustav_Dalen_Tower_20V3_20160101_20190918.nc'
     
     filename_insitu = os.path.join(path,filename)
     if not os.path.exists(filename_insitu):
@@ -106,9 +106,12 @@ def main():
     
     doy_vec = np.array([int(float(Julian_day[i])) for i in range(0,len(Time))])
     
-    lat_ins, lon_ins = Matchups_hres.get_lat_lon_ins(station_name)
+    lat_ins, lon_ins = common_functions.get_lat_lon_ins(station_name)
     
     f = open(path_main+'OLCI_list_'+filename.split('.')[0]+'.txt','a+')
+    
+    cmd = 'mkdir ./temp_'+station_name # create temp folder
+    (ls_status, ls_output) = subprocess.getstatusoutput(cmd)
     
     last_day = datetime.datetime(1990,1,1)
     
@@ -125,19 +128,19 @@ def main():
             
             # create list in txt file with file starting with "S3A_OL_2_WFR____"
             cmd = 'ls -1 '+\
-                path_source+str(int(year_vec[i]))+'/'+str(int(doy_vec[i]))+'/S3A_OL_2_WFR____*.zip > ./temp/temp_list.txt'
+                path_source+str(int(year_vec[i]))+'/'+str(int(doy_vec[i]))+'/S3A_OL_2_WFR____*.zip > ./temp_'+station_name+'/temp_list.txt'
     #        print(cmd)
             # New process, connected to the Python interpreter through pipes:
             prog = subprocess.Popen(cmd, shell=True,stderr=subprocess.PIPE)
             out, err = prog.communicate()
             if not err:
                 # iterate list
-                with open('./temp/temp_list.txt','r') as file:
+                with open('./temp_'+station_name+'/temp_list.txt','r') as file:
                     for line in file:                    
                         # unzip and adding exception handling
                         try:
                             zip = zipfile.ZipFile(line[:-1])
-                            zip.extractall('./temp')
+                            zip.extractall('./temp_'+station_name)
                             zip.close()
                         except IOError as e:
                             print("Unable to copy file. %s" % e)
@@ -149,7 +152,7 @@ def main():
                         else: # if ends in .zip
                             prod_name = line[:-1].split('.')[-2].split('/')[-1]    
                         
-                        path_source2 = './temp/'+prod_name+'.SEN3/'
+                        path_source2 = './temp_'+station_name+'/'+prod_name+'.SEN3/'
                         print(path_source2)
                         
                         # check if file include lat lon
@@ -161,13 +164,17 @@ def main():
                             print('Product DOES NOT contains location!')
                     
                         # delete files
-                        cmd = 'rm -r ./temp/*.SEN3' # remove .SEN* folder
+                        cmd = 'rm -r ./temp_'+station_name+'/*.SEN3' # remove .SEN* folder
                         (ls_status, ls_output) = subprocess.getstatusoutput(cmd)
-                        cmd = 'rm ./temp/temp_list.txt'
+                        cmd = 'rm ./temp_'+station_name+'/temp_list.txt'
                         (ls_status, ls_output) = subprocess.getstatusoutput(cmd)
-                
-    f.close()  
 
+    cmd = 'rm -r ./temp_'+station_name
+    (ls_status, ls_output) = subprocess.getstatusoutput(cmd)
+
+    f.close()  
+    cmd = 'cat '+path_main+'OLCI_list_'+filename.split('.')[0]+'.txt|sort|uniq > '+path_main+'OLCI_list_'+filename.split('.')[0]+'_uniq.txt'
+    (ls_status, ls_output) = subprocess.getstatusoutput(cmd)
 #%%
 if __name__ == '__main__':
     main()        

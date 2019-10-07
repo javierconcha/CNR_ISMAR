@@ -1,8 +1,34 @@
 # -*- coding: utf-8 -*-
 """
 Created on Mon Nov 20 16:10:50 2017
-
 @author: Marco
+Modified by Javier A. Concha on September 18 2019
+"""
+"""
+Created on Mon Nov 20 16:10:50 2017
+Function to create a netcdf file with the in situ data from AERONET-OC using V3.
+Example how to call the function:
+    python excel_to_nc_AquaAlta_merge_newsite.py -sd 2016 01 01 -ed 2016 12 31 -s Venise
+    
+Note: The following subfolder should be created in advance:
+    - temp_file_15/
+    - temp_file_20/
+    - excel_file/
+    - netcdf_file/
+"""
+"""
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import xlrd
