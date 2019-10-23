@@ -25,6 +25,8 @@ import numpy as np
 import numpy.ma as ma
 import subprocess
 import matplotlib.pyplot as plt
+plt.rc('xtick',labelsize=12)
+plt.rc('ytick',labelsize=12)
 import sys
 
 from datetime import datetime
@@ -124,20 +126,32 @@ def get_F0(wl,path_main):
 def rmse(predictions, targets):
     return np.sqrt(((np.asarray(predictions) - np.asarray(targets)) ** 2).mean())       
 #%%
-def plot_scatter(x,y,str1,path_out,prot_name,sensor_name,station_vec,min_val,max_val):           
+def plot_scatter(x,y,str1,path_out,prot_name,sensor_name,station_vec,min_val,max_val):  
+
+    count_Venise = 0
+    count_Gloria = 0
+    count_Galata_Platform = 0
+    count_Helsinki_Lighthouse = 0
+    count_Gustav_Dalen_Tower = 0
+
     plt.figure()
     #plt.errorbar(x, y, xerr=e_x, yerr=e_y, fmt='or')
     for cnt, line in enumerate(y):
         if station_vec[cnt] == 'Venise':
             mrk_style = 'or'
+            count_Venise = count_Venise+1
         elif station_vec[cnt] == 'Gloria':
             mrk_style = 'og'
+            count_Gloria = count_Gloria+1
         elif station_vec[cnt] == 'Galata_Platform':
             mrk_style = 'ob'
+            count_Galata_Platform = count_Galata_Platform+1
         elif station_vec[cnt] == 'Helsinki_Lighthouse':
             mrk_style = 'om'
+            count_Helsinki_Lighthouse = count_Helsinki_Lighthouse+1
         elif station_vec[cnt] == 'Gustav_Dalen_Tower':
             mrk_style = 'oc'
+            count_Gustav_Dalen_Tower = count_Gustav_Dalen_Tower+1
         plt.plot(x[cnt], y[cnt],mrk_style)
     plt.axis([min_val, max_val, min_val, max_val])
     plt.gca().set_aspect('equal', adjustable='box')
@@ -151,8 +165,8 @@ def plot_scatter(x,y,str1,path_out,prot_name,sensor_name,station_vec,min_val,max
     line = slope*np.array([xmin,xmax],dtype=np.float32)+intercept
     plt.plot([xmin,xmax], line)
     # plt.legend(['1:1','Regression Line'])
-    plt.xlabel('$L^{PRS}_{WN}$')
-    plt.ylabel('$L^{'+sensor_name+'}_{WN}$')
+    plt.xlabel('$L^{PRS}_{WN}$',fontsize=12)
+    plt.ylabel('$L^{'+sensor_name+'}_{WN}$',fontsize=12)
     if (xmin<0 or ymin<0):
         plt.plot([xmin,xmax],[0, 0],'--k',linewidth = 0.7)  
     
@@ -185,11 +199,31 @@ def plot_scatter(x,y,str1,path_out,prot_name,sensor_name,station_vec,min_val,max
         
     plt.text(0.05, 0.65, str0,horizontalalignment='left', fontsize=12,transform=plt.gca().transAxes)
     
-    ofname = 'scatter_matchups_'+str1.replace(".","p")+'_'+sensor_name+'_'+prot_name+'.pdf'
+    ofname = sensor_name+'_scatter_matchups_'+str1.replace(".","p")+'_'+prot_name+'.pdf'
     ofname = os.path.join(path_out,'source',ofname)
     
     plt.savefig(ofname, dpi=300)
-    
+
+    # latex table
+    if str1 == '412.5':
+        print('proto & nm & N & rmse & MAPD & MPD & $r^2$\n')
+    str_table = '{} & {} & {:d} & {:,.2f} & {:,.0f} & {:,.0f} & {:,.2f}\\\\'\
+    .format(prot_name,\
+            str2,\
+            N,\
+            rmse_val,\
+            mean_abs_rel_diff,\
+            mean_rel_diff,\
+            r_value**2)
+
+    print(str_table)
+ 
+    print('count_Venise: '+str(count_Venise))
+    print('count_Gloria: '+str(count_Gloria))
+    print('count_Galata_Platform: '+str(count_Galata_Platform))
+    print('count_Helsinki_Lighthouse: '+str(count_Helsinki_Lighthouse))
+    print('count_Gustav_Dalen_Tower: '+str(count_Gustav_Dalen_Tower))
+
     # plt.show()   
     return rmse_val, mean_abs_rel_diff, mean_rel_diff, r_value**2
 #%%
@@ -285,16 +319,16 @@ def plot_both_methods(vl_str,notation_flag,path_out,min_val,max_val):
             elif ins_ba_station[cnt] == 'Gustav_Dalen_Tower':
                 mrk_style = '+c'
             plt.plot(sat_ba_stop_time[cnt], sat_ba[cnt],mrk_style)
-    plt.xlabel('Time')
+    plt.xlabel('Time',fontsize=12)
     sensor_name = 'OLCI'
-    plt.ylabel('$L^{'+sensor_name+'}_{WN}$')
+    plt.ylabel('$L^{'+sensor_name+'}_{WN}$',fontsize=12)
     # zero line
     xmin, xmax = plt.gca().get_xlim()
     plt.plot([xmin,xmax],[0, 0],'--k',linewidth = 0.7)  
-    plt.text(0.05, 0.95, str3+'nm',horizontalalignment='left', fontsize=12,transform=plt.gca().transAxes)
+    plt.text(0.05, 0.95, str3+'nm',horizontalalignment='left',fontsize=12,transform=plt.gca().transAxes)
 
     # save fig
-    ofname = 'timeseries_diff_ba_zi_'+vl_str.replace(".","p")+'.pdf'
+    ofname = sensor_name+'_timeseries_diff_ba_zi_'+vl_str.replace(".","p")+'.pdf'
     ofname = os.path.join(path_out,'source',ofname)
     plt.savefig(ofname, dpi=300)
 
@@ -308,9 +342,9 @@ def plot_both_methods(vl_str,notation_flag,path_out,min_val,max_val):
     x0, x1 = ax1.get_xlim()
     ax1.set_xlim([x0,x0+1*(x1-x0)])
 
-    ax1.set_ylabel('Frequency')
+    ax1.set_ylabel('Frequency',fontsize=12)
 
-    str1 = 'ZMB18\nmin: {:f}\nmax: {:f}\nstd: {:f}\nmedian: {:f}\nmean: {:f}\nN: {:,.0f}'\
+    str1 = 'ZMB18\nmin: {:,.2f}\nmax: {:,.2f}\nstd: {:,.2f}\nmedian: {:,.2f}\nmean: {:,.2f}\nN: {:,.0f}'\
     .format(np.nanmin(sat_zi),
             np.nanmax(sat_zi),
             np.nanstd(sat_zi),
@@ -318,7 +352,7 @@ def plot_both_methods(vl_str,notation_flag,path_out,min_val,max_val):
             np.nanmean(sat_zi),
             len(sat_zi))
 
-    str2 = 'BW06\nmin: {:f}\nmax: {:f}\nstd: {:f}\nmedian: {:f}\nmean: {:f}\nN: {:,.0f}'\
+    str2 = 'BW06\nmin: {:,.2f}\nmax: {:,.2f}\nstd: {:,.2f}\nmedian: {:,.2f}\nmean: {:,.2f}\nN: {:,.0f}'\
     .format(np.nanmin(sat_ba),
             np.nanmax(sat_ba),
             np.nanstd(sat_ba),
@@ -333,14 +367,36 @@ def plot_both_methods(vl_str,notation_flag,path_out,min_val,max_val):
     ax1.text(xpos,bottom+0.55*(top-bottom), str1, fontsize=12,color='red')
     ax1.text(xpos,bottom+0.15*(top-bottom), str2, fontsize=12,color='black')
 
-    fig.text(0.5,0.04,'$L^{'+sensor_name+'}_{WN}$',ha='center')
+    fig.text(0.5,0.01,'$L^{'+sensor_name+'}_{WN}$',ha='center',fontsize=12)
 
     # save fig
-    ofname = 'hist_ba_zi_'+vl_str.replace(".","p")+'.pdf'
+    ofname = sensor_name+'_hist_ba_zi_'+vl_str.replace(".","p")+'.pdf'
     ofname = os.path.join(path_out,'source',ofname)
     plt.savefig(ofname, dpi=300)
 
     plt.show()
+
+    #latex table
+    if vl_str == '412.5':
+        print('proto & nm & min & max & std & median & mean & N\\\\')
+    str_table = 'ZMB18 & {} & {:,.2f} & {:,.2f} & {:,.2f} & {:,.2f} & {:,.2f} & {:,.0f}\\\\'\
+    .format(vl_str,\
+            np.nanmin(sat_zi),
+            np.nanmax(sat_zi),
+            np.nanstd(sat_zi),
+            np.nanmedian(sat_zi),
+            np.nanmean(sat_zi),
+            len(sat_zi))
+    print(str_table)
+    str_table = 'BW06 & {} & {:,.2f} & {:,.2f} & {:,.2f} & {:,.2f} & {:,.2f} & {:,.0f}\\\\'\
+    .format(vl_str,\
+            np.nanmin(sat_ba),
+            np.nanmax(sat_ba),
+            np.nanstd(sat_ba),
+            np.nanmedian(sat_ba),
+            np.nanmean(sat_ba),
+            len(sat_ba))
+    print(str_table)
     
     # histogram of the difference
     kwargs2 = dict(bins='auto', histtype='step')
@@ -349,9 +405,9 @@ def plot_both_methods(vl_str,notation_flag,path_out,min_val,max_val):
     x0, x1 = ax1.get_xlim()
     ax1.set_xlim([x0,x0+0.15*(x1-x0)])
 
-    ax1.set_ylabel('Frequency')
+    ax1.set_ylabel('Frequency',fontsize=12)
 
-    str1 = '{}nm\nmin: {:f}\nmax: {:f}\nstd: {:f}\nmedian: {:f}\nmean: {:f}\nN: {:,.0f}'\
+    str1 = '{}nm\nmin: {:,.2f}\nmax: {:,.2f}\nstd: {:,.2f}\nmedian: {:,.4f}\nmean: {:,.4f}\nN: {:,.0f}'\
     .format(str3,
             np.nanmin(diff),
             np.nanmax(diff),
@@ -360,12 +416,24 @@ def plot_both_methods(vl_str,notation_flag,path_out,min_val,max_val):
             np.nanmean(diff),
             len(diff))
 
+    if vl_str == '412.5':
+        print('diff & nm & min & max & std & median & mean & N\\\\')
+    str_table = 'diff & {} & {:,.2f} & {:,.2f} & {:,.2f} & {:,.4f} & {:,.4f} & {:,.0f}'\
+    .format(str3,
+            np.nanmin(diff),
+            np.nanmax(diff),
+            np.nanstd(diff),
+            np.nanmedian(diff),
+            np.nanmean(diff),
+            len(diff))
+    print(str_table)
+
     bottom, top = ax1.get_ylim()
     left, right = ax1.get_xlim()
     xpos = left+0.02*(right-left)
     ax1.text(xpos,bottom+0.60*(top-bottom), str1, fontsize=12)
 
-    fig.text(0.5,0.03,'Diff. $L^{'+sensor_name+'}_{WN}$',ha='center')
+    fig.text(0.5,0.01,'Diff. $L^{'+sensor_name+'}_{WN}$',ha='center',fontsize=12)
 
     ax2.hist(diff, **kwargs2)
     x0, x1 = ax2.get_xlim()
@@ -386,7 +454,7 @@ def plot_both_methods(vl_str,notation_flag,path_out,min_val,max_val):
     ax2.plot((- d,  d), (1 - d, 1 + d), **kwargs)  # bottom-right diagonal
 
     # save fig
-    ofname = 'hist_diff_ba_zi_'+vl_str.replace(".","p")+'.pdf'
+    ofname = sensor_name+'_hist_diff_ba_zi_'+vl_str.replace(".","p")+'.pdf'
     ofname = os.path.join(path_out,'source',ofname)
     plt.savefig(ofname, dpi=300)
     plt.show()
@@ -446,15 +514,15 @@ def plot_both_methods(vl_str,notation_flag,path_out,min_val,max_val):
     xmin, xmax = plt.gca().get_xlim()
     ymin, ymax = plt.gca().get_ylim()
     plt.plot([xmin,xmax],[ymin, ymax],'--k')        
-    plt.xlabel('$L^{PRS}_{WN}$')
+    plt.xlabel('$L^{PRS}_{WN}$',fontsize=12)
     sensor_name = 'OLCI'
-    plt.ylabel('$L^{'+sensor_name+'}_{WN}$')
+    plt.ylabel('$L^{'+sensor_name+'}_{WN}$',fontsize=12)
     if (xmin<0 or ymin<0):
         plt.plot([xmin,xmax],[0, 0],'--k',linewidth = 0.7)  
     plt.text(0.05, 0.95, str3+'nm',horizontalalignment='left', fontsize=12,transform=plt.gca().transAxes)
 
     # save fig
-    ofname = 'scatter_diff_ba_zi_'+vl_str.replace(".","p")+'.pdf'
+    ofname = sensor_name+'_scatter_diff_ba_zi_'+vl_str.replace(".","p")+'.pdf'
     ofname = os.path.join(path_out,'source',ofname)
     plt.savefig(ofname, dpi=300)
 
@@ -914,8 +982,8 @@ wv = [412.5,442.5,490.0,560.0,665.0]
 plt.figure()
 plt.plot(wv,rmse_zi,'-o')
 plt.plot(wv,rmse_ba,'-o')
-plt.xlabel('Wavelength [nm]')
-plt.ylabel('$rmse$')
+plt.xlabel('Wavelength [nm]',fontsize=12)
+plt.ylabel('$rmse$',fontsize=12)
 # plt.legend(['Zibordi, Mèlin and Berthon (2018)','Bailey and Werdell (2006)'])
 plt.show()
 
@@ -932,8 +1000,8 @@ wv = [412.5,442.5,490.0,560.0,665.0]
 plt.figure()
 plt.plot(wv,mean_abs_rel_diff_zi,'-o')
 plt.plot(wv,mean_abs_rel_diff_ba,'-o')
-plt.xlabel('Wavelength [nm]')
-plt.ylabel('MAPD [%]')
+plt.xlabel('Wavelength [nm]',fontsize=12)
+plt.ylabel('MAPD [%]',fontsize=12)
 # plt.legend(['Zibordi','Bailey and Werdell'])
 plt.show()
 
@@ -950,8 +1018,8 @@ wv = [412.5,442.5,490.0,560.0,665.0]
 plt.figure()
 plt.plot(wv,mean_rel_diff_zi,'-o')
 plt.plot(wv,mean_rel_diff_ba,'-o')
-plt.xlabel('Wavelength [nm]')
-plt.ylabel('MPD [%]')
+plt.xlabel('Wavelength [nm]',fontsize=12)
+plt.ylabel('MPD [%]',fontsize=12)
 # plt.legend(['Zibordi','Bailey and Werdell'])
 plt.show()    
 
@@ -968,9 +1036,9 @@ wv = [412.5,442.5,490.0,560.0,665.0]
 plt.figure()
 plt.plot(wv,r_sqr_zi,'-o')
 plt.plot(wv,r_sqr_ba,'-o')
-plt.xlabel('Wavelength [nm]')
-plt.ylabel('$r^2$')
-plt.legend(['Zibordi, Mèlin and Berthon (2018)','Bailey and Werdell (2006)'])
+plt.xlabel('Wavelength [nm]',fontsize=12)
+plt.ylabel('$r^2$',fontsize=12)
+plt.legend(['ZMB18','BW06'],fontsize=12)
 plt.show()    
 
 ofname = 'OLCI_r_sqr.pdf'

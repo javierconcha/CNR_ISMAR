@@ -44,10 +44,12 @@ from netCDF4 import Dataset
 import numpy as np
 import numpy.ma as ma
 import matplotlib.pyplot as plt
+plt.rc('xtick',labelsize=12)
+plt.rc('ytick',labelsize=12)
+from scipy import stats
+import common_functions
 
 sys.path.insert(0,'/Users/javier.concha/Desktop/Javier/2019_ROMA/CNR_Research/HYPERNETS_Validation_Protocols/python_scripts')
-import Matchups_MAIN
-import create_extract
 
 def get_lat_lon_ins(station_name):
     if station_name == 'Galata_Platform': # Black Sea
@@ -90,627 +92,1495 @@ def get_lat_lon_ins(station_name):
         print('ERROR: station not found: '+station_name)
     return Latitude, Longitude
 
+#%%
+def plot_scatter(x,y,str1,path_out,prot_name,sensor_name,station_vec,min_val,max_val):           
+
+    count_Venise = 0
+    count_Gloria = 0
+    count_Galata_Platform = 0
+    count_Helsinki_Lighthouse = 0
+    count_Gustav_Dalen_Tower = 0
+    count_Lake_Erie = 0
+    count_LISCO = 0
+    count_Palgrunden = 0
+    count_Thornton_C_power = 0
+    count_USC_SEAPRISM = 0
+    count_USC_SEAPRISM_2 = 0
+    count_WaveCIS_Site_CSI_6 = 0
+
+    plt.figure()
+    #plt.errorbar(x, y, xerr=e_x, yerr=e_y, fmt='or')
+    for cnt, line in enumerate(y):
+        if station_vec[cnt] == 'Venise': # Adriatic Sea
+            mrk_style = 'o'
+            mrk_color = 'r' 
+            count_Venise = count_Venise+1
+        elif station_vec[cnt] == 'Gloria': # Black Sea    
+            mrk_style = 'o'
+            mrk_color = 'g'       
+            count_Gloria = count_Gloria+1
+        elif station_vec[cnt] == 'Galata_Platform': # Black Sea
+            mrk_style = 'o'
+            mrk_color = 'b'
+            count_Galata_Platform = count_Galata_Platform+1
+        elif station_vec[cnt] == 'Helsinki_Lighthouse': # Baltic Sea
+            mrk_style = 'o'
+            mrk_color = 'm'            
+            count_Helsinki_Lighthouse = count_Helsinki_Lighthouse+1
+        elif station_vec[cnt] == 'Gustav_Dalen_Tower': # Baltic Sea
+            mrk_style = 'o'
+            mrk_color = 'c'
+            count_Gustav_Dalen_Tower = count_Gustav_Dalen_Tower+1
+        elif station_vec[cnt] == 'Lake_Erie':
+            mrk_style = 'o'
+            mrk_color = 'brown'
+            count_Lake_Erie = count_Lake_Erie+1
+        elif station_vec[cnt] == 'LISCO':
+            mrk_style = 'o'
+            mrk_color = 'lime'
+            count_LISCO = count_LISCO+1
+        elif station_vec[cnt] == 'Palgrunden':
+            mrk_style = 'o'
+            mrk_color = 'dodgerblue'
+            count_Palgrunden = count_Palgrunden+1
+        elif station_vec[cnt] == 'Thornton_C-power':
+            mrk_style = 'o'
+            mrk_color = 'crimson'
+            count_Thornton_C_power = count_Thornton_C_power+1
+        elif station_vec[cnt] == 'USC_SEAPRISM':
+            mrk_style = 'o'
+            mrk_color = 'chocolate'
+            count_USC_SEAPRISM = count_USC_SEAPRISM+1
+        elif station_vec[cnt] == 'USC_SEAPRISM_2':
+            mrk_style = 'o'
+            mrk_color = 'darkviolet'
+            count_USC_SEAPRISM_2 = count_USC_SEAPRISM_2+1
+        elif station_vec[cnt] == 'WaveCIS_Site_CSI_6':
+            mrk_style = 'o'
+            mrk_color = 'turquoise'  
+            count_WaveCIS_Site_CSI_6 = count_WaveCIS_Site_CSI_6+1
+
+        plt.plot(x[cnt], y[cnt],marker=mrk_style,color=mrk_color)
+    plt.axis([min_val, max_val, min_val, max_val])
+    plt.gca().set_aspect('equal', adjustable='box')
+    # plot 1:1 line
+    xmin, xmax = plt.gca().get_xlim()
+    ymin, ymax = plt.gca().get_ylim()
+    plt.plot([xmin,xmax],[ymin, ymax],'--k')
+    
+    # Generated linear fit
+    slope, intercept, r_value, p_value, std_err = stats.linregress(x,y)
+    line = slope*np.array([xmin,xmax],dtype=np.float32)+intercept
+    plt.plot([xmin,xmax], line)
+    # plt.legend(['1:1','Regression Line'])
+    plt.xlabel('$L^{PRS}_{WN}$',fontsize=12)
+    plt.ylabel('$L^{'+sensor_name+'}_{WN}$',fontsize=12)
+    if (xmin<0 or ymin<0):
+        plt.plot([xmin,xmax],[0, 0],'--k',linewidth = 0.7)  
+    
+    # stats
+    N = len(x)
+    rmse_val = common_functions.rmse(y,x)
+    ref_obs = np.asarray(x)
+    sat_obs = np.asarray(y)
+    
+        # the mean of relative (signed) percent differences
+    rel_diff = 100*(ref_obs-sat_obs)/ref_obs
+    mean_rel_diff = np.mean(rel_diff)
+        
+        #  the mean of absolute (unsigned) percent differences
+    mean_abs_rel_diff = np.mean(np.abs(rel_diff))
+    
+    str2 = str1
+    # to print without .0
+    if str1[-2:]=='.0':
+        str2 = str2[:-2]
+        
+    
+    str0 = '{}nm\nN={:d}\nrmse={:,.2f}\nMAPD={:,.0f}%\nMPD={:,.0f}%\n$r^2$={:,.2f}'\
+    .format(str2,\
+            N,\
+            rmse_val,\
+            mean_abs_rel_diff,\
+            mean_rel_diff,\
+            r_value**2)
+        
+    plt.text(0.05, 0.65, str0,horizontalalignment='left', fontsize=12,transform=plt.gca().transAxes)
+    
+    ofname = sensor_name+'_scatter_matchups_'+str1.replace(".","p")+'_'+prot_name+'.pdf'
+    ofname = os.path.join(path_out,'source',ofname)
+    
+    plt.savefig(ofname, dpi=300)
+    
+    # plt.show()   
+
+        # latex table
+    if str1 == '444.0':
+        print('proto & nm & N & rmse & MAPD & MPD & $r^2$')
+    str_table = '{} & {} & {:d} & {:,.2f} & {:,.0f} & {:,.0f} & {:,.2f}\\\\'\
+    .format(prot_name,\
+            str2,\
+            N,\
+            rmse_val,\
+            mean_abs_rel_diff,\
+            mean_rel_diff,\
+            r_value**2)
+
+    print(str_table)
+
+    print('count_Venise: '+str(count_Venise))
+    print('count_Gloria: '+str(count_Gloria))
+    print('count_Galata_Platform: '+str(count_Galata_Platform))
+    print('count_Helsinki_Lighthouse: '+str(count_Helsinki_Lighthouse))
+    print('count_Gustav_Dalen_Tower: '+str(count_Gustav_Dalen_Tower))
+    print('count_Lake_Erie: '+str(count_Lake_Erie))
+    print('count_LISCO: '+str(count_LISCO))
+    print('count_Palgrunden: '+str(count_Palgrunden))
+    print('count_Thornton_C_power: '+str(count_Thornton_C_power))
+    print('count_USC_SEAPRISM: '+str(count_USC_SEAPRISM))
+    print('count_USC_SEAPRISM_2: '+str(count_USC_SEAPRISM_2))
+    print('count_WaveCIS_Site_CSI_6: '+str(count_WaveCIS_Site_CSI_6))
+
+    return rmse_val, mean_abs_rel_diff, mean_rel_diff, r_value**2
+#%%
+def plot_all_methods(vl_str,notation_flag,path_out,min_val,max_val):
+    print('=====================================')
+    print(vl_str)
+    if vl_str == '444.0':
+        str0 = '0444p00'
+        str3 = '444'
+    elif vl_str == '497.0':
+        str0 = '0497p00'
+        str3 = '497'
+    elif vl_str == '560.0':
+        str0 = '0560p00'
+        str3 = '560'
+    elif vl_str == '664.0':
+        str0 = '0664p00'
+        str3 = '664'
+    
+    ins_ba_station = globals()['matchups_Lwn_'+str0+'_fq_ins_ba_station']
+    ins_pa_station = globals()['matchups_Lwn_'+str0+'_fq_ins_pa_station']
+    ins_va_station = globals()['matchups_Lwn_'+str0+'_fq_ins_va_station']
+
+    sat_ba_time = globals()['matchups_Lwn_'+str0+'_fq_sat_ba_time']
+    sat_pa_time = globals()['matchups_Lwn_'+str0+'_fq_sat_pa_time']
+    sat_va_time = globals()['matchups_Lwn_'+str0+'_fq_sat_va_time']
+
+
+    sat_ba = globals()['matchups_Lwn_'+str0+'_fq_sat_ba']
+    sat_pa = globals()['matchups_Lwn_'+str0+'_fq_sat_pa']
+    sat_va = globals()['matchups_Lwn_'+str0+'_fq_sat_va']
+
+    ins_ba = globals()['matchups_Lwn_'+str0+'_fq_ins_ba']
+    ins_pa = globals()['matchups_Lwn_'+str0+'_fq_ins_pa']
+    ins_va = globals()['matchups_Lwn_'+str0+'_fq_ins_va']
+
+    count_ba_pa = 0
+    count_ba_va = 0
+    count_pa_va = 0
+    count_all = 0
+    count_ba = len(ins_ba_station)
+    count_pa = len(ins_pa_station)
+    count_va = len(ins_va_station)
+
+    diff_ba_pa = []
+    diff_ba_va = []
+    diff_pa_va = []
+
+    count_Venise = 0
+    count_Gloria = 0
+    count_Galata_Platform = 0
+    count_Helsinki_Lighthouse = 0
+    count_Gustav_Dalen_Tower = 0
+    count_Lake_Erie = 0
+    count_LISCO = 0
+    count_Palgrunden = 0
+    count_Thornton_C_power = 0
+    count_USC_SEAPRISM = 0
+    count_USC_SEAPRISM_2 = 0
+    count_WaveCIS_Site_CSI_6 = 0
+    
+    sensor_name = 'MSI'
+
+#%   scatter plot with all methods
+    fig = plt.figure()
+    ax = fig.add_subplot(111) # to put two legends in the same plot
+    for cnt, line in enumerate(ins_ba_station):
+        if ins_ba_station[cnt] == 'Venise': # Adriatic Sea
+            mrk_style = 'x'
+            mrk_color = 'r' 
+            count_Venise = count_Venise+1
+        elif ins_ba_station[cnt] == 'Gloria': # Black Sea    
+            mrk_style = 'x'
+            mrk_color = 'g'       
+            count_Gloria = count_Gloria+1
+        elif ins_ba_station[cnt] == 'Galata_Platform': # Black Sea
+            mrk_style = 'x'
+            mrk_color = 'b'
+            count_Galata_Platform = count_Galata_Platform+1
+        elif ins_ba_station[cnt] == 'Helsinki_Lighthouse': # Baltic Sea
+            mrk_style = 'x'
+            mrk_color = 'm'            
+            count_Helsinki_Lighthouse = count_Helsinki_Lighthouse+1
+        elif ins_ba_station[cnt] == 'Gustav_Dalen_Tower': # Baltic Sea
+            mrk_style = 'x'
+            mrk_color = 'c'
+            count_Gustav_Dalen_Tower = count_Gustav_Dalen_Tower+1
+        elif ins_ba_station[cnt] == 'Lake_Erie':
+            mrk_style = 'x'
+            mrk_color = 'brown'
+            count_Lake_Erie = count_Lake_Erie+1
+        elif ins_ba_station[cnt] == 'LISCO':
+            mrk_style = 'x'
+            mrk_color = 'lime'
+            count_LISCO = count_LISCO+1
+        elif ins_ba_station[cnt] == 'Palgrunden':
+            mrk_style = 'x'
+            mrk_color = 'dodgerblue'
+            count_Palgrunden = count_Palgrunden+1
+        elif ins_ba_station[cnt] == 'Thornton_C-power':
+            mrk_style = 'x'
+            mrk_color = 'crimson'
+            count_Thornton_C_power = count_Thornton_C_power+1
+        elif ins_ba_station[cnt] == 'USC_SEAPRISM':
+            mrk_style = 'x'
+            mrk_color = 'chocolate'
+            count_USC_SEAPRISM = count_USC_SEAPRISM+1
+        elif ins_ba_station[cnt] == 'USC_SEAPRISM_2':
+            mrk_style = 'x'
+            mrk_color = 'darkviolet'
+            count_USC_SEAPRISM_2 = count_USC_SEAPRISM_2+1
+        elif ins_ba_station[cnt] == 'WaveCIS_Site_CSI_6':
+            mrk_style = 'x'
+            mrk_color = 'turquoise'  
+            count_WaveCIS_Site_CSI_6 = count_WaveCIS_Site_CSI_6+1
+        ax.plot(ins_ba[cnt], sat_ba[cnt],marker=mrk_style,color=mrk_color)
+
+        cond1 = sat_ba_time[cnt]==np.array(sat_pa_time) # same S2A/MSI file
+        cond2 = ins_ba_station[cnt]==np.array(ins_pa_station) # same stations for both methods
+        cond_ba_pa = cond1&cond2
+
+        cond1 = sat_ba_time[cnt]==np.array(sat_va_time) # same S2A/MSI file
+        cond2 = ins_ba_station[cnt]==np.array(ins_va_station) # same stations for both methods
+        cond_ba_va = cond1&cond2
+
+        # coincident mea ba and pa
+        idx=np.where(cond_ba_pa)
+        # print('=====================================')
+        # print(cnt)
+        if len(idx[0]) == 1:
+            count_ba_pa = count_ba_pa+1
+            ax.plot([ins_ba[cnt],ins_pa[idx[0][0]]],\
+                [sat_ba[cnt],sat_pa[idx[0][0]]],color=mrk_color)
+            diff_ba_pa.append(sat_ba[cnt]-sat_pa[idx[0][0]])
+
+        # coincident mea ba and va
+        idx2=np.where(cond_ba_va)
+        if len(idx2[0]) == 1:
+            count_ba_va = count_ba_va+1
+            ax.plot([ins_ba[cnt],ins_va[idx2[0][0]]],\
+                [sat_ba[cnt],sat_va[idx2[0][0]]],color=mrk_color)
+            diff_ba_va.append(sat_ba[cnt]-sat_va[idx2[0][0]]) 
+
+        if (len(idx[0]) == 1)&(len(idx2[0]) == 1): # matchup coincident to all methods
+            count_all = count_all+1
+                
+    for cnt, line in enumerate(ins_pa_station):
+        if ins_pa_station[cnt] == 'Venise': # Adriatic Sea
+            mrk_style = '+'
+            mrk_color = 'r' 
+            count_Venise = count_Venise+1
+        elif ins_pa_station[cnt] == 'Gloria': # Black Sea    
+            mrk_style = '+'
+            mrk_color = 'g'       
+            count_Gloria = count_Gloria+1
+        elif ins_pa_station[cnt] == 'Galata_Platform': # Black Sea
+            mrk_style = '+'
+            mrk_color = 'b'
+            count_Galata_Platform = count_Galata_Platform+1
+        elif ins_pa_station[cnt] == 'Helsinki_Lighthouse': # Baltic Sea
+            mrk_style = '+'
+            mrk_color = 'm'            
+            count_Helsinki_Lighthouse = count_Helsinki_Lighthouse+1
+        elif ins_pa_station[cnt] == 'Gustav_Dalen_Tower': # Baltic Sea
+            mrk_style = '+'
+            mrk_color = 'c'
+            count_Gustav_Dalen_Tower = count_Gustav_Dalen_Tower+1
+        elif ins_pa_station[cnt] == 'Lake_Erie':
+            mrk_style = '+'
+            mrk_color = 'brown'
+            count_Lake_Erie = count_Lake_Erie+1
+        elif ins_pa_station[cnt] == 'LISCO':
+            mrk_style = '+'
+            mrk_color = 'lime'
+            count_LISCO = count_LISCO+1
+        elif ins_pa_station[cnt] == 'Palgrunden':
+            mrk_style = '+'
+            mrk_color = 'dodgerblue'
+            count_Palgrunden = count_Palgrunden+1
+        elif ins_pa_station[cnt] == 'Thornton_C-power':
+            mrk_style = '+'
+            mrk_color = 'crimson'
+            count_Thornton_C_power = count_Thornton_C_power+1
+        elif ins_pa_station[cnt] == 'USC_SEAPRISM':
+            mrk_style = '+'
+            mrk_color = 'chocolate'
+            count_USC_SEAPRISM = count_USC_SEAPRISM+1
+        elif ins_pa_station[cnt] == 'USC_SEAPRISM_2':
+            mrk_style = '+'
+            mrk_color = 'darkviolet'
+            count_USC_SEAPRISM_2 = count_USC_SEAPRISM_2+1
+        elif ins_pa_station[cnt] == 'WaveCIS_Site_CSI_6':
+            mrk_style = '+'
+            mrk_color = 'turquoise'  
+            count_WaveCIS_Site_CSI_6 = count_WaveCIS_Site_CSI_6+1
+        ax.plot(ins_pa[cnt], sat_pa[cnt],marker=mrk_style,color=mrk_color)    
+
+        cond1 = sat_pa_time[cnt]==np.array(sat_va_time) # same S2A/MSI file
+        cond2 = ins_pa_station[cnt]==np.array(ins_va_station) # same stations for both methods
+        cond_pa_va = cond1&cond2
+
+        # coincident mea pa and va
+        idx3=np.where(cond_pa_va)
+        if len(idx3[0]) == 1:
+            count_pa_va = count_pa_va+1
+            ax.plot([ins_pa[cnt],ins_va[idx3[0][0]]],\
+                [sat_pa[cnt],sat_va[idx3[0][0]]],color=mrk_color)
+            diff_pa_va.append(sat_pa[cnt]-sat_va[idx3[0][0]]) 
+            
+    for cnt, line in enumerate(ins_va_station):
+        if ins_va_station[cnt] == 'Venise': # Adriatic Sea
+            mrk_style = 'o'
+            mrk_color = 'r' 
+            count_Venise = count_Venise+1
+        elif ins_va_station[cnt] == 'Gloria': # Black Sea    
+            mrk_style = 'o'
+            mrk_color = 'g'       
+            count_Gloria = count_Gloria+1
+        elif ins_va_station[cnt] == 'Galata_Platform': # Black Sea
+            mrk_style = 'o'
+            mrk_color = 'b'
+            count_Galata_Platform = count_Galata_Platform+1
+        elif ins_va_station[cnt] == 'Helsinki_Lighthouse': # Baltic Sea
+            mrk_style = 'o'
+            mrk_color = 'm'            
+            count_Helsinki_Lighthouse = count_Helsinki_Lighthouse+1
+        elif ins_va_station[cnt] == 'Gustav_Dalen_Tower': # Baltic Sea
+            mrk_style = 'o'
+            mrk_color = 'c'
+            count_Gustav_Dalen_Tower = count_Gustav_Dalen_Tower+1
+        elif ins_va_station[cnt] == 'Lake_Erie':
+            mrk_style = 'o'
+            mrk_color = 'brown'
+            count_Lake_Erie = count_Lake_Erie+1
+        elif ins_va_station[cnt] == 'LISCO':
+            mrk_style = 'o'
+            mrk_color = 'lime'
+            count_LISCO = count_LISCO+1
+        elif ins_va_station[cnt] == 'Palgrunden':
+            mrk_style = 'o'
+            mrk_color = 'dodgerblue'
+            count_Palgrunden = count_Palgrunden+1
+        elif ins_va_station[cnt] == 'Thornton_C-power':
+            mrk_style = 'o'
+            mrk_color = 'crimson'
+            count_Thornton_C_power = count_Thornton_C_power+1
+        elif ins_va_station[cnt] == 'USC_SEAPRISM':
+            mrk_style = 'o'
+            mrk_color = 'chocolate'
+            count_USC_SEAPRISM = count_USC_SEAPRISM+1
+        elif ins_va_station[cnt] == 'USC_SEAPRISM_2':
+            mrk_style = 'o'
+            mrk_color = 'darkviolet'
+            count_USC_SEAPRISM_2 = count_USC_SEAPRISM_2+1
+        elif ins_va_station[cnt] == 'WaveCIS_Site_CSI_6':
+            mrk_style = 'o'
+            mrk_color = 'turquoise'  
+            count_WaveCIS_Site_CSI_6 = count_WaveCIS_Site_CSI_6+1
+        ax.plot(ins_va[cnt], sat_va[cnt],marker=mrk_style,color=mrk_color,markerfacecolor='none')         
+
+    plt.axis([min_val, max_val, min_val, max_val])
+    plt.gca().set_aspect('equal', adjustable='box')
+    # plot 1:1 line
+    xmin, xmax = plt.gca().get_xlim()
+    ymin, ymax = plt.gca().get_ylim()
+    ax.plot([xmin,xmax],[ymin, ymax],'--k')        
+    plt.xlabel('$L^{PRS}_{WN}$')
+    plt.ylabel('$L^{'+sensor_name+'}_{WN}$')
+    if (xmin<0 or ymin<0):
+        ax.plot([xmin,xmax],[0, 0],'--k',linewidth = 0.7)  
+    plt.text(0.05, 0.95, str3+'nm',horizontalalignment='left', fontsize=12,transform=plt.gca().transAxes)
+
+    # save fig
+    ofname = sensor_name+'_scatter_diff_ba_pa_va_'+vl_str.replace(".","p")+'.pdf'
+    ofname = os.path.join(path_out,'source',ofname)
+    plt.savefig(ofname, dpi=300)
+
+    plt.show()    
+
+    # # time series with two methods
+    # plt.figure(figsize=(16,4))
+
+    # for cnt, line in enumerate(ins_ba_station):
+    #     if ins_ba_station[cnt] == 'Venise': # Adriatic Sea
+    #         mrk_style = 'x'
+    #         mrk_color = 'r' 
+    #     elif ins_ba_station[cnt] == 'Gloria': # Black Sea    
+    #         mrk_style = 'x'
+    #         mrk_color = 'g'       
+    #     elif ins_ba_station[cnt] == 'Galata_Platform': # Black Sea
+    #         mrk_style = 'x'
+    #         mrk_color = 'b'
+    #     elif ins_ba_station[cnt] == 'Helsinki_Lighthouse': # Baltic Sea
+    #         mrk_style = 'x'
+    #         mrk_color = 'm'            
+    #     elif ins_ba_station[cnt] == 'Gustav_Dalen_Tower': # Baltic Sea
+    #         mrk_style = 'x'
+    #         mrk_color = 'c'
+    #     elif ins_ba_station[cnt] == 'Lake_Erie':
+    #         mrk_style = 'x'
+    #         mrk_color = 'brown'
+    #     elif ins_ba_station[cnt] == 'LISCO':
+    #         mrk_style = 'x'
+    #         mrk_color = 'lime'
+    #     elif ins_ba_station[cnt] == 'Palgrunden':
+    #         mrk_style = 'x'
+    #         mrk_color = 'dodgerblue'
+    #     elif ins_ba_station[cnt] == 'Thornton_C-power':
+    #         mrk_style = 'x'
+    #         mrk_color = 'crimson'
+    #     elif ins_ba_station[cnt] == 'USC_SEAPRISM':
+    #         mrk_style = 'x'
+    #         mrk_color = 'chocolate'
+    #     elif ins_ba_station[cnt] == 'USC_SEAPRISM_2':
+    #         mrk_style = 'x'
+    #         mrk_color = 'darkviolet'
+    #     elif ins_ba_station[cnt] == 'WaveCIS_Site_CSI_6':
+    #         mrk_style = 'x'
+    #         mrk_color = 'turquoise'            
+                
+    #     cond1 = sat_ba_time[cnt]==np.array(sat_pa_time) # same S2A/MSI file
+    #     cond2 = ins_ba_station[cnt]==np.array(ins_pa_station) # same stations for both methods
+    #     cond_ba_pa = cond1&cond2
+
+    #     cond1 = sat_ba_time[cnt]==np.array(sat_va_time) # same S2A/MSI file
+    #     cond2 = ins_ba_station[cnt]==np.array(ins_va_station) # same stations for both methods
+    #     cond_ba_va = cond1&cond2
+
+    #     # coincident mea ba and pa
+    #     idx=np.where(cond_ba_pa)
+    #     # print('=====================================')
+    #     # print(cnt)
+    #     if len(idx[0]) == 1:
+    #         count_ba_pa = count_ba_pa+1
+    #         # print('There is coincident matchups in BW.')
+    #         # print(sat_zi_time[cnt])
+    #         # print(sat_ba_time[idx[0][0]])
+    #         # print(ins_zi_station[cnt])
+    #         # print(ins_ba_station[idx[0][0]])
+    #         plt.plot(sat_ba_time[cnt], sat_ba[cnt],marker=mrk_style,color=mrk_color)
+    #         plt.plot([sat_ba_time[cnt],sat_pa_time[idx[0][0]]],\
+    #             [sat_ba[cnt],sat_pa[idx[0][0]]],color=mrk_color)
+            
+    #     else:
+    #         # print(idx[0])
+    #         # print(sat_ba_time[cnt])
+    #         plt.plot(sat_ba_time[cnt], sat_ba[cnt],mrk_style)           
+                
+    # for cnt, line in enumerate(ins_pa_station):
+    #     if ins_pa_station[cnt] == 'Venise': # Adriatic Sea
+    #         mrk_style = '+'
+    #         mrk_color = 'r' 
+    #     elif ins_pa_station[cnt] == 'Gloria': # Black Sea    
+    #         mrk_style = '+'
+    #         mrk_color = 'g'       
+    #     elif ins_pa_station[cnt] == 'Galata_Platform': # Black Sea
+    #         mrk_style = '+'
+    #         mrk_color = 'b'
+    #     elif ins_pa_station[cnt] == 'Helsinki_Lighthouse': # Baltic Sea
+    #         mrk_style = '+'
+    #         mrk_color = 'm'            
+    #     elif ins_pa_station[cnt] == 'Gustav_Dalen_Tower': # Baltic Sea
+    #         mrk_style = '+'
+    #         mrk_color = 'c'
+    #     elif ins_pa_station[cnt] == 'Lake_Erie':
+    #         mrk_style = '+'
+    #         mrk_color = 'brown'
+    #     elif ins_pa_station[cnt] == 'LISCO':
+    #         mrk_style = '+'
+    #         mrk_color = 'lime'
+    #     elif ins_pa_station[cnt] == 'Palgrunden':
+    #         mrk_style = '+'
+    #         mrk_color = 'dodgerblue'
+    #     elif ins_pa_station[cnt] == 'Thornton_C-power':
+    #         mrk_style = '+'
+    #         mrk_color = 'crimson'
+    #     elif ins_pa_station[cnt] == 'USC_SEAPRISM':
+    #         mrk_style = '+'
+    #         mrk_color = 'chocolate'
+    #     elif ins_pa_station[cnt] == 'USC_SEAPRISM_2':
+    #         mrk_style = '+'
+    #         mrk_color = 'darkviolet'
+    #     elif ins_pa_station[cnt] == 'WaveCIS_Site_CSI_6':
+    #         mrk_style = '+'
+    #         mrk_color = 'turquoise'          
+    #     plt.plot(sat_pa_time[cnt], sat_pa[cnt],marker=mrk_style,color=mrk_color)
+
+    # for cnt, line in enumerate(ins_va_station):
+    #     if ins_va_station[cnt] == 'Venise': # Adriatic Sea
+    #         mrk_style = 'o'
+    #         mrk_color = 'r' 
+    #     elif ins_va_station[cnt] == 'Gloria': # Black Sea    
+    #         mrk_style = 'o'
+    #         mrk_color = 'g'       
+    #     elif ins_va_station[cnt] == 'Galata_Platform': # Black Sea
+    #         mrk_style = 'o'
+    #         mrk_color = 'b'
+    #     elif ins_va_station[cnt] == 'Helsinki_Lighthouse': # Baltic Sea
+    #         mrk_style = 'o'
+    #         mrk_color = 'm'            
+    #     elif ins_va_station[cnt] == 'Gustav_Dalen_Tower': # Baltic Sea
+    #         mrk_style = 'o'
+    #         mrk_color = 'c'
+    #     elif ins_va_station[cnt] == 'Lake_Erie':
+    #         mrk_style = 'o'
+    #         mrk_color = 'brown'
+    #     elif ins_va_station[cnt] == 'LISCO':
+    #         mrk_style = 'o'
+    #         mrk_color = 'lime'
+    #     elif ins_va_station[cnt] == 'Palgrunden':
+    #         mrk_style = 'o'
+    #         mrk_color = 'dodgerblue'
+    #     elif ins_va_station[cnt] == 'Thornton_C-power':
+    #         mrk_style = 'o'
+    #         mrk_color = 'crimson'
+    #     elif ins_va_station[cnt] == 'USC_SEAPRISM':
+    #         mrk_style = 'o'
+    #         mrk_color = 'chocolate'
+    #     elif ins_va_station[cnt] == 'USC_SEAPRISM_2':
+    #         mrk_style = 'o'
+    #         mrk_color = 'darkviolet'
+    #     elif ins_va_station[cnt] == 'WaveCIS_Site_CSI_6':
+    #         mrk_style = 'o'
+    #         mrk_color = 'turquoise'  
+    #     plt.plot(sat_va_time[cnt], sat_va[cnt],marker=mrk_style,color=mrk_color,markerfacecolor='none') 
+
+
+    # plt.xlabel('Time')
+    # sensor_name = 'OLCI'
+    # plt.ylabel('$L^{'+sensor_name+'}_{WN}$')
+    # # zero line
+    # xmin, xmax = plt.gca().get_xlim()
+    # plt.plot([xmin,xmax],[0, 0],'--k',linewidth = 0.7)  
+    # plt.text(0.05, 0.95, str3+'nm',horizontalalignment='left', fontsize=12,transform=plt.gca().transAxes)
+
+    # # save fig
+    # ofname = sensor_name+'_timeseries_diff_ba_pa_va_'+vl_str.replace(".","p")+'.pdf'
+    # ofname = os.path.join(path_out,'source',ofname)
+    # plt.savefig(ofname, dpi=300)
+
+    # plt.show()
+
+    # histograms of all datasets: ba, pa and va
+    kwargs2 = dict(bins='auto', histtype='step')
+    fig, ax1=plt.subplots(1,1,sharey=True, facecolor='w')
+    ax1.hist(sat_ba,color='red', **kwargs2)
+    ax1.hist(sat_pa,color='black', **kwargs2)
+    ax1.hist(sat_va,color='blue', **kwargs2)
+    x0, x1 = ax1.get_xlim()
+    ax1.set_xlim([x0,x0+1*(x1-x0)])
+
+    ax1.set_ylabel('Frequency')
+
+    str1 = 'BW06\nmin: {:,.2f}\nmax: {:,.2f}\nstd: {:,.2f}\nmedian: {:,.2f}\nmean: {:,.2f}\nN: {:,.0f}'\
+    .format(np.nanmin(sat_ba),
+            np.nanmax(sat_ba),
+            np.nanstd(sat_ba),
+            np.nanmedian(sat_ba),
+            np.nanmean(sat_ba),
+            len(sat_ba))
+
+    str2 = 'IPK19\nmin: {:,.2f}\nmax: {:,.2f}\nstd: {:,.2f}\nmedian: {:,.2f}\nmean: {:,.2f}\nN: {:,.0f}'\
+    .format(np.nanmin(sat_pa),
+            np.nanmax(sat_pa),
+            np.nanstd(sat_pa),
+            np.nanmedian(sat_pa),
+            np.nanmean(sat_pa),
+            len(sat_pa))
+
+    str4 = 'V19\nmin: {:,.2f}\nmax: {:,.2f}\nstd: {:,.2f}\nmedian: {:,.2f}\nmean: {:,.2f}\nN: {:,.0f}'\
+    .format(np.nanmin(sat_va),
+            np.nanmax(sat_va),
+            np.nanstd(sat_va),
+            np.nanmedian(sat_va),
+            np.nanmean(sat_va),
+            len(sat_va))
+
+    bottom, top = ax1.get_ylim()
+    left, right = ax1.get_xlim()
+    xpos = left+0.70*(right-left)
+    ax1.text(left+0.01*(right-left),bottom+0.95*(top-bottom), '{}nm'.format(str3), fontsize=12,color='black')
+    ax1.text(xpos,bottom+0.70*(top-bottom), str1, fontsize=10,color='red')
+    ax1.text(xpos,bottom+0.40*(top-bottom), str2, fontsize=10,color='black')
+    ax1.text(xpos,bottom+0.10*(top-bottom), str4, fontsize=10,color='blue')
+
+    fig.text(0.5,0.01,'$L^{'+sensor_name+'}_{WN}$',ha='center',fontsize=12)
+
+    # save fig
+    ofname = sensor_name+'_hist_ba_pa_va_'+vl_str.replace(".","p")+'.pdf'
+    ofname = os.path.join(path_out,'source',ofname)
+    plt.savefig(ofname, dpi=300)
+
+    plt.show()
+
+    #latex table
+    if vl_str == '444.0':
+        print('proto & nm & min & max & std & median & mean & N\\\\')
+    str_table = 'BW06 & {} & {:,.2f} & {:,.2f} & {:,.2f} & {:,.2f} & {:,.2f} & {:,.0f}\\\\'\
+    .format(vl_str,\
+            np.nanmin(sat_ba),
+            np.nanmax(sat_ba),
+            np.nanstd(sat_ba),
+            np.nanmedian(sat_ba),
+            np.nanmean(sat_ba),
+            len(sat_ba))
+    print(str_table)
+    str_table = 'IPK19 & {} & {:,.2f} & {:,.2f} & {:,.2f} & {:,.2f} & {:,.2f} & {:,.0f}\\\\'\
+    .format(vl_str,\
+            np.nanmin(sat_pa),
+            np.nanmax(sat_pa),
+            np.nanstd(sat_pa),
+            np.nanmedian(sat_pa),
+            np.nanmean(sat_pa),
+            len(sat_pa))
+    print(str_table)  
+    str_table = 'V19 & {} & {:,.2f} & {:,.2f} & {:,.2f} & {:,.2f} & {:,.2f} & {:,.0f}\\\\'\
+    .format(vl_str,\
+            np.nanmin(sat_va),
+            np.nanmax(sat_va),
+            np.nanstd(sat_va),
+            np.nanmedian(sat_va),
+            np.nanmean(sat_va),
+            len(sat_va))
+    print(str_table)  
+    
+    # histogram of the difference
+    kwargs2 = dict(bins='auto', histtype='step')
+    fig, ax1=plt.subplots(1,1,sharey=True, facecolor='w')
+    ax1.hist(diff_ba_pa,color='#1f77b4', **kwargs2)
+    ax1.hist(diff_ba_va,color='#ff7f0e', **kwargs2)
+    ax1.hist(diff_pa_va,color='#2ca02c', **kwargs2)
+
+    ax1.set_ylabel('Frequency',fontsize=12)
+
+    str1 = 'BW06-IPK19\nmin: {:,.2f}\nmax: {:,.2f}\nstd: {:,.2f}\nmedian: {:,.2f}\nmean: {:,.2f}\nN: {:,.0f}'\
+    .format(np.nanmin(diff_ba_pa),
+            np.nanmax(diff_ba_pa),
+            np.nanstd(diff_ba_pa),
+            np.nanmedian(diff_ba_pa),
+            np.nanmean(diff_ba_pa),
+            len(diff_ba_pa))
+
+    # latex table
+    if vl_str == '444.0':
+        print('BW06-IPK19 & nm & min & max & std & median & mean & N\\\\')
+    str_table = 'BW06-IPK19 & {} & {:,.2f} & {:,.2f} & {:,.2f} & {:,.4f} & {:,.4f} & {:,.0f}\\\\'\
+    .format(str3,
+            np.nanmin(diff_ba_pa),
+            np.nanmax(diff_ba_pa),
+            np.nanstd(diff_ba_pa),
+            np.nanmedian(diff_ba_pa),
+            np.nanmean(diff_ba_pa),
+            len(diff_ba_pa))
+    print(str_table)
+
+    str2 = 'BW06-V19\nmin: {:,.2f}\nmax: {:,.2f}\nstd: {:,.2f}\nmedian: {:,.2f}\nmean: {:,.2f}\nN: {:,.0f}'\
+    .format(np.nanmin(diff_ba_va),
+            np.nanmax(diff_ba_va),
+            np.nanstd(diff_ba_va),
+            np.nanmedian(diff_ba_va),
+            np.nanmean(diff_ba_va),
+            len(diff_ba_va))
+
+    # latex table
+    if vl_str == '444.0':
+        print('BW06-V19 & nm & min & max & std & median & mean & N\\\\')
+    str_table = 'BW06-V19 & {} & {:,.2f} & {:,.2f} & {:,.2f} & {:,.4f} & {:,.4f} & {:,.0f}\\\\'\
+    .format(str3,
+            np.nanmin(diff_ba_va),
+            np.nanmax(diff_ba_va),
+            np.nanstd(diff_ba_va),
+            np.nanmedian(diff_ba_va),
+            np.nanmean(diff_ba_va),
+            len(diff_ba_va))
+    print(str_table)
+
+    str4 = 'IPK19-V19\nmin: {:,.2f}\nmax: {:,.2f}\nstd: {:,.2f}\nmedian: {:,.2f}\nmean: {:,.2f}\nN: {:,.0f}'\
+    .format(np.nanmin(diff_pa_va),
+            np.nanmax(diff_pa_va),
+            np.nanstd(diff_pa_va),
+            np.nanmedian(diff_pa_va),
+            np.nanmean(diff_pa_va),
+            len(diff_pa_va))
+
+    # latex table
+    if vl_str == '444.0':
+        print('IPK19-V19 & nm & min & max & std & median & mean & N\\\\')
+    str_table = 'IPK19-V19 & {} & {:,.2f} & {:,.2f} & {:,.2f} & {:,.4f} & {:,.4f} & {:,.0f}\\\\'\
+    .format(str3,
+            np.nanmin(diff_pa_va),
+            np.nanmax(diff_pa_va),
+            np.nanstd(diff_pa_va),
+            np.nanmedian(diff_pa_va),
+            np.nanmean(diff_pa_va),
+            len(diff_pa_va))
+    print(str_table)
+
+    bottom, top = ax1.get_ylim()
+    left, right = ax1.get_xlim()
+    ax1.text(left+0.700*(right-left),bottom+0.70*(top-bottom), str1, fontsize=10,color='#1f77b4')
+    ax1.text(left+0.700*(right-left),bottom+0.40*(top-bottom), str2, fontsize=10,color='#ff7f0e')
+    ax1.text(left+0.700*(right-left),bottom+0.10*(top-bottom), str4, fontsize=10,color='#2ca02c')
+
+    ax1.text(left+0.05*(right-left),bottom+0.95*(top-bottom), str3+'nm', fontsize=10,color='black')
+
+    fig.text(0.5,0.01,'Diff. $L^{'+sensor_name+'}_{WN}$',ha='center',fontsize=12)
+
+    # save fig
+    ofname = sensor_name+'_hist_diff_ba_pa_va_'+vl_str.replace(".","p")+'.pdf'
+    ofname = os.path.join(path_out,'source',ofname)
+    plt.savefig(ofname, dpi=300)
+    plt.show()
+
+    print('Number of Matchups for BW06: '+str(count_ba))
+    print('Number of Matchups for IPK19: '+str(count_pa))
+    print('Number of Matchups for V19: '+str(count_va))
+    print('Number of Matchups for BW06 and IPK19: '+str(count_ba_pa))
+    print('Number of Matchups for BW06 and V19: '+str(count_ba_va))
+    print('Number of Matchups for IPK19 and V19: '+str(count_pa_va))
+    print('Number of Matchups for BW06, IPK19, V19: '+str(count_all))
+
+    # print('count_Venise: '+str(count_Venise))
+    # print('count_Gloria: '+str(count_Gloria))
+    # print('count_Galata_Platform: '+str(count_Galata_Platform))
+    # print('count_Helsinki_Lighthouse: '+str(count_Helsinki_Lighthouse))
+    # print('count_Gustav_Dalen_Tower: '+str(count_Gustav_Dalen_Tower))
+    # print('count_Lake_Erie: '+str(count_Lake_Erie))
+    # print('count_LISCO: '+str(count_LISCO))
+    # print('count_Palgrunden: '+str(count_Palgrunden))
+    # print('count_Thornton_C_power: '+str(count_Thornton_C_power))
+    # print('count_USC_SEAPRISM: '+str(count_USC_SEAPRISM))
+    # print('count_USC_SEAPRISM_2: '+str(count_USC_SEAPRISM_2))
+    # print('count_WaveCIS_Site_CSI_6: '+str(count_WaveCIS_Site_CSI_6))
 
 #%%
-def main():
-    path_main = '/Users/javier.concha/Desktop/Javier/2019_ROMA/CNR_Research/HYPERNETS_Validation_Protocols/python_scripts/'
-    path_out = os.path.join(path_main,'Figures')
-    path_data = '/Users/javier.concha/Desktop/Javier/2019_ROMA/CNR_Research/HYPERNETS_Validation_Protocols/python_scripts/Quinten_data/'
-    sensor_name = 'S2A'
-    path_to_list = os.path.join(path_data,sensor_name,'aeronet_list.txt') 
-    
-    # Solar spectral irradiance F0 in uW/cm^2/nm 
-    F0_0444p00 = Matchups_MAIN.get_F0(444.0,path_main)
-    F0_0497p00 = Matchups_MAIN.get_F0(497.0,path_main)
-    F0_0560p00 = Matchups_MAIN.get_F0(560.0,path_main)
-    F0_0664p00 = Matchups_MAIN.get_F0(664.0,path_main) 
-    
-    matchups_Lwn_0444p00_fq_ins_ba = []
-    matchups_Lwn_0497p00_fq_ins_ba = []
-    matchups_Lwn_0560p00_fq_ins_ba = []
-    matchups_Lwn_0664p00_fq_ins_ba = []
-    
-    matchups_Lwn_0444p00_fq_sat_ba = []
-    matchups_Lwn_0497p00_fq_sat_ba = []
-    matchups_Lwn_0560p00_fq_sat_ba = []
-    matchups_Lwn_0664p00_fq_sat_ba = []
-    
-    matchups_Lwn_0444p00_fq_ins_pa = []
-    matchups_Lwn_0497p00_fq_ins_pa = []
-    matchups_Lwn_0560p00_fq_ins_pa = []
-    matchups_Lwn_0664p00_fq_ins_pa = []
-    
-    matchups_Lwn_0444p00_fq_sat_pa = []
-    matchups_Lwn_0497p00_fq_sat_pa = []
-    matchups_Lwn_0560p00_fq_sat_pa = []
-    matchups_Lwn_0664p00_fq_sat_pa = []
-    
-    matchups_Lwn_0444p00_fq_ins_va = []
-    matchups_Lwn_0497p00_fq_ins_va = []
-    matchups_Lwn_0560p00_fq_ins_va = []
-    matchups_Lwn_0664p00_fq_ins_va = []
-    
-    matchups_Lwn_0444p00_fq_sat_va = []
-    matchups_Lwn_0497p00_fq_sat_va = []
-    matchups_Lwn_0560p00_fq_sat_va = []
-    matchups_Lwn_0664p00_fq_sat_va = []
-    
-    donut_mask = np.array([[False,False,False,False,False,False,False],\
-                  [False,False,False,False,False,False,False],\
-                  [False,False,True,True,True,False,False],\
-                  [False,False,True,True,True,False,False],\
-                  [False,False,True,True,True,False,False],\
-                  [False,False,False,False,False,False,False],\
-                  [False,False,False,False,False,False,False]])
-       
-    with open(path_to_list,'r') as file_list:
-        for cnt, file_name in enumerate(file_list):
-            folder_name = file_name.split('/')[1]
-            station_name = folder_name[:-15]
-            year_str = folder_name.split('_')[-3]
-            month_str = folder_name.split('_')[-2]
-            day_str = folder_name.split('_')[-1]
-            
-            # sat data
-            path_to_nc = glob.glob(os.path.join(path_data,sensor_name,folder_name)+'/*.nc')[0]
-             
-            nc_f0 = Dataset(path_to_nc,'r')
-            
-            date_format = "%Y-%m-%dT%H:%M:%S.%fZ" 
-            sat_time = datetime.strptime(nc_f0.isodate, date_format)
-            
-            lat = nc_f0.variables['lat'][:]
-            lon = nc_f0.variables['lon'][:]
-            
-            in_situ_lat, in_situ_lon = get_lat_lon_ins(station_name)
-            
-            r, c = create_extract.find_row_column_from_lat_lon(lat,lon,in_situ_lat,in_situ_lon)
-    
-            rhos_0444p00 =  nc_f0.variables['rhos_444'][:]
-            rhos_0497p00 =  nc_f0.variables['rhos_497'][:]
-            rhos_0560p00 =  nc_f0.variables['rhos_560'][:]
-            rhos_0664p00 =  nc_f0.variables['rhos_664'][:]
-            rhos_0704p00 =  nc_f0.variables['rhos_704'][:]
-            rhos_0740p00 =  nc_f0.variables['rhos_740'][:]
-            rhos_0782p00 =  nc_f0.variables['rhos_782'][:]
-            rhos_0835p00 =  nc_f0.variables['rhos_835'][:]
-            rhos_0865p00 =  nc_f0.variables['rhos_865'][:]
-            rhos_1614p00 =  nc_f0.variables['rhos_1614'][:]
-            rhos_2202p00 =  nc_f0.variables['rhos_2202'][:]
-            
-            rhot_1614p00 =  nc_f0.variables['rhot_1614'][:]
-            
-            sza = nc_f0.THS
-            vza = nc_f0.THV
-                    
-            nc_f0.close()
-    
-            # in situ data        
-            with open(os.path.join(path_data,sensor_name,file_name[2:-1]), 'r') as file:
-                ins_time = []
-                # Date
-                line_num_date = 3-1
-                line_num_time = 4-1
-                ins_all_lines = file.readlines()
-                line_date = ins_all_lines[line_num_date]   
-                line_time = ins_all_lines[line_num_time] 
+#def main():
+path_main = '/Users/javier.concha/Desktop/Javier/2019_ROMA/CNR_Research/HYPERNETS_Validation_Protocols/python_scripts/'
+path_out = os.path.join(path_main,'Figures')
+path_data = '/Users/javier.concha/Desktop/Javier/2019_ROMA/CNR_Research/HYPERNETS_Validation_Protocols/python_scripts/Quinten_data/'
+sensor_name = 'S2A'
+path_to_list = os.path.join(path_data,sensor_name,'aeronet_list.txt') 
+
+# Solar spectral irradiance F0 in uW/cm^2/nm 
+F0_0444p00 = common_functions.get_F0(444.0,path_main)
+F0_0497p00 = common_functions.get_F0(497.0,path_main)
+F0_0560p00 = common_functions.get_F0(560.0,path_main)
+F0_0664p00 = common_functions.get_F0(664.0,path_main) 
+
+# Bailey and Werdell: initialization
+matchups_Lwn_0444p00_fq_ins_ba = []
+matchups_Lwn_0497p00_fq_ins_ba = []
+matchups_Lwn_0560p00_fq_ins_ba = []
+matchups_Lwn_0664p00_fq_ins_ba = []
+
+matchups_Lwn_0444p00_fq_sat_ba = []
+matchups_Lwn_0497p00_fq_sat_ba = []
+matchups_Lwn_0560p00_fq_sat_ba = []
+matchups_Lwn_0664p00_fq_sat_ba = []
+
+matchups_Lwn_0444p00_fq_ins_ba_station = []
+matchups_Lwn_0497p00_fq_ins_ba_station = []
+matchups_Lwn_0560p00_fq_ins_ba_station = []
+matchups_Lwn_0664p00_fq_ins_ba_station = []
+
+matchups_Lwn_0444p00_fq_sat_ba_time = []
+matchups_Lwn_0497p00_fq_sat_ba_time = []
+matchups_Lwn_0560p00_fq_sat_ba_time = []
+matchups_Lwn_0664p00_fq_sat_ba_time = []
+
+# Pahlevan: initialization
+matchups_Lwn_0444p00_fq_ins_pa = []
+matchups_Lwn_0497p00_fq_ins_pa = []
+matchups_Lwn_0560p00_fq_ins_pa = []
+matchups_Lwn_0664p00_fq_ins_pa = []
+
+matchups_Lwn_0444p00_fq_sat_pa = []
+matchups_Lwn_0497p00_fq_sat_pa = []
+matchups_Lwn_0560p00_fq_sat_pa = []
+matchups_Lwn_0664p00_fq_sat_pa = []
+
+matchups_Lwn_0444p00_fq_ins_pa_station = []
+matchups_Lwn_0497p00_fq_ins_pa_station = []
+matchups_Lwn_0560p00_fq_ins_pa_station = []
+matchups_Lwn_0664p00_fq_ins_pa_station = []
+
+matchups_Lwn_0444p00_fq_sat_pa_time = []
+matchups_Lwn_0497p00_fq_sat_pa_time = []
+matchups_Lwn_0560p00_fq_sat_pa_time = []
+matchups_Lwn_0664p00_fq_sat_pa_time = []
+
+# Vanhellemont: initialization
+matchups_Lwn_0444p00_fq_ins_va = []
+matchups_Lwn_0497p00_fq_ins_va = []
+matchups_Lwn_0560p00_fq_ins_va = []
+matchups_Lwn_0664p00_fq_ins_va = []
+
+matchups_Lwn_0444p00_fq_sat_va = []
+matchups_Lwn_0497p00_fq_sat_va = []
+matchups_Lwn_0560p00_fq_sat_va = []
+matchups_Lwn_0664p00_fq_sat_va = []
+
+matchups_Lwn_0444p00_fq_ins_va_station = []
+matchups_Lwn_0497p00_fq_ins_va_station = []
+matchups_Lwn_0560p00_fq_ins_va_station = []
+matchups_Lwn_0664p00_fq_ins_va_station = []
+
+matchups_Lwn_0444p00_fq_sat_va_time = []
+matchups_Lwn_0497p00_fq_sat_va_time = []
+matchups_Lwn_0560p00_fq_sat_va_time = []
+matchups_Lwn_0664p00_fq_sat_va_time = []
+
+donut_mask = np.array([[False,False,False,False,False,False,False],\
+              [False,False,False,False,False,False,False],\
+              [False,False,True,True,True,False,False],\
+              [False,False,True,True,True,False,False],\
+              [False,False,True,True,True,False,False],\
+              [False,False,False,False,False,False,False],\
+              [False,False,False,False,False,False,False]])
+   
+with open(path_to_list,'r') as file_list:
+    for cnt, file_name in enumerate(file_list):
+        folder_name = file_name.split('/')[1]
+        station_name = folder_name[:-15]
+        year_str = folder_name.split('_')[-3]
+        month_str = folder_name.split('_')[-2]
+        day_str = folder_name.split('_')[-1]
+        
+        # sat data
+        path_to_nc = glob.glob(os.path.join(path_data,sensor_name,folder_name)+'/*.nc')[0]
+         
+        nc_f0 = Dataset(path_to_nc,'r')
+        
+        date_format = "%Y-%m-%dT%H:%M:%S.%fZ" 
+        sat_time = datetime.strptime(nc_f0.isodate, date_format)
+        
+        lat = nc_f0.variables['lat'][:]
+        lon = nc_f0.variables['lon'][:]
+        
+        in_situ_lat, in_situ_lon = get_lat_lon_ins(station_name)
+        
+        r, c = common_functions.find_row_column_from_lat_lon(lat,lon,in_situ_lat,in_situ_lon)
+
+        rhos_0444p00 =  nc_f0.variables['rhos_444'][:]
+        rhos_0497p00 =  nc_f0.variables['rhos_497'][:]
+        rhos_0560p00 =  nc_f0.variables['rhos_560'][:]
+        rhos_0664p00 =  nc_f0.variables['rhos_664'][:]
+        rhos_0704p00 =  nc_f0.variables['rhos_704'][:]
+        rhos_0740p00 =  nc_f0.variables['rhos_740'][:]
+        rhos_0782p00 =  nc_f0.variables['rhos_782'][:]
+        rhos_0835p00 =  nc_f0.variables['rhos_835'][:]
+        rhos_0865p00 =  nc_f0.variables['rhos_865'][:]
+        rhos_1614p00 =  nc_f0.variables['rhos_1614'][:]
+        rhos_2202p00 =  nc_f0.variables['rhos_2202'][:]
+        
+        rhot_1614p00 =  nc_f0.variables['rhot_1614'][:]
+        
+        sza = nc_f0.THS
+        vza = nc_f0.THV
                 
-                str_list_date = line_date[:-1].replace('=',',').split(',')
-                str_list_time = line_time[:-1].replace('=',',').split(',')
-                
-                n_ins = len(str_list_date)-1
-                for i in range(n_ins):
-                    date_and_time_str = str_list_date[1:][i]+' '+str_list_time[1:][i]
-                    date_format = "%d/%m/%Y %H:%M:%S"
-                    ins_time.append(datetime.strptime(date_and_time_str, date_format))
-    
-            # Bailey and Werdell 2006 
-            print('--Bailey and Werdell 2006')
-            delta_time = 3# float in hours   
-            ins_time = np.array(ins_time)
-            time_diff = ins_time - sat_time
-            dt_hour = [i.total_seconds()/(60*60) for i in time_diff] # time diffence between in situ measurements and sat in hours
-            idx_min = np.argmin(np.abs(dt_hour))
-            matchup_idx_vec = np.abs(dt_hour) <= delta_time 
+        nc_f0.close()
+
+        # in situ data        
+        with open(os.path.join(path_data,sensor_name,file_name[2:-1]), 'r') as file:
+            ins_time = []
+            # Date
+            line_num_date = 3-1
+            line_num_time = 4-1
+            ins_all_lines = file.readlines()
+            line_date = ins_all_lines[line_num_date]   
+            line_time = ins_all_lines[line_num_time] 
             
-    #           104	Lwn(442)=0.285881,0.295781,0.288577,0.269275,0.233640,0.196600
-    #   105	Lwn(491)=0.532647,0.578646,0.523528,0.501363,0.397166,0.397819
-    #   106	Lwn(530)=0.759344,0.803289,0.810068,0.715048,0.648792,0.641661
-    #   107	Lwn(551)=0.855308,0.897261,0.892521,0.827199,0.776998,0.742645
-    #   108	Lwn(668)=0.246346,0.269323,0.275534,0.258861,0.244163,0.249685
+            str_list_date = line_date[:-1].replace('=',',').split(',')
+            str_list_time = line_time[:-1].replace('=',',').split(',')
             
-            Lwn_fq_0442p00 = float(ins_all_lines[104-1][:-1].replace('=',',').split(',')[idx_min+1]) 
-            Lwn_fq_0491p00 = float(ins_all_lines[105-1][:-1].replace('=',',').split(',')[idx_min+1]) 
-            Lwn_fq_00551p0 = float(ins_all_lines[107-1][:-1].replace('=',',').split(',')[idx_min+1]) 
-            Lwn_fq_0668p00 = float(ins_all_lines[108-1][:-1].replace('=',',').split(',')[idx_min+1]) 
-    
-            nday = sum(matchup_idx_vec)
-            if nday >=1:
-                print(str(nday)+' matchups for '+folder_name)
+            n_ins = len(str_list_date)-1
+            for i in range(n_ins):
+                date_and_time_str = str_list_date[1:][i]+' '+str_list_time[1:][i]
+                date_format = "%d/%m/%Y %H:%M:%S"
+                ins_time.append(datetime.strptime(date_and_time_str, date_format))
+
+        # Bailey and Werdell 2006 
+        print('--Bailey and Werdell 2006')
+        delta_time = 3# float in hours   
+        ins_time = np.array(ins_time)
+        time_diff = ins_time - sat_time
+        dt_hour = [i.total_seconds()/(60*60) for i in time_diff] # time diffence between in situ measurements and sat in hours
+        idx_min = np.argmin(np.abs(dt_hour))
+        matchup_idx_vec = np.abs(dt_hour) <= delta_time 
+        
+#           104	Lwn(442)=0.285881,0.295781,0.288577,0.269275,0.233640,0.196600
+#   105	Lwn(491)=0.532647,0.578646,0.523528,0.501363,0.397166,0.397819
+#   106	Lwn(530)=0.759344,0.803289,0.810068,0.715048,0.648792,0.641661
+#   107	Lwn(551)=0.855308,0.897261,0.892521,0.827199,0.776998,0.742645
+#   108	Lwn(668)=0.246346,0.269323,0.275534,0.258861,0.244163,0.249685
+        
+        Lwn_fq_0442p00 = float(ins_all_lines[104-1][:-1].replace('=',',').split(',')[idx_min+1]) 
+        Lwn_fq_0491p00 = float(ins_all_lines[105-1][:-1].replace('=',',').split(',')[idx_min+1]) 
+        Lwn_fq_00551p0 = float(ins_all_lines[107-1][:-1].replace('=',',').split(',')[idx_min+1]) 
+        Lwn_fq_0668p00 = float(ins_all_lines[108-1][:-1].replace('=',',').split(',')[idx_min+1]) 
+
+        nday = sum(matchup_idx_vec)
+        if nday >=1:
+            print(str(nday)+' matchups for '+folder_name)
+            
+            size_box = 5
+            NTP = size_box*size_box # Number Total Pixels, excluding land pixels, Bailey and Werdell 2006
+            start_idx_x = (r-int(size_box/2))
+            stop_idx_x = (r+int(size_box/2)+1)
+            start_idx_y = (c-int(size_box/2))
+            stop_idx_y = (c+int(size_box/2)+1)
+
+            rhos_0444p00_box = rhos_0444p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+            rhos_0497p00_box = rhos_0497p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+            rhos_0560p00_box = rhos_0560p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+            rhos_0664p00_box = rhos_0664p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+            rhos_0704p00_box = rhos_0704p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+            rhos_0740p00_box = rhos_0740p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+            rhos_0782p00_box = rhos_0782p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+            rhos_0835p00_box = rhos_0835p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+            rhos_0865p00_box = rhos_0865p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+            rhos_1614p00_box = rhos_1614p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+            rhos_2202p00_box = rhos_2202p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]  
+            
+            # for cloud screening
+            rhot_1614p00_box = rhot_1614p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y] 
+            
+            flags_mask = rhot_1614p00_box>0.0215
+            
+            rhos_0444p00_box.mask =  rhos_0444p00_box.mask or flags_mask 
+            rhos_0497p00_box.mask =  rhos_0497p00_box.mask or flags_mask
+            rhos_0560p00_box.mask =  rhos_0560p00_box.mask or flags_mask
+            rhos_0664p00_box.mask =  rhos_0664p00_box.mask or flags_mask
+            
+            NGP = np.count_nonzero(flags_mask == 0) # Number Good Pixels, Bailey and Werdell 2006
                 
-                size_box = 5
-                NTP = size_box*size_box # Number Total Pixels, excluding land pixels, Bailey and Werdell 2006
-                start_idx_x = (r-int(size_box/2))
-                stop_idx_x = (r+int(size_box/2)+1)
-                start_idx_y = (c-int(size_box/2))
-                stop_idx_y = (c+int(size_box/2)+1)
-    
-                rhos_0444p00_box = rhos_0444p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
-                rhos_0497p00_box = rhos_0497p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
-                rhos_0560p00_box = rhos_0560p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
-                rhos_0664p00_box = rhos_0664p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
-                rhos_0704p00_box = rhos_0704p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
-                rhos_0740p00_box = rhos_0740p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
-                rhos_0782p00_box = rhos_0782p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
-                rhos_0835p00_box = rhos_0835p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
-                rhos_0865p00_box = rhos_0865p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
-                rhos_1614p00_box = rhos_1614p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
-                rhos_2202p00_box = rhos_2202p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]  
+            if sza<=75 and vza<=60 and NGP>NTP/2+1 and rhot_1614p00_box.mean()<=0.01:
+                # if nan, change mask            
+                rhos_0444p00_box = ma.masked_invalid(rhos_0444p00_box)
+                rhos_0497p00_box = ma.masked_invalid(rhos_0497p00_box)
+                rhos_0560p00_box = ma.masked_invalid(rhos_0560p00_box)
+                rhos_0664p00_box = ma.masked_invalid(rhos_0664p00_box)
+
+                NGP_rhos_0444p00 = np.count_nonzero(rhos_0444p00_box.mask == 0)
+                NGP_rhos_0497p00 = np.count_nonzero(rhos_0497p00_box.mask == 0)
+                NGP_rhos_0560p00 = np.count_nonzero(rhos_0560p00_box.mask == 0)
+                NGP_rhos_0664p00 = np.count_nonzero(rhos_0664p00_box.mask == 0)
+
+                mean_unfiltered_rhos_0444p00 = rhos_0444p00_box.mean()
+                mean_unfiltered_rhos_0497p00 = rhos_0497p00_box.mean()
+                mean_unfiltered_rhos_0560p00 = rhos_0560p00_box.mean()
+                mean_unfiltered_rhos_0664p00 = rhos_0664p00_box.mean()
+ 
+                std_unfiltered_rhos_0444p00 = rhos_0444p00_box.std()
+                std_unfiltered_rhos_0497p00 = rhos_0497p00_box.std()
+                std_unfiltered_rhos_0560p00 = rhos_0560p00_box.std()
+                std_unfiltered_rhos_0664p00 = rhos_0664p00_box.std()
+
+                # mask values that are not within +/- 1.5*std of mean\               
+                rhos_0444p00_box = ma.masked_outside(rhos_0444p00_box,mean_unfiltered_rhos_0444p00\
+                    -1.5*std_unfiltered_rhos_0444p00\
+                    , mean_unfiltered_rhos_0444p00\
+                    +1.5*std_unfiltered_rhos_0444p00)
+                rhos_0497p00_box = ma.masked_outside(rhos_0497p00_box,mean_unfiltered_rhos_0497p00\
+                    -1.5*std_unfiltered_rhos_0497p00\
+                    , mean_unfiltered_rhos_0497p00\
+                    +1.5*std_unfiltered_rhos_0497p00)
+                rhos_0560p00_box = ma.masked_outside(rhos_0560p00_box,mean_unfiltered_rhos_0560p00\
+                    -1.5*std_unfiltered_rhos_0560p00\
+                    , mean_unfiltered_rhos_0560p00\
+                    +1.5*std_unfiltered_rhos_0560p00)
+                rhos_0664p00_box = ma.masked_outside(rhos_0664p00_box,mean_unfiltered_rhos_0664p00\
+                    -1.5*std_unfiltered_rhos_0664p00\
+                    , mean_unfiltered_rhos_0664p00\
+                    +1.5*std_unfiltered_rhos_0664p00)
+
+                mean_filtered_rhos_0444p00 = rhos_0444p00_box.mean()
+                mean_filtered_rhos_0497p00 = rhos_0497p00_box.mean()
+                mean_filtered_rhos_0560p00 = rhos_0560p00_box.mean()
+                mean_filtered_rhos_0664p00 = rhos_0664p00_box.mean()
+
+                std_filtered_rhos_0444p00 = rhos_0444p00_box.std()
+                std_filtered_rhos_0497p00 = rhos_0497p00_box.std()
+                std_filtered_rhos_0560p00 = rhos_0560p00_box.std()
+                std_filtered_rhos_0664p00 = rhos_0664p00_box.std()
+
+                CV_filtered_rhos_0444p00 = std_filtered_rhos_0444p00/mean_filtered_rhos_0444p00
+                CV_filtered_rhos_0497p00 = std_filtered_rhos_0497p00/mean_filtered_rhos_0497p00
+                CV_filtered_rhos_0560p00 = std_filtered_rhos_0560p00/mean_filtered_rhos_0560p00
+                CV_filtered_rhos_0664p00 = std_filtered_rhos_0664p00/mean_filtered_rhos_0664p00
                 
-                # for cloud screening
-                rhot_1614p00_box = rhot_1614p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y] 
-                
-                flags_mask = rhot_1614p00_box>0.0215
-                
-                rhos_0444p00_box.mask =  rhos_0444p00_box.mask or flags_mask 
-                rhos_0497p00_box.mask =  rhos_0497p00_box.mask or flags_mask
-                rhos_0560p00_box.mask =  rhos_0560p00_box.mask or flags_mask
-                rhos_0664p00_box.mask =  rhos_0664p00_box.mask or flags_mask
-                
-                NGP = np.count_nonzero(flags_mask == 0) # Number Good Pixels, Bailey and Werdell 2006
-                    
-                if sza<=75 and vza<=60 and NGP>NTP/2+1 and rhot_1614p00_box.mean()<=0.01:
-                    # if nan, change mask            
-                    rhos_0444p00_box = ma.masked_invalid(rhos_0444p00_box)
-                    rhos_0497p00_box = ma.masked_invalid(rhos_0497p00_box)
-                    rhos_0560p00_box = ma.masked_invalid(rhos_0560p00_box)
-                    rhos_0664p00_box = ma.masked_invalid(rhos_0664p00_box)
-    
-                    NGP_rhos_0444p00 = np.count_nonzero(rhos_0444p00_box.mask == 0)
-                    NGP_rhos_0497p00 = np.count_nonzero(rhos_0497p00_box.mask == 0)
-                    NGP_rhos_0560p00 = np.count_nonzero(rhos_0560p00_box.mask == 0)
-                    NGP_rhos_0664p00 = np.count_nonzero(rhos_0664p00_box.mask == 0)
-    
-                    mean_unfiltered_rhos_0444p00 = rhos_0444p00_box.mean()
-                    mean_unfiltered_rhos_0497p00 = rhos_0497p00_box.mean()
-                    mean_unfiltered_rhos_0560p00 = rhos_0560p00_box.mean()
-                    mean_unfiltered_rhos_0664p00 = rhos_0664p00_box.mean()
-     
-                    std_unfiltered_rhos_0444p00 = rhos_0444p00_box.std()
-                    std_unfiltered_rhos_0497p00 = rhos_0497p00_box.std()
-                    std_unfiltered_rhos_0560p00 = rhos_0560p00_box.std()
-                    std_unfiltered_rhos_0664p00 = rhos_0664p00_box.std()
-    
-                    # mask values that are not within +/- 1.5*std of mean\               
-                    rhos_0444p00_box = ma.masked_outside(rhos_0444p00_box,mean_unfiltered_rhos_0444p00\
-                        -1.5*std_unfiltered_rhos_0444p00\
-                        , mean_unfiltered_rhos_0444p00\
-                        +1.5*std_unfiltered_rhos_0444p00)
-                    rhos_0497p00_box = ma.masked_outside(rhos_0497p00_box,mean_unfiltered_rhos_0497p00\
-                        -1.5*std_unfiltered_rhos_0497p00\
-                        , mean_unfiltered_rhos_0497p00\
-                        +1.5*std_unfiltered_rhos_0497p00)
-                    rhos_0560p00_box = ma.masked_outside(rhos_0560p00_box,mean_unfiltered_rhos_0560p00\
-                        -1.5*std_unfiltered_rhos_0560p00\
-                        , mean_unfiltered_rhos_0560p00\
-                        +1.5*std_unfiltered_rhos_0560p00)
-                    rhos_0664p00_box = ma.masked_outside(rhos_0664p00_box,mean_unfiltered_rhos_0664p00\
-                        -1.5*std_unfiltered_rhos_0664p00\
-                        , mean_unfiltered_rhos_0664p00\
-                        +1.5*std_unfiltered_rhos_0664p00)
-    
-                    mean_filtered_rhos_0444p00 = rhos_0444p00_box.mean()
-                    mean_filtered_rhos_0497p00 = rhos_0497p00_box.mean()
-                    mean_filtered_rhos_0560p00 = rhos_0560p00_box.mean()
-                    mean_filtered_rhos_0664p00 = rhos_0664p00_box.mean()
-    
-                    std_filtered_rhos_0444p00 = rhos_0444p00_box.std()
-                    std_filtered_rhos_0497p00 = rhos_0497p00_box.std()
-                    std_filtered_rhos_0560p00 = rhos_0560p00_box.std()
-                    std_filtered_rhos_0664p00 = rhos_0664p00_box.std()
-    
-                    CV_filtered_rhos_0444p00 = std_filtered_rhos_0444p00/mean_filtered_rhos_0444p00
-                    CV_filtered_rhos_0497p00 = std_filtered_rhos_0497p00/mean_filtered_rhos_0497p00
-                    CV_filtered_rhos_0560p00 = std_filtered_rhos_0560p00/mean_filtered_rhos_0560p00
-                    CV_filtered_rhos_0664p00 = std_filtered_rhos_0664p00/mean_filtered_rhos_0664p00
-                    
-                    CVs = [CV_filtered_rhos_0444p00,CV_filtered_rhos_0497p00, CV_filtered_rhos_0560p00]
-                    print(CVs)
-                    MedianCV = np.nanmedian(CVs)
-    
-                    print('Median CV={:.4f}'.format(MedianCV))
-                   
-                    if MedianCV <= 0.15:
-                        # Rrs 0444p00
-                        print('444.0')
-                        if NGP_rhos_0444p00<NTP/2+1:
-                            print('Exceeded: NGP_rhos_0444p00={:.0f}'.format(NGP_rhos_0444p00))
-                        else:
-                            matchups_Lwn_0444p00_fq_sat_ba.append(mean_filtered_rhos_0444p00*F0_0444p00/np.pi)
-                            matchups_Lwn_0444p00_fq_ins_ba.append(Lwn_fq_0442p00)
-                        # Rrs 0497p00
-                        print('497.0')
-                        if NGP_rhos_0497p00<NTP/2+1:
-                            print('Exceeded: NGP_rhos_0497p00={:.0f}'.format(NGP_rhos_0497p00))
-                        else:
-                            matchups_Lwn_0497p00_fq_sat_ba.append(mean_filtered_rhos_0497p00*F0_0497p00/np.pi)
-                            matchups_Lwn_0497p00_fq_ins_ba.append(Lwn_fq_0491p00)
-                        # Rrs 0560p00
-                        print('560.0')
-                        if NGP_rhos_0560p00<NTP/2+1:
-                            print('Exceeded: NGP_rhos_0560p00={:.0f}'.format(NGP_rhos_0560p00))
-                        else:
-                            matchups_Lwn_0560p00_fq_sat_ba.append(mean_filtered_rhos_0560p00*F0_0560p00/np.pi)
-                            matchups_Lwn_0560p00_fq_ins_ba.append(Lwn_fq_00551p0)
-                        # Rrs 0664p00
-                        print('664.0')
-                        if NGP_rhos_0664p00<NTP/2+1:
-                            print('Exceeded: NGP_rhos_0664p00={:.0f}'.format(NGP_rhos_0664p00))
-                        else:
-                            matchups_Lwn_0664p00_fq_sat_ba.append(mean_filtered_rhos_0664p00*F0_0664p00/np.pi)
-                            matchups_Lwn_0664p00_fq_ins_ba.append(Lwn_fq_0668p00)  
+                CVs = [CV_filtered_rhos_0444p00,CV_filtered_rhos_0497p00, CV_filtered_rhos_0560p00]
+                print(CVs)
+                MedianCV = np.nanmedian(CVs)
+
+                print('Median CV={:.4f}'.format(MedianCV))
+               
+                if MedianCV <= 0.15:
+                    # Rrs 0444p00
+                    print('444.0')
+                    if NGP_rhos_0444p00<NTP/2+1:
+                        print('Exceeded: NGP_rhos_0444p00={:.0f}'.format(NGP_rhos_0444p00))
                     else:
-                        print('Median CV exceeds criteria: Median[CV]={:.4f}'.format(MedianCV))
-                else:
-                    print('Angles exceeds criteria: sza={:.2f}'.format(sza)+'; vza={:.2f}'.format(vza)+\
-                        '; OR mean of rhot_1614={:.4f}'.format(rhot_1614p00_box.mean())+'>0.01!\n'+\
-                        '; OR NGP={:.0f}'.format(NGP)+'< NTP/2+1={:.0f}'.format(NTP/2+1)+'!')
-    #                print('Angles exceeds criteria: sza='+str(sza)+'; vza='+str(vza)+'; OR NGP='+str(NGP)+'< NTP/2+1='+str(NTP/2+1)+'!')
-            else:
-                print('Not matchups for '+folder_name) 
-    
-            # Pahlevan based on Bailey and Werdell 2006 
-            print('--Pahlevan based on Bailey and Werdell 2006')
-            delta_time = 0.5# float in hours   
-            ins_time = np.array(ins_time)
-            time_diff = ins_time - sat_time
-            dt_hour = [i.total_seconds()/(60*60) for i in time_diff] # time diffence between in situ measurements and sat in hours
-            idx_min = np.argmin(np.abs(dt_hour))
-            matchup_idx_vec = np.abs(dt_hour) <= delta_time 
-    
-            Lwn_fq_0442p00 = float(ins_all_lines[104-1][:-1].replace('=',',').split(',')[idx_min+1]) 
-            Lwn_fq_0491p00 = float(ins_all_lines[105-1][:-1].replace('=',',').split(',')[idx_min+1]) 
-            Lwn_fq_00551p0 = float(ins_all_lines[107-1][:-1].replace('=',',').split(',')[idx_min+1]) 
-            Lwn_fq_0668p00 = float(ins_all_lines[108-1][:-1].replace('=',',').split(',')[idx_min+1])        
-    
-            nday = sum(matchup_idx_vec)
-            if nday >=1:
-                print(str(nday)+' matchups for '+folder_name)
-                
-                size_box = 7
-                NTP = size_box*size_box # Number Total Pixels, excluding land pixels, Bailey and Werdell 2006
-                start_idx_x = (r-int(size_box/2))
-                stop_idx_x = (r+int(size_box/2)+1)
-                start_idx_y = (c-int(size_box/2))
-                stop_idx_y = (c+int(size_box/2)+1)
-    
-                rhos_0444p00_box = rhos_0444p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
-                rhos_0497p00_box = rhos_0497p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
-                rhos_0560p00_box = rhos_0560p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
-                rhos_0664p00_box = rhos_0664p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
-                rhos_0704p00_box = rhos_0704p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
-                rhos_0740p00_box = rhos_0740p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
-                rhos_0782p00_box = rhos_0782p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
-                rhos_0835p00_box = rhos_0835p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
-                rhos_0865p00_box = rhos_0865p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
-                rhos_1614p00_box = rhos_1614p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
-                rhos_2202p00_box = rhos_2202p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]  
-                
-                # for cloud screening
-                rhot_1614p00_box = rhot_1614p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y] 
-                
-                flags_mask = rhot_1614p00_box>0.0215
-                
-                rhos_0444p00_box.mask =  rhos_0444p00_box.mask | flags_mask | donut_mask 
-                rhos_0497p00_box.mask =  rhos_0497p00_box.mask | flags_mask | donut_mask
-                rhos_0560p00_box.mask =  rhos_0560p00_box.mask | flags_mask | donut_mask
-                rhos_0664p00_box.mask =  rhos_0664p00_box.mask | flags_mask | donut_mask
-                
-                NGP = np.count_nonzero(flags_mask == 0) # Number Good Pixels, Bailey and Werdell 2006
-                    
-                if sza<=75 and vza<=60 and NGP>NTP/2+1 and rhot_1614p00_box.mean()<=0.01:
-                    # if nan, change mask            
-                    rhos_0444p00_box = ma.masked_invalid(rhos_0444p00_box)
-                    rhos_0497p00_box = ma.masked_invalid(rhos_0497p00_box)
-                    rhos_0560p00_box = ma.masked_invalid(rhos_0560p00_box)
-                    rhos_0664p00_box = ma.masked_invalid(rhos_0664p00_box)
-    
-                    NGP_rhos_0444p00 = np.count_nonzero(rhos_0444p00_box.mask == 0)
-                    NGP_rhos_0497p00 = np.count_nonzero(rhos_0497p00_box.mask == 0)
-                    NGP_rhos_0560p00 = np.count_nonzero(rhos_0560p00_box.mask == 0)
-                    NGP_rhos_0664p00 = np.count_nonzero(rhos_0664p00_box.mask == 0)
-    
-                    mean_unfiltered_rhos_0444p00 = rhos_0444p00_box.mean()
-                    mean_unfiltered_rhos_0497p00 = rhos_0497p00_box.mean()
-                    mean_unfiltered_rhos_0560p00 = rhos_0560p00_box.mean()
-                    mean_unfiltered_rhos_0664p00 = rhos_0664p00_box.mean()
-     
-                    std_unfiltered_rhos_0444p00 = rhos_0444p00_box.std()
-                    std_unfiltered_rhos_0497p00 = rhos_0497p00_box.std()
-                    std_unfiltered_rhos_0560p00 = rhos_0560p00_box.std()
-                    std_unfiltered_rhos_0664p00 = rhos_0664p00_box.std()
-    
-                    # mask values that are not within +/- 1.5*std of mean\               
-                    rhos_0444p00_box = ma.masked_outside(rhos_0444p00_box,mean_unfiltered_rhos_0444p00\
-                        -1.5*std_unfiltered_rhos_0444p00\
-                        , mean_unfiltered_rhos_0444p00\
-                        +1.5*std_unfiltered_rhos_0444p00)
-                    rhos_0497p00_box = ma.masked_outside(rhos_0497p00_box,mean_unfiltered_rhos_0497p00\
-                        -1.5*std_unfiltered_rhos_0497p00\
-                        , mean_unfiltered_rhos_0497p00\
-                        +1.5*std_unfiltered_rhos_0497p00)
-                    rhos_0560p00_box = ma.masked_outside(rhos_0560p00_box,mean_unfiltered_rhos_0560p00\
-                        -1.5*std_unfiltered_rhos_0560p00\
-                        , mean_unfiltered_rhos_0560p00\
-                        +1.5*std_unfiltered_rhos_0560p00)
-                    rhos_0664p00_box = ma.masked_outside(rhos_0664p00_box,mean_unfiltered_rhos_0664p00\
-                        -1.5*std_unfiltered_rhos_0664p00\
-                        , mean_unfiltered_rhos_0664p00\
-                        +1.5*std_unfiltered_rhos_0664p00)
-    
-                    mean_filtered_rhos_0444p00 = rhos_0444p00_box.mean()
-                    mean_filtered_rhos_0497p00 = rhos_0497p00_box.mean()
-                    mean_filtered_rhos_0560p00 = rhos_0560p00_box.mean()
-                    mean_filtered_rhos_0664p00 = rhos_0664p00_box.mean()
-    
-                    std_filtered_rhos_0444p00 = rhos_0444p00_box.std()
-                    std_filtered_rhos_0497p00 = rhos_0497p00_box.std()
-                    std_filtered_rhos_0560p00 = rhos_0560p00_box.std()
-                    std_filtered_rhos_0664p00 = rhos_0664p00_box.std()
-    
-                    CV_filtered_rhos_0444p00 = std_filtered_rhos_0444p00/mean_filtered_rhos_0444p00
-                    CV_filtered_rhos_0497p00 = std_filtered_rhos_0497p00/mean_filtered_rhos_0497p00
-                    CV_filtered_rhos_0560p00 = std_filtered_rhos_0560p00/mean_filtered_rhos_0560p00
-                    CV_filtered_rhos_0664p00 = std_filtered_rhos_0664p00/mean_filtered_rhos_0664p00
-                    
-                    CVs = [CV_filtered_rhos_0444p00,CV_filtered_rhos_0497p00, CV_filtered_rhos_0560p00]
-                    print(CVs)
-                    MedianCV = np.nanmedian(CVs)
-    
-                    print('Median CV={:.4f}'.format(MedianCV))
-                   
-                    if MedianCV <= 0.15:
-                        # Rrs 0444p00
-                        print('444.0')
-                        if NGP_rhos_0444p00<NTP/2+1:
-                            print('Exceeded: NGP_rhos_0444p00={:.0f}'.format(NGP_rhos_0444p00))
-                        else:
-                            matchups_Lwn_0444p00_fq_sat_pa.append(mean_filtered_rhos_0444p00*F0_0444p00/np.pi)
-                            matchups_Lwn_0444p00_fq_ins_pa.append(Lwn_fq_0442p00)
-                        # Rrs 0497p00
-                        print('497.0')
-                        if NGP_rhos_0497p00<NTP/2+1:
-                            print('Exceeded: NGP_rhos_0497p00={:.0f}'.format(NGP_rhos_0497p00))
-                        else:
-                            matchups_Lwn_0497p00_fq_sat_pa.append(mean_filtered_rhos_0497p00*F0_0497p00/np.pi)
-                            matchups_Lwn_0497p00_fq_ins_pa.append(Lwn_fq_0491p00)
-                        # Rrs 0560p00
-                        print('560.0')
-                        if NGP_rhos_0560p00<NTP/2+1:
-                            print('Exceeded: NGP_rhos_0560p00={:.0f}'.format(NGP_rhos_0560p00))
-                        else:
-                            matchups_Lwn_0560p00_fq_sat_pa.append(mean_filtered_rhos_0560p00*F0_0560p00/np.pi)
-                            matchups_Lwn_0560p00_fq_ins_pa.append(Lwn_fq_00551p0)
-                        # Rrs 0664p00
-                        print('664.0')
-                        if NGP_rhos_0664p00<NTP/2+1:
-                            print('Exceeded: NGP_rhos_0664p00={:.0f}'.format(NGP_rhos_0664p00))
-                        else:
-                            matchups_Lwn_0664p00_fq_sat_pa.append(mean_filtered_rhos_0664p00*F0_0664p00/np.pi)
-                            matchups_Lwn_0664p00_fq_ins_pa.append(Lwn_fq_0668p00)  
+                        matchups_Lwn_0444p00_fq_sat_ba.append(mean_filtered_rhos_0444p00*F0_0444p00/np.pi)
+                        matchups_Lwn_0444p00_fq_ins_ba.append(Lwn_fq_0442p00)
+                        matchups_Lwn_0444p00_fq_ins_ba_station.append(station_name)
+                        matchups_Lwn_0444p00_fq_sat_ba_time.append(sat_time)
+                    # Rrs 0497p00
+                    print('497.0')
+                    if NGP_rhos_0497p00<NTP/2+1:
+                        print('Exceeded: NGP_rhos_0497p00={:.0f}'.format(NGP_rhos_0497p00))
                     else:
-                        print('Median CV exceeds criteria: Median[CV]={:.4f}'.format(MedianCV))
+                        matchups_Lwn_0497p00_fq_sat_ba.append(mean_filtered_rhos_0497p00*F0_0497p00/np.pi)
+                        matchups_Lwn_0497p00_fq_ins_ba.append(Lwn_fq_0491p00)
+                        matchups_Lwn_0497p00_fq_ins_ba_station.append(station_name)
+                        matchups_Lwn_0497p00_fq_sat_ba_time.append(sat_time)
+                    # Rrs 0560p00
+                    print('560.0')
+                    if NGP_rhos_0560p00<NTP/2+1:
+                        print('Exceeded: NGP_rhos_0560p00={:.0f}'.format(NGP_rhos_0560p00))
+                    else:
+                        matchups_Lwn_0560p00_fq_sat_ba.append(mean_filtered_rhos_0560p00*F0_0560p00/np.pi)
+                        matchups_Lwn_0560p00_fq_ins_ba.append(Lwn_fq_00551p0)
+                        matchups_Lwn_0560p00_fq_ins_ba_station.append(station_name)
+                        matchups_Lwn_0560p00_fq_sat_ba_time.append(sat_time)
+                    # Rrs 0664p00
+                    print('664.0')
+                    if NGP_rhos_0664p00<NTP/2+1:
+                        print('Exceeded: NGP_rhos_0664p00={:.0f}'.format(NGP_rhos_0664p00))
+                    else:
+                        matchups_Lwn_0664p00_fq_sat_ba.append(mean_filtered_rhos_0664p00*F0_0664p00/np.pi)
+                        matchups_Lwn_0664p00_fq_ins_ba.append(Lwn_fq_0668p00)  
+                        matchups_Lwn_0664p00_fq_ins_ba_station.append(station_name)
+                        matchups_Lwn_0664p00_fq_sat_ba_time.append(sat_time)  
                 else:
-                    print('Angles exceeds criteria: sza={:.2f}'.format(sza)+'; vza={:.2f}'.format(vza)+\
-                        '; OR mean of rhot_1614={:.4f}'.format(rhot_1614p00_box.mean())+'>0.01!\n'+\
-                        '; OR NGP={:.0f}'.format(NGP)+'< NTP/2+1={:.0f}'.format(NTP/2+1)+'!')
-    #                print('Angles exceeds criteria: sza='+str(sza)+'; vza='+str(vza)+'; OR NGP='+str(NGP)+'< NTP/2+1='+str(NTP/2+1)+'!')
+                    print('Median CV exceeds criteria: Median[CV]={:.4f}'.format(MedianCV))
             else:
-                print('Not matchups for '+folder_name) 
-    
-            # Vanhellemot
-            print('--Vanhellemot')
-    
-            # in situ from aeronet_i.log
-            # in_situ_lat, in_situ_lon = get_lat_lon_ins(station_name)
+                print('Angles exceeds criteria: sza={:.2f}'.format(sza)+'; vza={:.2f}'.format(vza)+\
+                    '; OR mean of rhot_1614={:.4f}'.format(rhot_1614p00_box.mean())+'>0.01!\n'+\
+                    '; OR NGP={:.0f}'.format(NGP)+'< NTP/2+1={:.0f}'.format(NTP/2+1)+'!')
+#                print('Angles exceeds criteria: sza='+str(sza)+'; vza='+str(vza)+'; OR NGP='+str(NGP)+'< NTP/2+1='+str(NTP/2+1)+'!')
+        else:
+            print('Not matchups for '+folder_name) 
+
+        # Pahlevan based on Bailey and Werdell 2006 
+        print('--Pahlevan based on Bailey and Werdell 2006')
+        delta_time = 0.5# float in hours   
+        ins_time = np.array(ins_time)
+        time_diff = ins_time - sat_time
+        dt_hour = [i.total_seconds()/(60*60) for i in time_diff] # time diffence between in situ measurements and sat in hours
+        idx_min = np.argmin(np.abs(dt_hour))
+        matchup_idx_vec = np.abs(dt_hour) <= delta_time 
+
+        Lwn_fq_0442p00 = float(ins_all_lines[104-1][:-1].replace('=',',').split(',')[idx_min+1]) 
+        Lwn_fq_0491p00 = float(ins_all_lines[105-1][:-1].replace('=',',').split(',')[idx_min+1]) 
+        Lwn_fq_00551p0 = float(ins_all_lines[107-1][:-1].replace('=',',').split(',')[idx_min+1]) 
+        Lwn_fq_0668p00 = float(ins_all_lines[108-1][:-1].replace('=',',').split(',')[idx_min+1])        
+
+        nday = sum(matchup_idx_vec)
+        if nday >=1:
+            print(str(nday)+' matchups for '+folder_name)
             
-            # r, c = create_extract.find_row_column_from_lat_lon(lat,lon,in_situ_lat,in_situ_lon)
-    
-            # in situ data        
-            # with open(os.path.join(path_data,sensor_name,file_name[2:-1]), 'r') as file:
-            #     ins_time = []
-            #     # Date
-            #     line_num_date = 3-1
-            #     line_num_time = 4-1
-            #     ins_all_lines = file.readlines()
-            #     line_date = ins_all_lines[line_num_date]   
-            #     line_time = ins_all_lines[line_num_time] 
+            size_box = 7
+            NTP = size_box*size_box # Number Total Pixels, excluding land pixels, Bailey and Werdell 2006
+            start_idx_x = (r-int(size_box/2))
+            stop_idx_x = (r+int(size_box/2)+1)
+            start_idx_y = (c-int(size_box/2))
+            stop_idx_y = (c+int(size_box/2)+1)
+
+            rhos_0444p00_box = rhos_0444p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+            rhos_0497p00_box = rhos_0497p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+            rhos_0560p00_box = rhos_0560p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+            rhos_0664p00_box = rhos_0664p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+            rhos_0704p00_box = rhos_0704p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+            rhos_0740p00_box = rhos_0740p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+            rhos_0782p00_box = rhos_0782p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+            rhos_0835p00_box = rhos_0835p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+            rhos_0865p00_box = rhos_0865p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+            rhos_1614p00_box = rhos_1614p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+            rhos_2202p00_box = rhos_2202p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]  
+            
+            # for cloud screening
+            rhot_1614p00_box = rhot_1614p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y] 
+            
+            flags_mask = rhot_1614p00_box>0.0215
+            
+            rhos_0444p00_box.mask =  rhos_0444p00_box.mask | flags_mask | donut_mask 
+            rhos_0497p00_box.mask =  rhos_0497p00_box.mask | flags_mask | donut_mask
+            rhos_0560p00_box.mask =  rhos_0560p00_box.mask | flags_mask | donut_mask
+            rhos_0664p00_box.mask =  rhos_0664p00_box.mask | flags_mask | donut_mask
+            
+            NGP = np.count_nonzero(flags_mask == 0) # Number Good Pixels, Bailey and Werdell 2006
                 
-            #     str_list_date = line_date[:-1].replace('=',',').split(',')
-            #     str_list_time = line_time[:-1].replace('=',',').split(',')
+            if sza<=75 and vza<=60 and NGP>NTP/2+1 and rhot_1614p00_box.mean()<=0.01:
+                # if nan, change mask            
+                rhos_0444p00_box = ma.masked_invalid(rhos_0444p00_box)
+                rhos_0497p00_box = ma.masked_invalid(rhos_0497p00_box)
+                rhos_0560p00_box = ma.masked_invalid(rhos_0560p00_box)
+                rhos_0664p00_box = ma.masked_invalid(rhos_0664p00_box)
+
+                NGP_rhos_0444p00 = np.count_nonzero(rhos_0444p00_box.mask == 0)
+                NGP_rhos_0497p00 = np.count_nonzero(rhos_0497p00_box.mask == 0)
+                NGP_rhos_0560p00 = np.count_nonzero(rhos_0560p00_box.mask == 0)
+                NGP_rhos_0664p00 = np.count_nonzero(rhos_0664p00_box.mask == 0)
+
+                mean_unfiltered_rhos_0444p00 = rhos_0444p00_box.mean()
+                mean_unfiltered_rhos_0497p00 = rhos_0497p00_box.mean()
+                mean_unfiltered_rhos_0560p00 = rhos_0560p00_box.mean()
+                mean_unfiltered_rhos_0664p00 = rhos_0664p00_box.mean()
+ 
+                std_unfiltered_rhos_0444p00 = rhos_0444p00_box.std()
+                std_unfiltered_rhos_0497p00 = rhos_0497p00_box.std()
+                std_unfiltered_rhos_0560p00 = rhos_0560p00_box.std()
+                std_unfiltered_rhos_0664p00 = rhos_0664p00_box.std()
+
+                # mask values that are not within +/- 1.5*std of mean\               
+                rhos_0444p00_box = ma.masked_outside(rhos_0444p00_box,mean_unfiltered_rhos_0444p00\
+                    -1.5*std_unfiltered_rhos_0444p00\
+                    , mean_unfiltered_rhos_0444p00\
+                    +1.5*std_unfiltered_rhos_0444p00)
+                rhos_0497p00_box = ma.masked_outside(rhos_0497p00_box,mean_unfiltered_rhos_0497p00\
+                    -1.5*std_unfiltered_rhos_0497p00\
+                    , mean_unfiltered_rhos_0497p00\
+                    +1.5*std_unfiltered_rhos_0497p00)
+                rhos_0560p00_box = ma.masked_outside(rhos_0560p00_box,mean_unfiltered_rhos_0560p00\
+                    -1.5*std_unfiltered_rhos_0560p00\
+                    , mean_unfiltered_rhos_0560p00\
+                    +1.5*std_unfiltered_rhos_0560p00)
+                rhos_0664p00_box = ma.masked_outside(rhos_0664p00_box,mean_unfiltered_rhos_0664p00\
+                    -1.5*std_unfiltered_rhos_0664p00\
+                    , mean_unfiltered_rhos_0664p00\
+                    +1.5*std_unfiltered_rhos_0664p00)
+
+                mean_filtered_rhos_0444p00 = rhos_0444p00_box.mean()
+                mean_filtered_rhos_0497p00 = rhos_0497p00_box.mean()
+                mean_filtered_rhos_0560p00 = rhos_0560p00_box.mean()
+                mean_filtered_rhos_0664p00 = rhos_0664p00_box.mean()
+
+                std_filtered_rhos_0444p00 = rhos_0444p00_box.std()
+                std_filtered_rhos_0497p00 = rhos_0497p00_box.std()
+                std_filtered_rhos_0560p00 = rhos_0560p00_box.std()
+                std_filtered_rhos_0664p00 = rhos_0664p00_box.std()
+
+                CV_filtered_rhos_0444p00 = std_filtered_rhos_0444p00/mean_filtered_rhos_0444p00
+                CV_filtered_rhos_0497p00 = std_filtered_rhos_0497p00/mean_filtered_rhos_0497p00
+                CV_filtered_rhos_0560p00 = std_filtered_rhos_0560p00/mean_filtered_rhos_0560p00
+                CV_filtered_rhos_0664p00 = std_filtered_rhos_0664p00/mean_filtered_rhos_0664p00
                 
-            #     n_ins = len(str_list_date)-1
-            #     for i in range(n_ins):
-            #         date_and_time_str = str_list_date[1:][i]+' '+str_list_time[1:][i]
-            #         date_format = "%d/%m/%Y %H:%M:%S"
-            #         ins_time.append(datetime.strptime(date_and_time_str, date_format))
-    
-            # delta_time = 2.0# float in hours   
-            # ins_time = np.array(ins_time)
-            # time_diff = ins_time - sat_time
-            # dt_hour = [i.total_seconds()/(60*60) for i in time_diff] # time diffence between in situ measurements and sat in hours
-            # idx_min = np.argmin(np.abs(dt_hour))
-            # matchup_idx_vec = np.abs(dt_hour) <= delta_time 
-    
-       #      # from aeronet_i.log
-       #         101  Lwn(412)=0.5702557894736842
-       # 102  Lwn(441)=0.7611690526315789
-       # 103  Lwn(489)=0.9938783157894736
-       # 104  Lwn(530)=0.7793456842105263
-       # 105  Lwn(551)=0.5839507894736842
-       # 106  Lwn(668)=0.06526310526315791
-       # 107  Lwn(869)=-0.004366210526315784
-       # 108  Lwn(1018)=-0.0016966842105263127
-            # 109  Lwn_f/Q(412)=0.5564285789473684
-            # 110  Lwn_f/Q(441)=0.7373514736842104
-            # 111  Lwn_f/Q(489)=0.9496013157894736
-            # 112  Lwn_f/Q(530)=0.7502892631578948
-            # 113  Lwn_f/Q(551)=0.5632072105263157
-            # 114  Lwn_f/Q(668)=0.06371473684210528
-            # 115  Lwn_f/Q(869)=-0.004366210526315784
-            # 116  Lwn_f/Q(1018)=-0.0016966842105263127
-    
-            ins_file_path = os.path.join(path_data,sensor_name,folder_name)+'/aeronet_i.log'
-    
-            with open(ins_file_path, 'r') as file:
-                ins_all_lines = file.readlines()
-                Lwn_fq_0442p00 = float(ins_all_lines[102-1][:-1].split('=')[1]) 
-                Lwn_fq_0491p00 = float(ins_all_lines[103-1][:-1].split('=')[1]) 
-                Lwn_fq_00551p0 = float(ins_all_lines[105-1][:-1].split('=')[1]) 
-                Lwn_fq_0668p00 = float(ins_all_lines[106-1][:-1].split('=')[1])   
-    
-            # from l2_dsf_new.log
-            # 90  kernel_rho_t=0.136428374656
-            # 96    kernel_wave_s=444,497,560,664,704,740,782,835,865,1614,2202
-            #.      0             1   2   3   4   5   6   7   8   9   10   11  
-            # 97  kernel_rho_s=0.0171095194906,...
-            # 98  kernel_sdev_s=0.000584191352004,...
-    
-            sat_file_path = os.path.join(path_data,sensor_name,folder_name)+'/l2_dsf_new.log'  
-    
-            with open(sat_file_path, 'r') as file:
-                ins_all_lines = file.readlines()
-                mean_filtered_rhot_1614p00 = float(ins_all_lines[90-1][:-1].replace('=',',').split(',')[10]) 
-                mean_filtered_rhos_0444p00 = float(ins_all_lines[97-1][:-1].replace('=',',').split(',')[1]) 
-                mean_filtered_rhos_0497p00 = float(ins_all_lines[97-1][:-1].replace('=',',').split(',')[2])
-                mean_filtered_rhos_0560p00 = float(ins_all_lines[97-1][:-1].replace('=',',').split(',')[3])
-                mean_filtered_rhos_0664p00 = float(ins_all_lines[97-1][:-1].replace('=',',').split(',')[4])
-    
-            if sza<=75 and vza<=60 and mean_filtered_rhot_1614p00<=0.01:
-                matchups_Lwn_0444p00_fq_sat_va.append(mean_filtered_rhos_0444p00*F0_0444p00/np.pi)
-                matchups_Lwn_0444p00_fq_ins_va.append(Lwn_fq_0442p00)  
-    
-                matchups_Lwn_0497p00_fq_sat_va.append(mean_filtered_rhos_0497p00*F0_0497p00/np.pi)
-                matchups_Lwn_0497p00_fq_ins_va.append(Lwn_fq_0491p00) 
-    
-                matchups_Lwn_0560p00_fq_sat_va.append(mean_filtered_rhos_0560p00*F0_0560p00/np.pi)
-                matchups_Lwn_0560p00_fq_ins_va.append(Lwn_fq_00551p0) 
-    
-                matchups_Lwn_0664p00_fq_sat_va.append(mean_filtered_rhos_0664p00*F0_0664p00/np.pi)
-                matchups_Lwn_0664p00_fq_ins_va.append(Lwn_fq_0668p00) 
-                      
-    
-    #%% plots  
-    prot_name = 'ba' 
-    sensor_name = 'MSI'
-    rmse_val_0444p00_ba, mean_abs_rel_diff_0444p00_ba, mean_rel_diff_0444p00_ba, r_sqr_0444p00_ba = Matchups_MAIN.plot_scatter(matchups_Lwn_0444p00_fq_ins_ba,matchups_Lwn_0444p00_fq_sat_ba,'444.0',path_out,prot_name,sensor_name,min_val=-0.50,max_val=3.50) 
-    rmse_val_0497p00_ba, mean_abs_rel_diff_0497p00_ba, mean_rel_diff_0497p00_ba, r_sqr_0497p00_ba = Matchups_MAIN.plot_scatter(matchups_Lwn_0497p00_fq_ins_ba,matchups_Lwn_0497p00_fq_sat_ba,'497.0',path_out,prot_name,sensor_name,min_val= 0.00,max_val=4.00) 
-    rmse_val_0560p00_ba, mean_abs_rel_diff_0560p00_ba, mean_rel_diff_0560p00_ba, r_sqr_0560p00_ba = Matchups_MAIN.plot_scatter(matchups_Lwn_0560p00_fq_ins_ba,matchups_Lwn_0560p00_fq_sat_ba,'560.0',path_out,prot_name,sensor_name,min_val= 0.00,max_val=4.00) 
-    rmse_val_0664p00_ba, mean_abs_rel_diff_0664p00_ba, mean_rel_diff_0664p00_ba, r_sqr_0664p00_ba = Matchups_MAIN.plot_scatter(matchups_Lwn_0664p00_fq_ins_ba,matchups_Lwn_0664p00_fq_sat_ba,'664.0',path_out,prot_name,sensor_name,min_val=-0.20,max_val=1.50) 
-    
-    #%% plots  
-    prot_name = 'pa' 
-    sensor_name = 'MSI'
-    rmse_val_0444p00_pa, mean_abs_rel_diff_0444p00_pa, mean_rel_diff_0444p00_pa, r_sqr_0444p00_pa = Matchups_MAIN.plot_scatter(matchups_Lwn_0444p00_fq_ins_pa,matchups_Lwn_0444p00_fq_sat_pa,'444.0',path_out,prot_name,sensor_name,min_val=-0.50,max_val=3.50) 
-    rmse_val_0497p00_pa, mean_abs_rel_diff_0497p00_pa, mean_rel_diff_0497p00_pa, r_sqr_0497p00_pa = Matchups_MAIN.plot_scatter(matchups_Lwn_0497p00_fq_ins_pa,matchups_Lwn_0497p00_fq_sat_pa,'497.0',path_out,prot_name,sensor_name,min_val= 0.00,max_val=4.00) 
-    rmse_val_0560p00_pa, mean_abs_rel_diff_0560p00_pa, mean_rel_diff_0560p00_pa, r_sqr_0560p00_pa = Matchups_MAIN.plot_scatter(matchups_Lwn_0560p00_fq_ins_pa,matchups_Lwn_0560p00_fq_sat_pa,'560.0',path_out,prot_name,sensor_name,min_val= 0.00,max_val=4.00) 
-    rmse_val_0664p00_pa, mean_abs_rel_diff_0664p00_pa, mean_rel_diff_0664p00_pa, r_sqr_0664p00_pa = Matchups_MAIN.plot_scatter(matchups_Lwn_0664p00_fq_ins_pa,matchups_Lwn_0664p00_fq_sat_pa,'664.0',path_out,prot_name,sensor_name,min_val=-0.20,max_val=1.50) 
-    
-    #%% plots  
-    prot_name = 'va' 
-    sensor_name = 'MSI'
-    rmse_val_0444p00_va, mean_abs_rel_diff_0444p00_va, mean_rel_diff_0444p00_va, r_sqr_0444p00_va = Matchups_MAIN.plot_scatter(matchups_Lwn_0444p00_fq_ins_va,matchups_Lwn_0444p00_fq_sat_va,'444.0',path_out,prot_name,sensor_name,min_val=-0.50,max_val=3.50) 
-    rmse_val_0497p00_va, mean_abs_rel_diff_0497p00_va, mean_rel_diff_0497p00_va, r_sqr_0497p00_va = Matchups_MAIN.plot_scatter(matchups_Lwn_0497p00_fq_ins_va,matchups_Lwn_0497p00_fq_sat_va,'497.0',path_out,prot_name,sensor_name,min_val= 0.00,max_val=4.00) 
-    rmse_val_0560p00_va, mean_abs_rel_diff_0560p00_va, mean_rel_diff_0560p00_va, r_sqr_0560p00_va = Matchups_MAIN.plot_scatter(matchups_Lwn_0560p00_fq_ins_va,matchups_Lwn_0560p00_fq_sat_va,'560.0',path_out,prot_name,sensor_name,min_val= 0.00,max_val=4.00) 
-    rmse_val_0664p00_va, mean_abs_rel_diff_0664p00_va, mean_rel_diff_0664p00_va, r_sqr_0664p00_va = Matchups_MAIN.plot_scatter(matchups_Lwn_0664p00_fq_ins_va,matchups_Lwn_0664p00_fq_sat_va,'664.0',path_out,prot_name,sensor_name,min_val=-0.20,max_val=1.50) 
-    
-    #%%
-    # rmse
-    rmse_ba = [rmse_val_0444p00_ba,rmse_val_0497p00_ba,rmse_val_0560p00_ba,rmse_val_0664p00_ba]
-    rmse_pa = [rmse_val_0444p00_pa,rmse_val_0497p00_pa,rmse_val_0560p00_pa,rmse_val_0664p00_pa]
-    rmse_va = [rmse_val_0444p00_va,rmse_val_0497p00_va,rmse_val_0560p00_va,rmse_val_0664p00_va]
-    wv = [444.0,497.0,560.0,664.0]
-    plt.figure()
-    plt.plot(wv,rmse_ba,'-o')
-    plt.plot(wv,rmse_pa,'-o')
-    plt.plot(wv,rmse_va,'-o')
-    plt.xlabel('Wavelength [nm]')
-    plt.ylabel('rmse')
-    plt.legend(['Bailey and Werdell (2006)','Ilori, Pahlevan and Knudby (2019)','Vanhellemont (2019)'])
-    plt.show()
-    
-    ofname = 'S2A_rmse.pdf'
-    ofname = os.path.join(path_out,'source',ofname)   
-    plt.savefig(ofname, dpi=300)
-    
-    # mean_abs_rel_diff
-    mean_abs_rel_diff_ba = [mean_abs_rel_diff_0444p00_ba,mean_abs_rel_diff_0497p00_ba,\
-        mean_abs_rel_diff_0560p00_ba,mean_abs_rel_diff_0664p00_ba]
-    mean_abs_rel_diff_pa = [mean_abs_rel_diff_0444p00_pa,mean_abs_rel_diff_0497p00_pa,\
-        mean_abs_rel_diff_0560p00_pa,mean_abs_rel_diff_0664p00_pa]
-    mean_abs_rel_diff_va = [mean_abs_rel_diff_0444p00_va,mean_abs_rel_diff_0497p00_va,\
-        mean_abs_rel_diff_0560p00_va,mean_abs_rel_diff_0664p00_va]    
-    wv = [444.0,497.0,560.0,664.0]
-    plt.figure()
-    plt.plot(wv,mean_abs_rel_diff_ba,'-o')
-    plt.plot(wv,mean_abs_rel_diff_pa,'-o')
-    plt.plot(wv,mean_abs_rel_diff_va,'-o')
-    plt.xlabel('Wavelength [nm]')
-    plt.ylabel('MAPD [%]')
-    # plt.legend(['Bailey and Werdell','Pahlevan','Vanhellemont'])
-    plt.show()
-    
-    ofname = 'S2A_mean_abs_rel_diff.pdf'
-    ofname = os.path.join(path_out,'source',ofname)   
-    plt.savefig(ofname, dpi=300)
-    
-    # mean_rel_diff
-    mean_rel_diff_ba = [mean_rel_diff_0444p00_ba,mean_rel_diff_0497p00_ba,\
-        mean_rel_diff_0560p00_ba,mean_rel_diff_0664p00_ba]
-    mean_rel_diff_pa = [mean_rel_diff_0444p00_pa,mean_rel_diff_0497p00_pa,\
-        mean_rel_diff_0560p00_pa,mean_rel_diff_0664p00_pa]
-    mean_rel_diff_va = [mean_rel_diff_0444p00_va,mean_rel_diff_0497p00_va,\
-        mean_rel_diff_0560p00_va,mean_rel_diff_0664p00_va]    
-    wv = [444.0,497.0,560.0,664.0]
-    plt.figure()
-    plt.plot(wv,mean_rel_diff_ba,'-o')
-    plt.plot(wv,mean_rel_diff_pa,'-o')
-    plt.plot(wv,mean_rel_diff_va,'-o')
-    plt.xlabel('Wavelength [nm]')
-    plt.ylabel('MPD [%]')
-    # plt.legend(['Bailey and Werdell','Pahlevan','Vanhellemont'])
-    plt.show()    
-    
-    ofname = 'S2A_mean_rel_diff.pdf'
-    ofname = os.path.join(path_out,'source',ofname)   
-    plt.savefig(ofname, dpi=300)
-    
-    # r_sqr
-    r_sqr_ba = [r_sqr_0444p00_ba,r_sqr_0497p00_ba,\
-        r_sqr_0560p00_ba,r_sqr_0664p00_ba]
-    r_sqr_pa = [r_sqr_0444p00_pa,r_sqr_0497p00_pa,\
-        r_sqr_0560p00_pa,r_sqr_0664p00_pa]
-    r_sqr_va = [r_sqr_0444p00_va,r_sqr_0497p00_va,\
-        r_sqr_0560p00_va,r_sqr_0664p00_va]    
-    wv = [444.0,497.0,560.0,664.0]
-    plt.figure()
-    plt.plot(wv,r_sqr_ba,'-o')
-    plt.plot(wv,r_sqr_pa,'-o')
-    plt.plot(wv,r_sqr_va,'-o')
-    plt.xlabel('Wavelength [nm]')
-    plt.ylabel('$r^2$')
-    # plt.legend(['Bailey and Werdell','Pahlevan','Vanhellemont'])
-    plt.show()    
-    
-    ofname = 'S2A_r_sqr.pdf'
-    ofname = os.path.join(path_out,'source',ofname)   
-    plt.savefig(ofname, dpi=300)  
-    
-    #            print(ins_time)
-                
+                CVs = [CV_filtered_rhos_0444p00,CV_filtered_rhos_0497p00, CV_filtered_rhos_0560p00]
+                print(CVs)
+                MedianCV = np.nanmedian(CVs)
+
+                print('Median CV={:.4f}'.format(MedianCV))
+               
+                if MedianCV <= 0.15:
+                    # Rrs 0444p00
+                    print('444.0')
+                    if NGP_rhos_0444p00<NTP/2+1:
+                        print('Exceeded: NGP_rhos_0444p00={:.0f}'.format(NGP_rhos_0444p00))
+                    else:
+                        matchups_Lwn_0444p00_fq_sat_pa.append(mean_filtered_rhos_0444p00*F0_0444p00/np.pi)
+                        matchups_Lwn_0444p00_fq_ins_pa.append(Lwn_fq_0442p00)
+                        matchups_Lwn_0444p00_fq_ins_pa_station.append(station_name)
+                        matchups_Lwn_0444p00_fq_sat_pa_time.append(sat_time)
+                    # Rrs 0497p00
+                    print('497.0')
+                    if NGP_rhos_0497p00<NTP/2+1:
+                        print('Exceeded: NGP_rhos_0497p00={:.0f}'.format(NGP_rhos_0497p00))
+                    else:
+                        matchups_Lwn_0497p00_fq_sat_pa.append(mean_filtered_rhos_0497p00*F0_0497p00/np.pi)
+                        matchups_Lwn_0497p00_fq_ins_pa.append(Lwn_fq_0491p00)
+                        matchups_Lwn_0497p00_fq_ins_pa_station.append(station_name)
+                        matchups_Lwn_0497p00_fq_sat_pa_time.append(sat_time)
+                    # Rrs 0560p00
+                    print('560.0')
+                    if NGP_rhos_0560p00<NTP/2+1:
+                        print('Exceeded: NGP_rhos_0560p00={:.0f}'.format(NGP_rhos_0560p00))
+                    else:
+                        matchups_Lwn_0560p00_fq_sat_pa.append(mean_filtered_rhos_0560p00*F0_0560p00/np.pi)
+                        matchups_Lwn_0560p00_fq_ins_pa.append(Lwn_fq_00551p0)
+                        matchups_Lwn_0560p00_fq_ins_pa_station.append(station_name)
+                        matchups_Lwn_0560p00_fq_sat_pa_time.append(sat_time)
+                    # Rrs 0664p00
+                    print('664.0')
+                    if NGP_rhos_0664p00<NTP/2+1:
+                        print('Exceeded: NGP_rhos_0664p00={:.0f}'.format(NGP_rhos_0664p00))
+                    else:
+                        matchups_Lwn_0664p00_fq_sat_pa.append(mean_filtered_rhos_0664p00*F0_0664p00/np.pi)
+                        matchups_Lwn_0664p00_fq_ins_pa.append(Lwn_fq_0668p00)
+                        matchups_Lwn_0664p00_fq_ins_pa_station.append(station_name)
+                        matchups_Lwn_0664p00_fq_sat_pa_time.append(sat_time)
+                else:
+                    print('Median CV exceeds criteria: Median[CV]={:.4f}'.format(MedianCV))
+            else:
+                print('Angles exceeds criteria: sza={:.2f}'.format(sza)+'; vza={:.2f}'.format(vza)+\
+                    '; OR mean of rhot_1614={:.4f}'.format(rhot_1614p00_box.mean())+'>0.01!\n'+\
+                    '; OR NGP={:.0f}'.format(NGP)+'< NTP/2+1={:.0f}'.format(NTP/2+1)+'!')
+#                print('Angles exceeds criteria: sza='+str(sza)+'; vza='+str(vza)+'; OR NGP='+str(NGP)+'< NTP/2+1='+str(NTP/2+1)+'!')
+        else:
+            print('Not matchups for '+folder_name) 
+
+        # Vanhellemot
+        print('--Vanhellemot')
+
+        # in situ from aeronet_i.log
+        # in_situ_lat, in_situ_lon = get_lat_lon_ins(station_name)
+        
+        # r, c = create_extract.find_row_column_from_lat_lon(lat,lon,in_situ_lat,in_situ_lon)
+
+        # in situ data        
+        # with open(os.path.join(path_data,sensor_name,file_name[2:-1]), 'r') as file:
+        #     ins_time = []
+        #     # Date
+        #     line_num_date = 3-1
+        #     line_num_time = 4-1
+        #     ins_all_lines = file.readlines()
+        #     line_date = ins_all_lines[line_num_date]   
+        #     line_time = ins_all_lines[line_num_time] 
+            
+        #     str_list_date = line_date[:-1].replace('=',',').split(',')
+        #     str_list_time = line_time[:-1].replace('=',',').split(',')
+            
+        #     n_ins = len(str_list_date)-1
+        #     for i in range(n_ins):
+        #         date_and_time_str = str_list_date[1:][i]+' '+str_list_time[1:][i]
+        #         date_format = "%d/%m/%Y %H:%M:%S"
+        #         ins_time.append(datetime.strptime(date_and_time_str, date_format))
+
+        # delta_time = 2.0# float in hours   
+        # ins_time = np.array(ins_time)
+        # time_diff = ins_time - sat_time
+        # dt_hour = [i.total_seconds()/(60*60) for i in time_diff] # time diffence between in situ measurements and sat in hours
+        # idx_min = np.argmin(np.abs(dt_hour))
+        # matchup_idx_vec = np.abs(dt_hour) <= delta_time 
+
+   #      # from aeronet_i.log
+   #         101  Lwn(412)=0.5702557894736842
+   # 102  Lwn(441)=0.7611690526315789
+   # 103  Lwn(489)=0.9938783157894736
+   # 104  Lwn(530)=0.7793456842105263
+   # 105  Lwn(551)=0.5839507894736842
+   # 106  Lwn(668)=0.06526310526315791
+   # 107  Lwn(869)=-0.004366210526315784
+   # 108  Lwn(1018)=-0.0016966842105263127
+        # 109  Lwn_f/Q(412)=0.5564285789473684
+        # 110  Lwn_f/Q(441)=0.7373514736842104
+        # 111  Lwn_f/Q(489)=0.9496013157894736
+        # 112  Lwn_f/Q(530)=0.7502892631578948
+        # 113  Lwn_f/Q(551)=0.5632072105263157
+        # 114  Lwn_f/Q(668)=0.06371473684210528
+        # 115  Lwn_f/Q(869)=-0.004366210526315784
+        # 116  Lwn_f/Q(1018)=-0.0016966842105263127
+
+        ins_file_path = os.path.join(path_data,sensor_name,folder_name)+'/aeronet_i.log'
+
+        with open(ins_file_path, 'r') as file:
+            ins_all_lines = file.readlines()
+            Lwn_fq_0442p00 = float(ins_all_lines[102-1][:-1].split('=')[1]) 
+            Lwn_fq_0491p00 = float(ins_all_lines[103-1][:-1].split('=')[1]) 
+            Lwn_fq_00551p0 = float(ins_all_lines[105-1][:-1].split('=')[1]) 
+            Lwn_fq_0668p00 = float(ins_all_lines[106-1][:-1].split('=')[1])   
+
+        # from l2_dsf_new.log
+        # 90  kernel_rho_t=0.136428374656
+        # 96    kernel_wave_s=444,497,560,664,704,740,782,835,865,1614,2202
+        #.      0             1   2   3   4   5   6   7   8   9   10   11  
+        # 97  kernel_rho_s=0.0171095194906,...
+        # 98  kernel_sdev_s=0.000584191352004,...
+
+        sat_file_path = os.path.join(path_data,sensor_name,folder_name)+'/l2_dsf_new.log'  
+
+        with open(sat_file_path, 'r') as file:
+            ins_all_lines = file.readlines()
+            mean_filtered_rhot_1614p00 = float(ins_all_lines[90-1][:-1].replace('=',',').split(',')[10]) 
+            mean_filtered_rhos_0444p00 = float(ins_all_lines[97-1][:-1].replace('=',',').split(',')[1]) 
+            mean_filtered_rhos_0497p00 = float(ins_all_lines[97-1][:-1].replace('=',',').split(',')[2])
+            mean_filtered_rhos_0560p00 = float(ins_all_lines[97-1][:-1].replace('=',',').split(',')[3])
+            mean_filtered_rhos_0664p00 = float(ins_all_lines[97-1][:-1].replace('=',',').split(',')[4])
+
+        if sza<=75 and vza<=60 and mean_filtered_rhot_1614p00<=0.01:
+            matchups_Lwn_0444p00_fq_sat_va.append(mean_filtered_rhos_0444p00*F0_0444p00/np.pi)
+            matchups_Lwn_0444p00_fq_ins_va.append(Lwn_fq_0442p00)
+            matchups_Lwn_0444p00_fq_ins_va_station.append(station_name)
+            matchups_Lwn_0444p00_fq_sat_va_time.append(sat_time)
+
+            matchups_Lwn_0497p00_fq_sat_va.append(mean_filtered_rhos_0497p00*F0_0497p00/np.pi)
+            matchups_Lwn_0497p00_fq_ins_va.append(Lwn_fq_0491p00)
+            matchups_Lwn_0497p00_fq_ins_va_station.append(station_name)
+            matchups_Lwn_0497p00_fq_sat_va_time.append(sat_time)
+
+            matchups_Lwn_0560p00_fq_sat_va.append(mean_filtered_rhos_0560p00*F0_0560p00/np.pi)
+            matchups_Lwn_0560p00_fq_ins_va.append(Lwn_fq_00551p0)
+            matchups_Lwn_0560p00_fq_ins_va_station.append(station_name)
+            matchups_Lwn_0560p00_fq_sat_va_time.append(sat_time)
+
+            matchups_Lwn_0664p00_fq_sat_va.append(mean_filtered_rhos_0664p00*F0_0664p00/np.pi)
+            matchups_Lwn_0664p00_fq_ins_va.append(Lwn_fq_0668p00)
+            matchups_Lwn_0664p00_fq_ins_va_station.append(station_name)
+            matchups_Lwn_0664p00_fq_sat_va_time.append(sat_time)
+                  
+
+#%% plots  
+prot_name = 'ba' 
+sensor_name = 'MSI'
+rmse_val_0444p00_ba, mean_abs_rel_diff_0444p00_ba, mean_rel_diff_0444p00_ba, r_sqr_0444p00_ba = plot_scatter(
+    matchups_Lwn_0444p00_fq_ins_ba,matchups_Lwn_0444p00_fq_sat_ba,'444.0',path_out,prot_name,sensor_name,\
+    matchups_Lwn_0444p00_fq_ins_ba_station,min_val=-0.50,max_val=3.50) 
+rmse_val_0497p00_ba, mean_abs_rel_diff_0497p00_ba, mean_rel_diff_0497p00_ba, r_sqr_0497p00_ba = plot_scatter(
+    matchups_Lwn_0497p00_fq_ins_ba,matchups_Lwn_0497p00_fq_sat_ba,'497.0',path_out,prot_name,sensor_name,\
+    matchups_Lwn_0497p00_fq_ins_ba_station,min_val= 0.00,max_val=4.00) 
+rmse_val_0560p00_ba, mean_abs_rel_diff_0560p00_ba, mean_rel_diff_0560p00_ba, r_sqr_0560p00_ba = plot_scatter(
+    matchups_Lwn_0560p00_fq_ins_ba,matchups_Lwn_0560p00_fq_sat_ba,'560.0',path_out,prot_name,sensor_name,\
+    matchups_Lwn_0560p00_fq_ins_ba_station,min_val= 0.00,max_val=4.00) 
+rmse_val_0664p00_ba, mean_abs_rel_diff_0664p00_ba, mean_rel_diff_0664p00_ba, r_sqr_0664p00_ba = plot_scatter(
+    matchups_Lwn_0664p00_fq_ins_ba,matchups_Lwn_0664p00_fq_sat_ba,'664.0',path_out,prot_name,sensor_name,\
+    matchups_Lwn_0664p00_fq_ins_ba_station,min_val=-0.20,max_val=1.50) 
+
+#% plots  
+prot_name = 'pa' 
+sensor_name = 'MSI'
+rmse_val_0444p00_pa, mean_abs_rel_diff_0444p00_pa, mean_rel_diff_0444p00_pa, r_sqr_0444p00_pa = plot_scatter(
+    matchups_Lwn_0444p00_fq_ins_pa,matchups_Lwn_0444p00_fq_sat_pa,'444.0',path_out,prot_name,sensor_name,\
+    matchups_Lwn_0444p00_fq_ins_pa_station,min_val=-0.50,max_val=3.50) 
+rmse_val_0497p00_pa, mean_abs_rel_diff_0497p00_pa, mean_rel_diff_0497p00_pa, r_sqr_0497p00_pa = plot_scatter(
+    matchups_Lwn_0497p00_fq_ins_pa,matchups_Lwn_0497p00_fq_sat_pa,'497.0',path_out,prot_name,sensor_name,\
+    matchups_Lwn_0497p00_fq_ins_pa_station,min_val= 0.00,max_val=4.00) 
+rmse_val_0560p00_pa, mean_abs_rel_diff_0560p00_pa, mean_rel_diff_0560p00_pa, r_sqr_0560p00_pa = plot_scatter(
+    matchups_Lwn_0560p00_fq_ins_pa,matchups_Lwn_0560p00_fq_sat_pa,'560.0',path_out,prot_name,sensor_name,\
+    matchups_Lwn_0560p00_fq_ins_pa_station,min_val= 0.00,max_val=4.00) 
+rmse_val_0664p00_pa, mean_abs_rel_diff_0664p00_pa, mean_rel_diff_0664p00_pa, r_sqr_0664p00_pa = plot_scatter(
+    matchups_Lwn_0664p00_fq_ins_pa,matchups_Lwn_0664p00_fq_sat_pa,'664.0',path_out,prot_name,sensor_name,\
+    matchups_Lwn_0664p00_fq_ins_pa_station,min_val=-0.20,max_val=1.50) 
+
+#% plots  
+prot_name = 'va' 
+sensor_name = 'MSI'
+rmse_val_0444p00_va, mean_abs_rel_diff_0444p00_va, mean_rel_diff_0444p00_va, r_sqr_0444p00_va = plot_scatter(
+    matchups_Lwn_0444p00_fq_ins_va,matchups_Lwn_0444p00_fq_sat_va,'444.0',path_out,prot_name,sensor_name,\
+    matchups_Lwn_0444p00_fq_ins_va_station,min_val=-0.50,max_val=3.50) 
+rmse_val_0497p00_va, mean_abs_rel_diff_0497p00_va, mean_rel_diff_0497p00_va, r_sqr_0497p00_va = plot_scatter(
+    matchups_Lwn_0497p00_fq_ins_va,matchups_Lwn_0497p00_fq_sat_va,'497.0',path_out,prot_name,sensor_name,\
+    matchups_Lwn_0497p00_fq_ins_va_station,min_val= 0.00,max_val=4.00) 
+rmse_val_0560p00_va, mean_abs_rel_diff_0560p00_va, mean_rel_diff_0560p00_va, r_sqr_0560p00_va = plot_scatter(
+    matchups_Lwn_0560p00_fq_ins_va,matchups_Lwn_0560p00_fq_sat_va,'560.0',path_out,prot_name,sensor_name,\
+    matchups_Lwn_0560p00_fq_ins_va_station,min_val= 0.00,max_val=4.00) 
+rmse_val_0664p00_va, mean_abs_rel_diff_0664p00_va, mean_rel_diff_0664p00_va, r_sqr_0664p00_va = plot_scatter(
+    matchups_Lwn_0664p00_fq_ins_va,matchups_Lwn_0664p00_fq_sat_va,'664.0',path_out,prot_name,sensor_name,\
+    matchups_Lwn_0664p00_fq_ins_va_station,min_val=-0.20,max_val=1.50) 
+
+
 #%%
-if __name__ == '__main__':
-    main()  
+# rmse
+rmse_ba = [rmse_val_0444p00_ba,rmse_val_0497p00_ba,rmse_val_0560p00_ba,rmse_val_0664p00_ba]
+rmse_pa = [rmse_val_0444p00_pa,rmse_val_0497p00_pa,rmse_val_0560p00_pa,rmse_val_0664p00_pa]
+rmse_va = [rmse_val_0444p00_va,rmse_val_0497p00_va,rmse_val_0560p00_va,rmse_val_0664p00_va]
+wv = [444.0,497.0,560.0,664.0]
+plt.figure()
+plt.plot(wv,rmse_ba,'-o')
+plt.plot(wv,rmse_pa,'-o')
+plt.plot(wv,rmse_va,'-o')
+plt.xlabel('Wavelength [nm]',fontsize=12)
+plt.ylabel('rmse',fontsize=12)
+plt.legend(['BW06','IPK19','V19'])
+plt.show()
+
+ofname = 'S2A_rmse.pdf'
+ofname = os.path.join(path_out,'source',ofname)   
+plt.savefig(ofname, dpi=300)
+
+# mean_abs_rel_diff
+mean_abs_rel_diff_ba = [mean_abs_rel_diff_0444p00_ba,mean_abs_rel_diff_0497p00_ba,\
+    mean_abs_rel_diff_0560p00_ba,mean_abs_rel_diff_0664p00_ba]
+mean_abs_rel_diff_pa = [mean_abs_rel_diff_0444p00_pa,mean_abs_rel_diff_0497p00_pa,\
+    mean_abs_rel_diff_0560p00_pa,mean_abs_rel_diff_0664p00_pa]
+mean_abs_rel_diff_va = [mean_abs_rel_diff_0444p00_va,mean_abs_rel_diff_0497p00_va,\
+    mean_abs_rel_diff_0560p00_va,mean_abs_rel_diff_0664p00_va]    
+wv = [444.0,497.0,560.0,664.0]
+plt.figure()
+plt.plot(wv,mean_abs_rel_diff_ba,'-o')
+plt.plot(wv,mean_abs_rel_diff_pa,'-o')
+plt.plot(wv,mean_abs_rel_diff_va,'-o')
+plt.xlabel('Wavelength [nm]',fontsize=12)
+plt.ylabel('MAPD [%]',fontsize=12)
+# plt.legend(['Bailey and Werdell','Pahlevan','Vanhellemont'])
+plt.show()
+
+ofname = 'S2A_mean_abs_rel_diff.pdf'
+ofname = os.path.join(path_out,'source',ofname)   
+plt.savefig(ofname, dpi=300)
+
+# mean_rel_diff
+mean_rel_diff_ba = [mean_rel_diff_0444p00_ba,mean_rel_diff_0497p00_ba,\
+    mean_rel_diff_0560p00_ba,mean_rel_diff_0664p00_ba]
+mean_rel_diff_pa = [mean_rel_diff_0444p00_pa,mean_rel_diff_0497p00_pa,\
+    mean_rel_diff_0560p00_pa,mean_rel_diff_0664p00_pa]
+mean_rel_diff_va = [mean_rel_diff_0444p00_va,mean_rel_diff_0497p00_va,\
+    mean_rel_diff_0560p00_va,mean_rel_diff_0664p00_va]    
+wv = [444.0,497.0,560.0,664.0]
+plt.figure()
+plt.plot(wv,mean_rel_diff_ba,'-o')
+plt.plot(wv,mean_rel_diff_pa,'-o')
+plt.plot(wv,mean_rel_diff_va,'-o')
+plt.xlabel('Wavelength [nm]',fontsize=12)
+plt.ylabel('MPD [%]',fontsize=12)
+# plt.legend(['Bailey and Werdell','Pahlevan','Vanhellemont'])
+plt.show()    
+
+ofname = 'S2A_mean_rel_diff.pdf'
+ofname = os.path.join(path_out,'source',ofname)   
+plt.savefig(ofname, dpi=300)
+
+# r_sqr
+r_sqr_ba = [r_sqr_0444p00_ba,r_sqr_0497p00_ba,\
+    r_sqr_0560p00_ba,r_sqr_0664p00_ba]
+r_sqr_pa = [r_sqr_0444p00_pa,r_sqr_0497p00_pa,\
+    r_sqr_0560p00_pa,r_sqr_0664p00_pa]
+r_sqr_va = [r_sqr_0444p00_va,r_sqr_0497p00_va,\
+    r_sqr_0560p00_va,r_sqr_0664p00_va]    
+wv = [444.0,497.0,560.0,664.0]
+plt.figure()
+plt.plot(wv,r_sqr_ba,'-o')
+plt.plot(wv,r_sqr_pa,'-o')
+plt.plot(wv,r_sqr_va,'-o')
+plt.xlabel('Wavelength [nm]',fontsize=12)
+plt.ylabel('$r^2$',fontsize=12)
+# plt.legend(['Bailey and Werdell','Pahlevan','Vanhellemont'])
+plt.show()    
+
+ofname = 'S2A_r_sqr.pdf'
+ofname = os.path.join(path_out,'source',ofname)   
+plt.savefig(ofname, dpi=300)  
+
+#            print(ins_time)
+#%% all approaches comparison
+notation_flag = 0 # to display percentage difference in the plot
+plot_all_methods('444.0',notation_flag,path_out,min_val=-2.00,max_val=4.0)
+plot_all_methods('497.0',notation_flag,path_out,min_val=-1.00,max_val=8.0)
+plot_all_methods('560.0',notation_flag,path_out,min_val=-1.00,max_val=6.0)
+plot_all_methods('664.0',notation_flag,path_out,min_val=-0.60,max_val=2.0)                 
+##%%
+#if __name__ == '__main__':
+#    main()  
 #%% aeronet_daily.log example
 '''
      1	## Log generated at 2018-03-28 15:27:15

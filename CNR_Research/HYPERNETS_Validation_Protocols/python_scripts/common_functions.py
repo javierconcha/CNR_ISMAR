@@ -20,6 +20,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import  numpy as np
+import os
+from netCDF4 import Dataset
 
 def get_lat_lon_ins(station_name):
     if station_name == 'Galata_Platform': # Black Sea
@@ -66,6 +68,14 @@ def get_lat_lon_ins(station_name):
 def rmse(predictions, targets):
     return np.sqrt(((np.asarray(predictions) - np.asarray(targets)) ** 2).mean())    
 
+#%% Get FO from Thuiller
+def get_F0(wl,path_main):
+    path_to_file = os.path.join(path_main,'Thuillier_F0.nc')
+    nc_f0 = Dataset(path_to_file,'r')
+    Wavelength = nc_f0.variables['Wavelength'][:]
+    F0 = nc_f0.variables['F0'][:]
+    F0_val = np.interp(wl,Wavelength,F0)
+    return F0_val
 
 def convert_DMS_to_decimal(DD,MM,SS,cardinal):
     D = DD + (MM/60) + (SS/3600)
