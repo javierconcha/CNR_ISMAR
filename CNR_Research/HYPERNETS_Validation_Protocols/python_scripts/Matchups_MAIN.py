@@ -126,7 +126,32 @@ def get_F0(wl,path_main):
 def rmse(predictions, targets):
     return np.sqrt(((np.asarray(predictions) - np.asarray(targets)) ** 2).mean())       
 #%%
-def plot_scatter(x,y,str1,path_out,prot_name,sensor_name,station_vec,min_val,max_val):  
+def plot_scatter(x,y,str1,path_out,prot_name,sensor_name,station_vec,min_val,max_val): 
+
+    rmse_val = np.nan
+    mean_abs_rel_diff = np.nan
+    mean_rel_diff = np.nan
+    r_value = np.nan
+    rmse_val_Venise = np.nan
+    mean_abs_rel_diff_Venise = np.nan
+    mean_rel_diff_Venise = np.nan
+    r_value_Venise = np.nan
+    rmse_val_Gloria = np.nan
+    mean_abs_rel_diff_Gloria = np.nan
+    mean_rel_diff_Gloria = np.nan
+    r_value_Gloria = np.nan
+    rmse_val_Galata_Platform = np.nan
+    mean_abs_rel_diff_Galata_Platform = np.nan
+    mean_rel_diff_Galata_Platform = np.nan
+    r_value_Galata_Platform = np.nan
+    rmse_val_Helsinki_Lighthouse = np.nan
+    mean_abs_rel_diff_Helsinki_Lighthouse = np.nan
+    mean_rel_diff_Helsinki_Lighthouse = np.nan
+    r_value_Helsinki_Lighthouse = np.nan
+    rmse_val_Gustav_Dalen_Tower = np.nan
+    mean_abs_rel_diff_Gustav_Dalen_Tower = np.nan
+    mean_rel_diff_Gustav_Dalen_Tower = np.nan
+    r_value_Gustav_Dalen_Tower  = np.nan
 
     count_Venise = 0
     count_Gloria = 0
@@ -138,21 +163,27 @@ def plot_scatter(x,y,str1,path_out,prot_name,sensor_name,station_vec,min_val,max
     #plt.errorbar(x, y, xerr=e_x, yerr=e_y, fmt='or')
     for cnt, line in enumerate(y):
         if station_vec[cnt] == 'Venise':
-            mrk_style = 'or'
+            mrk_color = 'r'
             count_Venise = count_Venise+1
         elif station_vec[cnt] == 'Gloria':
-            mrk_style = 'og'
+            mrk_color = 'g'
             count_Gloria = count_Gloria+1
         elif station_vec[cnt] == 'Galata_Platform':
-            mrk_style = 'ob'
+            mrk_color = 'b'
             count_Galata_Platform = count_Galata_Platform+1
         elif station_vec[cnt] == 'Helsinki_Lighthouse':
-            mrk_style = 'om'
+            mrk_color = 'm'
             count_Helsinki_Lighthouse = count_Helsinki_Lighthouse+1
         elif station_vec[cnt] == 'Gustav_Dalen_Tower':
-            mrk_style = 'oc'
+            mrk_color = 'c'
             count_Gustav_Dalen_Tower = count_Gustav_Dalen_Tower+1
-        plt.plot(x[cnt], y[cnt],mrk_style)
+
+        if prot_name == 'ba':
+            mrk_style = 'x'
+        elif  prot_name == 'zi':
+            mrk_style = '+' 
+
+        plt.plot(x[cnt], y[cnt],color=mrk_color,marker=mrk_style)
     plt.axis([min_val, max_val, min_val, max_val])
     plt.gca().set_aspect('equal', adjustable='box')
     # plot 1:1 line
@@ -172,17 +203,69 @@ def plot_scatter(x,y,str1,path_out,prot_name,sensor_name,station_vec,min_val,max
     
     # stats
     N = len(x)
-    rmse_val = rmse(y,x)
+    
     ref_obs = np.asarray(x)
     sat_obs = np.asarray(y)
-    
-        # the mean of relative (signed) percent differences
+    rmse_val = rmse(sat_obs,ref_obs)
+
+            # the mean of relative (signed) percent differences
     rel_diff = 100*(ref_obs-sat_obs)/ref_obs
     mean_rel_diff = np.mean(rel_diff)
         
         #  the mean of absolute (unsigned) percent differences
     mean_abs_rel_diff = np.mean(np.abs(rel_diff))
+
+    cond_station = np.asarray(station_vec)=='Venise'
+    if sum(cond_station):
+        ref_obs_Venise = ref_obs[cond_station]
+        sat_obs_Venise = sat_obs[cond_station]
+        slope_Venise, intercept_Venise, r_value_Venise, p_value_Venise, std_err_Venise = stats.linregress(ref_obs_Venise,sat_obs_Venise)
+        rmse_val_Venise = rmse(sat_obs_Venise,ref_obs_Venise)
+        rel_diff_Venise = 100*(ref_obs_Venise-sat_obs_Venise)/ref_obs_Venise
+        mean_rel_diff_Venise = np.mean(rel_diff_Venise)
+        mean_abs_rel_diff_Venise = np.mean(np.abs(rel_diff_Venise))
     
+        cond_station = np.asarray(station_vec)=='Gloria'
+    if sum(cond_station):    
+        ref_obs_Gloria = ref_obs[cond_station]
+        sat_obs_Gloria = sat_obs[cond_station]
+        slope_Gloria, intercept_Gloria, r_value_Gloria, p_value_Gloria, std_err_Gloria = stats.linregress(ref_obs_Gloria,sat_obs_Gloria)
+        rmse_val_Gloria = rmse(sat_obs_Gloria,ref_obs_Gloria)
+        rel_diff_Gloria = 100*(ref_obs_Gloria-sat_obs_Gloria)/ref_obs_Gloria
+        mean_rel_diff_Gloria = np.mean(rel_diff_Gloria)
+        mean_abs_rel_diff_Gloria = np.mean(np.abs(rel_diff_Gloria))
+        
+        cond_station = np.asarray(station_vec)=='Galata_Platform'
+    if sum(cond_station):    
+        ref_obs_Galata_Platform = ref_obs[cond_station]
+        sat_obs_Galata_Platform = sat_obs[cond_station]
+        slope_Galata_Platform, intercept_Galata_Platform, r_value_Galata_Platform, p_value_Galata_Platform, std_err_Galata_Platform = stats.linregress(ref_obs_Galata_Platform,sat_obs_Galata_Platform)
+        rmse_val_Galata_Platform = rmse(sat_obs_Galata_Platform,ref_obs_Galata_Platform)
+        rel_diff_Galata_Platform = 100*(ref_obs_Galata_Platform-sat_obs_Galata_Platform)/ref_obs_Galata_Platform
+        mean_rel_diff_Galata_Platform = np.mean(rel_diff_Galata_Platform)
+        mean_abs_rel_diff_Galata_Platform = np.mean(np.abs(rel_diff_Galata_Platform))
+        
+        cond_station = np.asarray(station_vec)=='Helsinki_Lighthouse'
+    if sum(cond_station):    
+        ref_obs_Helsinki_Lighthouse = ref_obs[cond_station]
+        sat_obs_Helsinki_Lighthouse = sat_obs[cond_station]
+        slope_Helsinki_Lighthouse, intercept_Helsinki_Lighthouse, r_value_Helsinki_Lighthouse, p_value_Helsinki_Lighthouse, std_err_Helsinki_Lighthouse = stats.linregress(ref_obs_Helsinki_Lighthouse,sat_obs_Helsinki_Lighthouse)
+        rmse_val_Helsinki_Lighthouse = rmse(sat_obs_Helsinki_Lighthouse,ref_obs_Helsinki_Lighthouse)
+        rel_diff_Helsinki_Lighthouse = 100*(ref_obs_Helsinki_Lighthouse-sat_obs_Helsinki_Lighthouse)/ref_obs_Helsinki_Lighthouse
+        mean_rel_diff_Helsinki_Lighthouse = np.mean(rel_diff_Helsinki_Lighthouse)
+        mean_abs_rel_diff_Helsinki_Lighthouse = np.mean(np.abs(rel_diff_Helsinki_Lighthouse))
+        
+        cond_station = np.asarray(station_vec)=='Gustav_Dalen_Tower'
+    if sum(cond_station):    
+        ref_obs_Gustav_Dalen_Tower = ref_obs[cond_station]
+        sat_obs_Gustav_Dalen_Tower = sat_obs[cond_station]
+        slope_Gustav_Dalen_Tower, intercept_Gustav_Dalen_Tower, r_value_Gustav_Dalen_Tower, p_value_Gustav_Dalen_Tower, std_err_Gustav_Dalen_Tower = stats.linregress(ref_obs_Gustav_Dalen_Tower,sat_obs_Gustav_Dalen_Tower)
+        rmse_val_Gustav_Dalen_Tower = rmse(sat_obs_Gustav_Dalen_Tower,ref_obs_Gustav_Dalen_Tower)
+        rel_diff_Gustav_Dalen_Tower = 100*(ref_obs_Gustav_Dalen_Tower-sat_obs_Gustav_Dalen_Tower)/ref_obs_Gustav_Dalen_Tower
+        mean_rel_diff_Gustav_Dalen_Tower = np.mean(rel_diff_Gustav_Dalen_Tower)
+        mean_abs_rel_diff_Gustav_Dalen_Tower = np.mean(np.abs(rel_diff_Gustav_Dalen_Tower))
+    
+
     str2 = str1
     # to print without .0
     if str1[-2:]=='.0':
@@ -205,10 +288,15 @@ def plot_scatter(x,y,str1,path_out,prot_name,sensor_name,station_vec,min_val,max
     plt.savefig(ofname, dpi=300)
 
     # latex table
+    if prot_name == 'ba':
+        prot_name_str = 'BW06'
+    elif  prot_name == 'zi':
+        prot_name_str = 'ZMB18'
+
     if str1 == '412.5':
         print('proto & nm & N & rmse & MAPD & MPD & $r^2$\n')
-    str_table = '{} & {} & {:d} & {:,.2f} & {:,.0f} & {:,.0f} & {:,.2f}\\\\'\
-    .format(prot_name,\
+    str_table = '{} & {} & {:d} & {:,.2f} & {:,.1f} & {:,.1f} & {:,.2f}\\\\'\
+    .format(prot_name_str,\
             str2,\
             N,\
             rmse_val,\
@@ -225,9 +313,17 @@ def plot_scatter(x,y,str1,path_out,prot_name,sensor_name,station_vec,min_val,max
     print('count_Gustav_Dalen_Tower: '+str(count_Gustav_Dalen_Tower))
 
     # plt.show()   
-    return rmse_val, mean_abs_rel_diff, mean_rel_diff, r_value**2
+    return rmse_val, mean_abs_rel_diff, mean_rel_diff, r_value**2,\
+        rmse_val_Venise, mean_abs_rel_diff_Venise, mean_rel_diff_Venise, r_value_Venise**2,\
+        rmse_val_Gloria, mean_abs_rel_diff_Gloria, mean_rel_diff_Gloria, r_value_Gloria**2,\
+        rmse_val_Galata_Platform, mean_abs_rel_diff_Galata_Platform, mean_rel_diff_Galata_Platform, r_value_Galata_Platform**2,\
+        rmse_val_Helsinki_Lighthouse, mean_abs_rel_diff_Helsinki_Lighthouse, mean_rel_diff_Helsinki_Lighthouse, r_value_Helsinki_Lighthouse**2,\
+        rmse_val_Gustav_Dalen_Tower, mean_abs_rel_diff_Gustav_Dalen_Tower, mean_rel_diff_Gustav_Dalen_Tower, r_value_Gustav_Dalen_Tower**2
 #%%
 def plot_both_methods(vl_str,notation_flag,path_out,min_val,max_val):
+
+    np.warnings.filterwarnings('ignore')
+
     print('=====================================')
     print(vl_str)
     if vl_str == '412.5':
@@ -252,6 +348,9 @@ def plot_both_methods(vl_str,notation_flag,path_out,min_val,max_val):
     sat_zi_stop_time = globals()['matchups_Lwn_'+str0+'_fq_sat_zi_stop_time']
     sat_ba_stop_time = globals()['matchups_Lwn_'+str0+'_fq_sat_ba_stop_time']
 
+    ins_zi_time = globals()['matchups_Lwn_'+str0+'_fq_ins_zi_time']
+    ins_ba_time = globals()['matchups_Lwn_'+str0+'_fq_ins_ba_time']
+
     sat_zi = globals()['matchups_Lwn_'+str0+'_fq_sat_zi']
     sat_ba = globals()['matchups_Lwn_'+str0+'_fq_sat_ba']
 
@@ -268,15 +367,20 @@ def plot_both_methods(vl_str,notation_flag,path_out,min_val,max_val):
     plt.figure(figsize=(16,4))
     for cnt, line in enumerate(ins_zi_station):
             if ins_zi_station[cnt] == 'Venise':
-                mrk_style = 'xr'
+                mrk_style = '+r'
+                mrk_style_ins = '>r'
             elif ins_zi_station[cnt] == 'Gloria':
-                mrk_style = 'xg'
+                mrk_style = '+g'
+                mrk_style_ins = '>g'
             elif ins_zi_station[cnt] == 'Galata_Platform':
-                mrk_style = 'xb'
+                mrk_style = '+b'
+                mrk_style_ins = '>b'
             elif ins_zi_station[cnt] == 'Helsinki_Lighthouse':
-                mrk_style = 'xm'
+                mrk_style = '+m'
+                mrk_style_ins = '>m'
             elif ins_zi_station[cnt] == 'Gustav_Dalen_Tower':
-                mrk_style = 'xc'
+                mrk_style = '+c'
+                mrk_style_ins = '>c'
                 
             cond1 = sat_zi_stop_time[cnt]==np.array(sat_ba_stop_time) # same S3A/OLCI file
             cond2 = ins_zi_station[cnt]==np.array(ins_ba_station) # same stations for both methods
@@ -294,6 +398,17 @@ def plot_both_methods(vl_str,notation_flag,path_out,min_val,max_val):
                 plt.plot([sat_zi_stop_time[cnt],sat_ba_stop_time[idx[0][0]]],\
                     [sat_zi[cnt],sat_ba[idx[0][0]]],mrk_style[1])
                 
+                plt.plot(ins_zi_time[cnt], ins_zi[cnt],mrk_style_ins,mfc='none')
+                plt.plot([ins_zi_time[cnt],ins_ba_time[idx[0][0]]],\
+                    [ins_zi[cnt],ins_ba[idx[0][0]]],mrk_style_ins[1])
+
+                # to connect in situ with sat
+                plt.plot([ins_zi_time[cnt],sat_zi_stop_time[cnt]],\
+                    [ins_zi[cnt],sat_zi[cnt]],mrk_style_ins[1],linestyle='dashed')
+
+                plt.plot([ins_ba_time[cnt],sat_ba_stop_time[cnt]],\
+                    [ins_ba[cnt],sat_ba[cnt]],mrk_style_ins[1],linestyle='dotted')
+
                 diff.append(sat_zi[cnt]-sat_ba[idx[0][0]])
 
                 percent_change = 100*np.abs(sat_zi[cnt]-sat_ba[idx[0][0]])/max([sat_zi[cnt],sat_ba[idx[0][0]]])
@@ -306,19 +421,33 @@ def plot_both_methods(vl_str,notation_flag,path_out,min_val,max_val):
                 # print(idx[0])
                 # print(sat_zi_stop_time[cnt])
                 plt.plot(sat_zi_stop_time[cnt], sat_zi[cnt],mrk_style)
+                plt.plot(ins_zi_time[cnt], ins_zi[cnt],mrk_style_ins,mfc='none')
+                # to connect in situ with sat
+                plt.plot([ins_zi_time[cnt],sat_zi_stop_time[cnt]],\
+                [ins_zi[cnt],sat_zi[cnt]],mrk_style_ins[1],linestyle='dashed')
                 
     for cnt, line in enumerate(ins_ba_station):
             if ins_ba_station[cnt] == 'Venise':
-                mrk_style = '+r'
+                mrk_style = 'xr'
+                mrk_style_ins = 'or'
             elif ins_ba_station[cnt] == 'Gloria':
-                mrk_style = '+g'
+                mrk_style = 'xg'
+                mrk_style_ins = 'og'
             elif ins_ba_station[cnt] == 'Galata_Platform':
-                mrk_style = '+b'
+                mrk_style = 'xb'
+                mrk_style_ins = 'ob'
             elif ins_ba_station[cnt] == 'Helsinki_Lighthouse':
-                mrk_style = '+m'
+                mrk_style = 'xm'
+                mrk_style_ins = 'om'
             elif ins_ba_station[cnt] == 'Gustav_Dalen_Tower':
-                mrk_style = '+c'
+                mrk_style = 'xc'
+                mrk_style_ins = 'oc'
             plt.plot(sat_ba_stop_time[cnt], sat_ba[cnt],mrk_style)
+            plt.plot(ins_ba_time[cnt], ins_ba[cnt],mrk_style_ins,mfc='none')
+
+            # to connect in situ with sat
+            plt.plot([ins_ba_time[cnt],sat_ba_stop_time[cnt]],\
+                    [ins_ba[cnt],sat_ba[cnt]],mrk_style_ins[1],linestyle='dotted')
     plt.xlabel('Time',fontsize=12)
     sensor_name = 'OLCI'
     plt.ylabel('$L^{'+sensor_name+'}_{WN}$',fontsize=12)
@@ -400,10 +529,10 @@ def plot_both_methods(vl_str,notation_flag,path_out,min_val,max_val):
     
     # histogram of the difference
     kwargs2 = dict(bins='auto', histtype='step')
-    fig, (ax1,ax2)=plt.subplots(1,2,sharey=True, facecolor='w')
+    fig, ax1=plt.subplots(1,1,sharey=True, facecolor='w')
     ax1.hist(diff, **kwargs2)
-    x0, x1 = ax1.get_xlim()
-    ax1.set_xlim([x0,x0+0.15*(x1-x0)])
+    # x0, x1 = ax1.get_xlim()
+    # ax1.set_xlim([x0,x0+0.15*(x1-x0)])
 
     ax1.set_ylabel('Frequency',fontsize=12)
 
@@ -435,23 +564,23 @@ def plot_both_methods(vl_str,notation_flag,path_out,min_val,max_val):
 
     fig.text(0.5,0.01,'Diff. $L^{'+sensor_name+'}_{WN}$',ha='center',fontsize=12)
 
-    ax2.hist(diff, **kwargs2)
-    x0, x1 = ax2.get_xlim()
-    ax2.set_xlim([x0+0.70*(x1-x0),x1])
+    # ax2.hist(diff, **kwargs2)
+    # x0, x1 = ax2.get_xlim()
+    # ax2.set_xlim([x0+0.70*(x1-x0),x1])
 
-    ax1.spines['right'].set_visible(False)
-    ax2.spines['left'].set_visible(False)
-    ax2.yaxis.tick_right()
-    ax2.tick_params(labelright='on')
+    # ax1.spines['right'].set_visible(False)
+    # ax2.spines['left'].set_visible(False)
+    # ax2.yaxis.tick_right()
+    # ax2.tick_params(labelright='on')
 
-    d = .015  # how big to make the diagonal lines in axes coordinates
-    # arguments to pass to plot, just so we don't keep repeating them
-    kwargs = dict(transform=ax1.transAxes, color='k', clip_on=False)
-    ax1.plot((1-d, 1+d), (-d, +d), **kwargs)        # top-left diagonal
-    ax1.plot((1-d,1+d), (1-d, 1+d), **kwargs)  # top-right diagonal
-    kwargs.update(transform=ax2.transAxes)  # switch to the bottom axes
-    ax2.plot((-d, d), (- d, + d), **kwargs)  # bottom-left diagonal
-    ax2.plot((- d,  d), (1 - d, 1 + d), **kwargs)  # bottom-right diagonal
+    # d = .015  # how big to make the diagonal lines in axes coordinates
+    # # arguments to pass to plot, just so we don't keep repeating them
+    # kwargs = dict(transform=ax1.transAxes, color='k', clip_on=False)
+    # ax1.plot((1-d, 1+d), (-d, +d), **kwargs)        # top-left diagonal
+    # ax1.plot((1-d,1+d), (1-d, 1+d), **kwargs)  # top-right diagonal
+    # kwargs.update(transform=ax2.transAxes)  # switch to the bottom axes
+    # ax2.plot((-d, d), (- d, + d), **kwargs)  # bottom-left diagonal
+    # ax2.plot((- d,  d), (1 - d, 1 + d), **kwargs)  # bottom-right diagonal
 
     # save fig
     ofname = sensor_name+'_hist_diff_ba_zi_'+vl_str.replace(".","p")+'.pdf'
@@ -467,15 +596,15 @@ def plot_both_methods(vl_str,notation_flag,path_out,min_val,max_val):
     plt.figure()
     for cnt, line in enumerate(ins_zi_station):
             if ins_zi_station[cnt] == 'Venise':
-                mrk_style = 'xr'
+                mrk_style = '+r'
             elif ins_zi_station[cnt] == 'Gloria':
-                mrk_style = 'xg'
+                mrk_style = '+g'
             elif ins_zi_station[cnt] == 'Galata_Platform':
-                mrk_style = 'xb'
+                mrk_style = '+b'
             elif ins_zi_station[cnt] == 'Helsinki_Lighthouse':
-                mrk_style = 'xm'
+                mrk_style = '+m'
             elif ins_zi_station[cnt] == 'Gustav_Dalen_Tower':
-                mrk_style = 'xc'
+                mrk_style = '+c'
                 
             cond1 = sat_zi_stop_time[cnt]==np.array(sat_ba_stop_time) # same S3A/OLCI file
             cond2 = ins_zi_station[cnt]==np.array(ins_ba_station) # same stations for both methods
@@ -497,15 +626,15 @@ def plot_both_methods(vl_str,notation_flag,path_out,min_val,max_val):
                 
     for cnt, line in enumerate(ins_ba_station):
             if ins_ba_station[cnt] == 'Venise':
-                mrk_style = '+r'
+                mrk_style = 'xr'
             elif ins_ba_station[cnt] == 'Gloria':
-                mrk_style = '+g'
+                mrk_style = 'xg'
             elif ins_ba_station[cnt] == 'Galata_Platform':
-                mrk_style = '+b'
+                mrk_style = 'xb'
             elif ins_ba_station[cnt] == 'Helsinki_Lighthouse':
-                mrk_style = '+m'
+                mrk_style = 'xm'
             elif ins_ba_station[cnt] == 'Gustav_Dalen_Tower':
-                mrk_style = '+c'
+                mrk_style = 'xc'
             plt.plot(ins_ba[cnt], sat_ba[cnt],mrk_style)
 
     plt.axis([min_val, max_val, min_val, max_val])
@@ -533,36 +662,6 @@ def plot_both_methods(vl_str,notation_flag,path_out,min_val,max_val):
 print('Main Code!')
 path_out = os.path.join(path_main,'Figures')
 path = os.path.join(path_main,'netcdf_file')
-filename = 'Venise_20_201601001_201812031.nc'
-filename_insitu = os.path.join(path,filename)
-if not os.path.exists(filename_insitu):
-    print('File does not exist')
-    
-nc_f0 = Dataset(filename_insitu,'r')
-
-Time = nc_f0.variables['Time'][:]
-Level = nc_f0.variables['Level'][:]
-Julian_day = nc_f0.variables['Julian_day'][:]
-Exact_wavelengths = nc_f0.variables['Exact_wavelengths'][:]
-Lwn_fonQ = nc_f0.variables['Lwn_fonQ'][:]
-
-nc_f0.close()
-
-day_vec =np.array([float(Time[i].replace(' ',':').split(':')[0]) for i in range(0,len(Time))])
-month_vec =np.array([float(Time[i].replace(' ',':').split(':')[1]) for i in range(0,len(Time))])
-year_vec =np.array([float(Time[i].replace(' ',':').split(':')[2]) for i in range(0,len(Time))])
-hour_vec =np.array([float(Time[i].replace(' ',':').split(':')[3]) for i in range(0,len(Time))])
-minute_vec =np.array([float(Time[i].replace(' ',':').split(':')[4]) for i in range(0,len(Time))])
-second_vec =np.array([float(Time[i].replace(' ',':').split(':')[5]) for i in range(0,len(Time))])
-
-Julian_day_vec =np.array([float(Julian_day[i]) for i in range(0,len(Time))])
-date_format = "%d:%m:%Y %H:%M:%S"
-ins_time = np.array([datetime.strptime(Time[i], date_format) for i in range(0,len(Time))])
-
-doy_vec = np.array([int(float(Julian_day[i])) for i in range(0,len(Time))])
-
-if create_list_flag:
-    create_OLCI_list(path_main,Time,year_vec,month_vec,doy_vec,day_vec)
    
 #%% Open extract.nc
 # extract.nc is created by create_extract.py
@@ -600,6 +699,12 @@ matchups_Lwn_0490p00_fq_sat_zi_stop_time = []
 matchups_Lwn_0560p00_fq_sat_zi_stop_time = []
 matchups_Lwn_0665p00_fq_sat_zi_stop_time = []    
 
+matchups_Lwn_0412p50_fq_ins_zi_time = []
+matchups_Lwn_0442p50_fq_ins_zi_time = []
+matchups_Lwn_0490p00_fq_ins_zi_time = []
+matchups_Lwn_0560p00_fq_ins_zi_time = []
+matchups_Lwn_0665p00_fq_ins_zi_time = [] 
+
 # Bailey and Werdell: initialization
 matchups_Lwn_0412p50_fq_ins_ba = []
 matchups_Lwn_0442p50_fq_ins_ba = []
@@ -623,21 +728,60 @@ matchups_Lwn_0412p50_fq_sat_ba_stop_time = []
 matchups_Lwn_0442p50_fq_sat_ba_stop_time = []
 matchups_Lwn_0490p00_fq_sat_ba_stop_time = []
 matchups_Lwn_0560p00_fq_sat_ba_stop_time = []
-matchups_Lwn_0665p00_fq_sat_ba_stop_time = []         
+matchups_Lwn_0665p00_fq_sat_ba_stop_time = []  
+
+matchups_Lwn_0412p50_fq_ins_ba_time = []
+matchups_Lwn_0442p50_fq_ins_ba_time = []
+matchups_Lwn_0490p00_fq_ins_ba_time = []
+matchups_Lwn_0560p00_fq_ins_ba_time = []
+matchups_Lwn_0665p00_fq_ins_ba_time = []        
 
 # station_list = ['Venise','Galata_Platform','Gloria']
 station_list = ['Venise','Galata_Platform','Gloria','Helsinki_Lighthouse','Gustav_Dalen_Tower']
 # station_list = ['Venise']
 
 for station_name in station_list:  
+
+    filename = station_name+'_20V3_20160426_20191118.nc'
+    # filename = station_name+'_20V3_20180622_20180822.nc'
+    filename_insitu = os.path.join(path,filename)
+    if not os.path.exists(filename_insitu):
+        print('File does not exist')
+        
+    nc_f0 = Dataset(filename_insitu,'r')
+
+    Time = nc_f0.variables['Time'][:]
+    Level = nc_f0.variables['Level'][:]
+    Julian_day = nc_f0.variables['Julian_day'][:]
+    Exact_wavelengths = nc_f0.variables['Exact_wavelengths'][:]
+    Lwn_fonQ = nc_f0.variables['Lwn_fonQ'][:]
+
+    nc_f0.close()
+
+    day_vec =np.array([float(Time[i].replace(' ',':').split(':')[0]) for i in range(0,len(Time))])
+    month_vec =np.array([float(Time[i].replace(' ',':').split(':')[1]) for i in range(0,len(Time))])
+    year_vec =np.array([float(Time[i].replace(' ',':').split(':')[2]) for i in range(0,len(Time))])
+    hour_vec =np.array([float(Time[i].replace(' ',':').split(':')[3]) for i in range(0,len(Time))])
+    minute_vec =np.array([float(Time[i].replace(' ',':').split(':')[4]) for i in range(0,len(Time))])
+    second_vec =np.array([float(Time[i].replace(' ',':').split(':')[5]) for i in range(0,len(Time))])
+
+    Julian_day_vec =np.array([float(Julian_day[i]) for i in range(0,len(Time))])
+    date_format = "%d:%m:%Y %H:%M:%S"
+    ins_time = np.array([datetime.strptime(Time[i], date_format) for i in range(0,len(Time))])
+
+    doy_vec = np.array([int(float(Julian_day[i])) for i in range(0,len(Time))])
+
+    if create_list_flag:
+        create_OLCI_list(path_main,Time,year_vec,month_vec,doy_vec,day_vec)
+
     path_to_list = os.path.join(path_main,'data','output','extract_list_'+station_name+'.txt')
     # create list of extract by station
     cmd = 'find '+os.path.join(path_main,'data','output')+' -name "extract_'+station_name+'.nc"|sort|uniq >'+path_to_list
     (ls_status, ls_output) = subprocess.getstatusoutput(cmd)
     with open(path_to_list,'r') as file:
         for cnt, line in enumerate(file):  
-            print('----------------------------')
-            print('line '+str(cnt))
+            # print('----------------------------')
+            # print('line '+str(cnt))
             year_str = line.split('/')[-3]
             doy_str = line.split('/')[-2]       
             nc_f1 = Dataset(line[:-1],'r')
@@ -659,7 +803,6 @@ for station_name in station_list:
             vza = nc_f1.variables['vza_value'][:]
             
             # Zibordi et al. 2018
-            print('--Zibordi et al. 2018')
             delta_time = 2# float in hours       
             time_diff = ins_time - sat_stop_time
             dt_hour = [i.total_seconds()/(60*60) for i in time_diff] # time diffence between in situ measurements and sat in hours
@@ -668,6 +811,9 @@ for station_name in station_list:
     
             nday = sum(matchup_idx_vec)
             if nday >=1:
+                print('----------------------------')
+                print('line '+str(cnt))
+                print('--Zibordi et al. 2018')
                 print(str(nday)+' matchups per '+year_str+' '+doy_str)
     #            print(Lwn_fonQ[idx_min,:])
     #            print(Exact_wavelengths[idx_min,:])
@@ -687,74 +833,90 @@ for station_name in station_list:
                 AOT_0865p50_box = AOT_0865p50[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
                 
                 flags_mask = OLCI_flags.create_mask(WQSF[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y])
+                print('flags_mask:')
                 print(flags_mask)
-                
+
+                # from AERONET-OC V3 file
+                # 0         1         2         3         4         5         6         7         8         9         10        11        12        13        14        15        16        17        18        19        20        21        22 
+                # Lw[340nm],Lw[380nm],Lw[400nm],Lw[412nm],Lw[440nm],Lw[443nm],Lw[490nm],Lw[500nm],Lw[510nm],Lw[531nm],Lw[532nm],Lw[551nm],Lw[555nm],Lw[560nm],Lw[620nm],Lw[667nm],Lw[675nm],Lw[681nm],Lw[709nm],Lw[779nm],Lw[865nm],Lw[870nm],Lw[1020nm]    
+                # -999,     -999,     -999,     412,      -999,     441.8,    488.5,    -999,     -999,     -999,     530.3,    551,      -999,     -999,     -999,     667.9,    -999,     -999,     -999,     -999,     -999,     870.8,    1020.5,
+                    
                 if sza<=70 and vza<=56 and not flags_mask.any(): # if any of the pixels if flagged, Fails validation criteria because all have to be valid in Zibordi 2018
                     Lwn_560 = rhow_0560p00_fq_box*F0_0560p00/np.pi
-                    Lwn_560_CV = Lwn_560.std()/Lwn_560.mean()    
+                    Lwn_560_CV = np.abs(Lwn_560.std()/Lwn_560.mean())    
                     
-                    AOT_0865p50_CV = AOT_0865p50_box.std()/AOT_0865p50_box.mean()
+                    AOT_0865p50_CV = np.abs(AOT_0865p50_box.std()/AOT_0865p50_box.mean())
                     
                     if Lwn_560_CV <= 0.2 and AOT_0865p50_CV <= 0.2:
                         # Rrs 0412p50
-                        print('412.5')
-                        if rhow_0412p50_fq_box.mask.any() == True or np.isnan(rhow_0412p50_fq_box).any() == True:
-                            print('At least one element in sat product is invalid!')
-                        else:
+                        # print('412.5')
+                        if not (rhow_0412p50_fq_box.mask.any() == True or np.isnan(rhow_0412p50_fq_box).any() == True):
+                        #     print('At least one element in sat product is invalid!')
+                        # else:
                             matchups_Lwn_0412p50_fq_sat_zi.append(rhow_0412p50_fq_box.mean()*F0_0412p50/np.pi)
-                            matchups_Lwn_0412p50_fq_ins_zi.append(Lwn_fonQ[idx_min,0]) # 412,
+                            matchups_Lwn_0412p50_fq_ins_zi.append(Lwn_fonQ[idx_min,3]) # 412,
                             matchups_Lwn_0412p50_fq_ins_zi_station.append(station_name)
                             matchups_Lwn_0412p50_fq_sat_zi_stop_time.append(sat_stop_time)
+                            matchups_Lwn_0412p50_fq_ins_zi_time.append(ins_time[idx_min])
                             
                         # Rrs 0442p50
-                        print('442.5')
-                        if rhow_0442p50_fq_box.mask.any() == True or np.isnan(rhow_0442p50_fq_box).any() == True:
-                            print('At least one element in sat product is invalid!')
-                        else:
+                        # print('442.5')
+                        if not (rhow_0442p50_fq_box.mask.any() == True or np.isnan(rhow_0442p50_fq_box).any() == True):
+                            # print('At least one element in sat product is invalid!')
+                        # else:
                             matchups_Lwn_0442p50_fq_sat_zi.append(rhow_0442p50_fq_box.mean()*F0_0442p50/np.pi)
-                            matchups_Lwn_0442p50_fq_ins_zi.append(Lwn_fonQ[idx_min,1]) # 441.8
+                            matchups_Lwn_0442p50_fq_ins_zi.append(Lwn_fonQ[idx_min,5]) # 441.8
                             matchups_Lwn_0442p50_fq_ins_zi_station.append(station_name)
                             matchups_Lwn_0442p50_fq_sat_zi_stop_time.append(sat_stop_time)
+                            matchups_Lwn_0442p50_fq_ins_zi_time.append(ins_time[idx_min])
                             
                         # Rrs 0490p00
-                        print('490.0')
-                        if rhow_0490p00_fq_box.mask.any() == True or np.isnan(rhow_0490p00_fq_box).any() == True:
-                            print('At least one element in sat product is invalid!')
-                        else:
+                        # print('490.0')
+                        if not (rhow_0490p00_fq_box.mask.any() == True or np.isnan(rhow_0490p00_fq_box).any() == True):
+                            # print('At least one element in sat product is invalid!')
+                        # else:
                             matchups_Lwn_0490p00_fq_sat_zi.append(rhow_0490p00_fq_box.mean()*F0_0490p00/np.pi)
-                            matchups_Lwn_0490p00_fq_ins_zi.append(Lwn_fonQ[idx_min,2]) # 488.5
+                            matchups_Lwn_0490p00_fq_ins_zi.append(Lwn_fonQ[idx_min,6]) # 488.5
                             matchups_Lwn_0490p00_fq_ins_zi_station.append(station_name)
                             matchups_Lwn_0490p00_fq_sat_zi_stop_time.append(sat_stop_time)
+                            matchups_Lwn_0490p00_fq_ins_zi_time.append(ins_time[idx_min])
                             
                         # Rrs 0560p00
-                        print('560.0')
-                        if rhow_0560p00_fq_box.mask.any() == True or np.isnan(rhow_0560p00_fq_box).any() == True:
-                            print('At least one element in sat product is invalid!')
-                        else:
+                        # print('560.0')
+                        if not (rhow_0560p00_fq_box.mask.any() == True or np.isnan(rhow_0560p00_fq_box).any() == True):
+                            # print('At least one element in sat product is invalid!')
+                        # else:
+                            if Exact_wavelengths[idx_min,13] != -999:
+                                idx_560 = 13
+                            elif Exact_wavelengths[idx_min,12] != -999:
+                                idx_560 = 12
+                            else: 
+                                idx_560 = 11
                             matchups_Lwn_0560p00_fq_sat_zi.append(rhow_0560p00_fq_box.mean()*F0_0560p00/np.pi)
-                            matchups_Lwn_0560p00_fq_ins_zi.append(Lwn_fonQ[idx_min,4]) # 551,
+                            matchups_Lwn_0560p00_fq_ins_zi.append(Lwn_fonQ[idx_min,idx_560]) # 551,
                             matchups_Lwn_0560p00_fq_ins_zi_station.append(station_name)
                             matchups_Lwn_0560p00_fq_sat_zi_stop_time.append(sat_stop_time)
+                            matchups_Lwn_0560p00_fq_ins_zi_time.append(ins_time[idx_min])
                             
                         # Rrs 0665p00
-                        print('665.0')
-                        if rhow_0665p00_fq_box.mask.any() == True or np.isnan(rhow_0665p00_fq_box).any() == True:
-                            print('At least one element in sat product is invalid!')
-                        else:
+                        # print('665.0')
+                        if not (rhow_0665p00_fq_box.mask.any() == True or np.isnan(rhow_0665p00_fq_box).any() == True):
+                            # print('At least one element in sat product is invalid!')
+                        # else:
                             matchups_Lwn_0665p00_fq_sat_zi.append(rhow_0665p00_fq_box.mean()*F0_0665p00/np.pi)
-                            matchups_Lwn_0665p00_fq_ins_zi.append(Lwn_fonQ[idx_min,5]) # 667.9    
+                            matchups_Lwn_0665p00_fq_ins_zi.append(Lwn_fonQ[idx_min,15]) # 667.9    
                             matchups_Lwn_0665p00_fq_ins_zi_station.append(station_name)
                             matchups_Lwn_0665p00_fq_sat_zi_stop_time.append(sat_stop_time)
+                            matchups_Lwn_0665p00_fq_ins_zi_time.append(ins_time[idx_min])
                             
-                    else:
-                        print('CV exceeds criteria: CV[Lwn(560)]='+str(Lwn_560_CV)+'; CV[AOT(865.5)]='+str(AOT_0865p50_CV))
-                else:
-                    print('Angles exceeds criteria: sza='+str(sza)+'; vza='+str(vza)+'; OR some pixels are flagged!')
-            else:
-                print('Not matchups per '+year_str+' '+doy_str)
+            #         else:
+            #             print('CV exceeds criteria: CV[Lwn(560)]='+str(Lwn_560_CV)+'; CV[AOT(865.5)]='+str(AOT_0865p50_CV))
+            #     else:
+            #         print('Angles exceeds criteria: sza='+str(sza)+'; vza='+str(vza)+'; OR some pixels are flagged!')
+            # else:
+            #     print('Not matchups per '+year_str+' '+doy_str)
     
              # Bailey and Werdell 2006 
-            print('--Bailey and Werdell 2006')
             delta_time = 3# float in hours       
             time_diff = ins_time - sat_stop_time
             dt_hour = [i.total_seconds()/(60*60) for i in time_diff] # time diffence between in situ measurements and sat in hours
@@ -763,6 +925,7 @@ for station_name in station_list:
     
             nday = sum(matchup_idx_vec)
             if nday >=1:
+                print('--Bailey and Werdell 2006')
                 print(str(nday)+' matchups per '+year_str+' '+doy_str)
      #           print(Lwn_fonQ[idx_min,:])
      #           print(Exact_wavelengths[idx_min,:])
@@ -783,10 +946,13 @@ for station_name in station_list:
     
                 AOT_0865p50_box = AOT_0865p50[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
                 
+                print('rhow_0412p50_fq_box:')
                 print(rhow_0412p50_fq_box)
+                print('rhow_0412p50_fq_box.mask:')
                 print(rhow_0412p50_fq_box.mask)
                 
                 flags_mask = OLCI_flags.create_mask(WQSF[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y])
+                print('flags_mask:')
                 print(flags_mask)
                 
                 NGP = np.count_nonzero(flags_mask == 0) # Number Good Pixels, Bailey and Werdell 2006
@@ -874,114 +1040,213 @@ for station_name in station_list:
                                          CV_filtered_rhow_0490p00, CV_filtered_rhow_0560p00,\
                                          CV_filtered_AOT_0865p50]
                     print(CVs)
-                    MedianCV = np.nanmedian(CVs)
+                    MedianCV = np.nanmedian(np.abs(CVs))
     
                     print('Median CV='+str(MedianCV))
                    
                     if MedianCV <= 0.15:
                         # Rrs 0412p50
-                        print('412.5')
-                        if NGP_rhow_0412p50<NTP/2+1:
-                            print('Exceeded: NGP_rhow_0412p50='+str(NGP_rhow_0412p50))
-                        else:
+                        # print('412.5')
+                        if not NGP_rhow_0412p50<NTP/2+1:
+                            # print('Exceeded: NGP_rhow_0412p50='+str(NGP_rhow_0412p50))
+                        # else:
                             matchups_Lwn_0412p50_fq_sat_ba.append(mean_filtered_rhow_0412p50*F0_0412p50/np.pi)
-                            matchups_Lwn_0412p50_fq_ins_ba.append(Lwn_fonQ[idx_min,0]) # 412,
+                            matchups_Lwn_0412p50_fq_ins_ba.append(Lwn_fonQ[idx_min,3]) # 412,
                             matchups_Lwn_0412p50_fq_ins_ba_station.append(station_name)
                             matchups_Lwn_0412p50_fq_sat_ba_stop_time.append(sat_stop_time)
+                            matchups_Lwn_0412p50_fq_ins_ba_time.append(ins_time[idx_min])
+
                             
                         # Rrs 0442p50
-                        print('442.5')
-                        if NGP_rhow_0442p50<NTP/2+1:
-                            print('Exceeded: NGP_rhow_0442p50='+str(NGP_rhow_0442p50))
-                        else:
+                        # print('442.5')
+                        if not NGP_rhow_0442p50<NTP/2+1:
+                            # print('Exceeded: NGP_rhow_0442p50='+str(NGP_rhow_0442p50))
+                        # else:
                             matchups_Lwn_0442p50_fq_sat_ba.append(mean_filtered_rhow_0442p50*F0_0442p50/np.pi)
-                            matchups_Lwn_0442p50_fq_ins_ba.append(Lwn_fonQ[idx_min,1]) # 441.8
+                            matchups_Lwn_0442p50_fq_ins_ba.append(Lwn_fonQ[idx_min,5]) # 441.8
                             matchups_Lwn_0442p50_fq_ins_ba_station.append(station_name)
                             matchups_Lwn_0442p50_fq_sat_ba_stop_time.append(sat_stop_time)
+                            matchups_Lwn_0442p50_fq_ins_ba_time.append(ins_time[idx_min])
                             
                         # Rrs 0490p00
-                        print('490.0')
-                        if NGP_rhow_0490p00<NTP/2+1:
-                            print('Exceeded: NGP_rhow_0490p00='+str(NGP_rhow_0490p00))
-                        else:
+                        # print('490.0')
+                        if not NGP_rhow_0490p00<NTP/2+1:
+                            # print('Exceeded: NGP_rhow_0490p00='+str(NGP_rhow_0490p00))
+                        # else:
                             matchups_Lwn_0490p00_fq_sat_ba.append(mean_filtered_rhow_0490p00*F0_0490p00/np.pi)
-                            matchups_Lwn_0490p00_fq_ins_ba.append(Lwn_fonQ[idx_min,2]) # 488.5
+                            matchups_Lwn_0490p00_fq_ins_ba.append(Lwn_fonQ[idx_min,6]) # 488.5
                             matchups_Lwn_0490p00_fq_ins_ba_station.append(station_name)
                             matchups_Lwn_0490p00_fq_sat_ba_stop_time.append(sat_stop_time)
+                            matchups_Lwn_0490p00_fq_ins_ba_time.append(ins_time[idx_min])
                             
                         # Rrs 0560p00
-                        print('560.0')
-                        if NGP_rhow_0560p00<NTP/2+1:
-                            print('Exceeded: NGP_rhow_0560p00='+str(NGP_rhow_0560p00))
-                        else:
+                        # print('560.0')
+                        if not NGP_rhow_0560p00<NTP/2+1:
+                            # print('Exceeded: NGP_rhow_0560p00='+str(NGP_rhow_0560p00))
+                        # else:
+                            if Exact_wavelengths[idx_min,13] != -999:
+                                idx_560 = 13
+                            elif Exact_wavelengths[idx_min,12] != -999:
+                                idx_560 = 12
+                            else: 
+                                idx_560 = 11
                             matchups_Lwn_0560p00_fq_sat_ba.append(mean_filtered_rhow_0560p00*F0_0560p00/np.pi)
-                            matchups_Lwn_0560p00_fq_ins_ba.append(Lwn_fonQ[idx_min,4]) # 551,
+                            matchups_Lwn_0560p00_fq_ins_ba.append(Lwn_fonQ[idx_min,idx_560]) # 551,
                             matchups_Lwn_0560p00_fq_ins_ba_station.append(station_name)
                             matchups_Lwn_0560p00_fq_sat_ba_stop_time.append(sat_stop_time)
+                            matchups_Lwn_0560p00_fq_ins_ba_time.append(ins_time[idx_min])
+
                             
                         # Rrs 0665p00
-                        print('665.0')
-                        if NGP_rhow_0665p00<NTP/2+1:
-                            print('Exceeded: NGP_rhow_0665p00='+str(NGP_rhow_0665p00))
-                        else:
+                        # print('665.0')
+                        if not NGP_rhow_0665p00<NTP/2+1:
+                            # print('Exceeded: NGP_rhow_0665p00='+str(NGP_rhow_0665p00))
+                        # else:
                             matchups_Lwn_0665p00_fq_sat_ba.append(mean_filtered_rhow_0665p00*F0_0665p00/np.pi)
-                            matchups_Lwn_0665p00_fq_ins_ba.append(Lwn_fonQ[idx_min,5]) # 667.9    
+                            matchups_Lwn_0665p00_fq_ins_ba.append(Lwn_fonQ[idx_min,15]) # 667.9    
                             matchups_Lwn_0665p00_fq_ins_ba_station.append(station_name)
                             matchups_Lwn_0665p00_fq_sat_ba_stop_time.append(sat_stop_time)
+                            matchups_Lwn_0665p00_fq_ins_ba_time.append(ins_time[idx_min])
                             
-                    else:
-                        print('Median CV exceeds criteria: Median[CV]='+str(MedianCV))
-                else:
-                    print('Angles exceeds criteria: sza='+str(sza)+'; vza='+str(vza)+'; OR NGP='+str(NGP)+'< NTP/2+1='+str(NTP/2+1)+'!')
-            else:
-                print('Not matchups per '+year_str+' '+doy_str)            
+            #         else:
+            #             print('Median CV exceeds criteria: Median[CV]='+str(MedianCV))
+            #     else:
+            #         print('Angles exceeds criteria: sza='+str(sza)+'; vza='+str(vza)+'; OR NGP='+str(NGP)+'< NTP/2+1='+str(NTP/2+1)+'!')
+            # else:
+            #     print('Not matchups per '+year_str+' '+doy_str)            
     
 #%% plots   
 prot_name = 'zi'
 sensor_name = 'OLCI'
-rmse_val_0412p50_zi, mean_abs_rel_diff_0412p50_zi, mean_rel_diff_0412p50_zi, r_sqr_0412p50_zi = plot_scatter(\
+rmse_val_0412p50_zi, mean_abs_rel_diff_0412p50_zi, mean_rel_diff_0412p50_zi, r_sqr_0412p50_zi,\
+rmse_val_0412p50_zi_Venise,mean_abs_rel_diff_0412p50_zi_Venise, mean_rel_diff_0412p50_zi_Venise, r_sqr_0412p50_zi_Venise,\
+rmse_val_0412p50_zi_Gloria,mean_abs_rel_diff_0412p50_zi_Gloria, mean_rel_diff_0412p50_zi_Gloria, r_sqr_0412p50_zi_Gloria,\
+rmse_val_0412p50_zi_Galata_Platform,mean_abs_rel_diff_0412p50_zi_Galata_Platform, mean_rel_diff_0412p50_zi_Galata_Platform, r_sqr_0412p50_zi_Galata_Platform,\
+rmse_val_0412p50_zi_Helsinki_Lighthouse,mean_abs_rel_diff_0412p50_zi_Helsinki_Lighthouse, mean_rel_diff_0412p50_zi_Helsinki_Lighthouse, r_sqr_0412p50_zi_Helsinki_Lighthouse,\
+rmse_val_0412p50_zi_Gustav_Dalen_Tower,mean_abs_rel_diff_0412p50_zi_Gustav_Dalen_Tower, mean_rel_diff_0412p50_zi_Gustav_Dalen_Tower, r_sqr_0412p50_zi_Gustav_Dalen_Tower\
+= plot_scatter(\
     matchups_Lwn_0412p50_fq_ins_zi,matchups_Lwn_0412p50_fq_sat_zi,'412.5',path_out,prot_name,sensor_name,\
-    matchups_Lwn_0412p50_fq_ins_zi_station,min_val=-1.00,max_val=4.0) 
-rmse_val_0442p50_zi, mean_abs_rel_diff_0442p50_zi, mean_rel_diff_0442p50_zi, r_sqr_0442p50_zi = plot_scatter(
+    matchups_Lwn_0412p50_fq_ins_zi_station,min_val=-3.00,max_val=5.0)
+
+rmse_val_0442p50_zi, mean_abs_rel_diff_0442p50_zi, mean_rel_diff_0442p50_zi, r_sqr_0442p50_zi,\
+rmse_val_0442p50_zi_Venise,mean_abs_rel_diff_0442p50_zi_Venise, mean_rel_diff_0442p50_zi_Venise, r_sqr_0442p50_zi_Venise,\
+rmse_val_0442p50_zi_Gloria,mean_abs_rel_diff_0442p50_zi_Gloria, mean_rel_diff_0442p50_zi_Gloria, r_sqr_0442p50_zi_Gloria,\
+rmse_val_0442p50_zi_Galata_Platform,mean_abs_rel_diff_0442p50_zi_Galata_Platform, mean_rel_diff_0442p50_zi_Galata_Platform, r_sqr_0442p50_zi_Galata_Platform,\
+rmse_val_0442p50_zi_Helsinki_Lighthouse,mean_abs_rel_diff_0442p50_zi_Helsinki_Lighthouse, mean_rel_diff_0442p50_zi_Helsinki_Lighthouse, r_sqr_0442p50_zi_Helsinki_Lighthouse,\
+rmse_val_0442p50_zi_Gustav_Dalen_Tower,mean_abs_rel_diff_0442p50_zi_Gustav_Dalen_Tower, mean_rel_diff_0442p50_zi_Gustav_Dalen_Tower, r_sqr_0442p50_zi_Gustav_Dalen_Tower\
+= plot_scatter(\
     matchups_Lwn_0442p50_fq_ins_zi,matchups_Lwn_0442p50_fq_sat_zi,'442.5',path_out,prot_name,sensor_name,\
-    matchups_Lwn_0442p50_fq_ins_zi_station,min_val=-1.00,max_val=6.0) 
-rmse_val_0490p00_zi, mean_abs_rel_diff_0490p00_zi, mean_rel_diff_0490p00_zi, r_sqr_0490p00_zi = plot_scatter(
+    matchups_Lwn_0442p50_fq_ins_zi_station,min_val=-3.00,max_val=6.2)
+
+rmse_val_0490p00_zi, mean_abs_rel_diff_0490p00_zi, mean_rel_diff_0490p00_zi, r_sqr_0490p00_zi,\
+rmse_val_0490p00_zi_Venise,mean_abs_rel_diff_0490p00_zi_Venise, mean_rel_diff_0490p00_zi_Venise, r_sqr_0490p00_zi_Venise,\
+rmse_val_0490p00_zi_Gloria,mean_abs_rel_diff_0490p00_zi_Gloria, mean_rel_diff_0490p00_zi_Gloria, r_sqr_0490p00_zi_Gloria,\
+rmse_val_0490p00_zi_Galata_Platform,mean_abs_rel_diff_0490p00_zi_Galata_Platform, mean_rel_diff_0490p00_zi_Galata_Platform, r_sqr_0490p00_zi_Galata_Platform,\
+rmse_val_0490p00_zi_Helsinki_Lighthouse,mean_abs_rel_diff_0490p00_zi_Helsinki_Lighthouse, mean_rel_diff_0490p00_zi_Helsinki_Lighthouse, r_sqr_0490p00_zi_Helsinki_Lighthouse,\
+rmse_val_0490p00_zi_Gustav_Dalen_Tower,mean_abs_rel_diff_0490p00_zi_Gustav_Dalen_Tower, mean_rel_diff_0490p00_zi_Gustav_Dalen_Tower, r_sqr_0490p00_zi_Gustav_Dalen_Tower\
+= plot_scatter(\
     matchups_Lwn_0490p00_fq_ins_zi,matchups_Lwn_0490p00_fq_sat_zi,'490.0',path_out,prot_name,sensor_name,\
-    matchups_Lwn_0490p00_fq_ins_zi_station,min_val=-1.00,max_val=8.0) 
-rmse_val_0560p00_zi, mean_abs_rel_diff_0560p00_zi, mean_rel_diff_0560p00_zi, r_sqr_0560p00_zi = plot_scatter(
+    matchups_Lwn_0490p00_fq_ins_zi_station,min_val=-2.00,max_val=8.0)
+
+rmse_val_0560p00_zi, mean_abs_rel_diff_0560p00_zi, mean_rel_diff_0560p00_zi, r_sqr_0560p00_zi,\
+rmse_val_0560p00_zi_Venise,mean_abs_rel_diff_0560p00_zi_Venise, mean_rel_diff_0560p00_zi_Venise, r_sqr_0560p00_zi_Venise,\
+rmse_val_0560p00_zi_Gloria,mean_abs_rel_diff_0560p00_zi_Gloria, mean_rel_diff_0560p00_zi_Gloria, r_sqr_0560p00_zi_Gloria,\
+rmse_val_0560p00_zi_Galata_Platform,mean_abs_rel_diff_0560p00_zi_Galata_Platform, mean_rel_diff_0560p00_zi_Galata_Platform, r_sqr_0560p00_zi_Galata_Platform,\
+rmse_val_0560p00_zi_Helsinki_Lighthouse,mean_abs_rel_diff_0560p00_zi_Helsinki_Lighthouse, mean_rel_diff_0560p00_zi_Helsinki_Lighthouse, r_sqr_0560p00_zi_Helsinki_Lighthouse,\
+rmse_val_0560p00_zi_Gustav_Dalen_Tower,mean_abs_rel_diff_0560p00_zi_Gustav_Dalen_Tower, mean_rel_diff_0560p00_zi_Gustav_Dalen_Tower, r_sqr_0560p00_zi_Gustav_Dalen_Tower\
+= plot_scatter(\
     matchups_Lwn_0560p00_fq_ins_zi,matchups_Lwn_0560p00_fq_sat_zi,'560.0',path_out,prot_name,sensor_name,\
-    matchups_Lwn_0560p00_fq_ins_zi_station,min_val=-1.00,max_val=6.0) 
-rmse_val_0665p00_zi, mean_abs_rel_diff_0665p00_zi, mean_rel_diff_0665p00_zi, r_sqr_0665p00_zi = plot_scatter(
+    matchups_Lwn_0560p00_fq_ins_zi_station,min_val=-0.50,max_val=6.0)
+
+rmse_val_0665p00_zi, mean_abs_rel_diff_0665p00_zi, mean_rel_diff_0665p00_zi, r_sqr_0665p00_zi,\
+rmse_val_0665p00_zi_Venise,mean_abs_rel_diff_0665p00_zi_Venise, mean_rel_diff_0665p00_zi_Venise, r_sqr_0665p00_zi_Venise,\
+rmse_val_0665p00_zi_Gloria,mean_abs_rel_diff_0665p00_zi_Gloria, mean_rel_diff_0665p00_zi_Gloria, r_sqr_0665p00_zi_Gloria,\
+rmse_val_0665p00_zi_Galata_Platform,mean_abs_rel_diff_0665p00_zi_Galata_Platform, mean_rel_diff_0665p00_zi_Galata_Platform, r_sqr_0665p00_zi_Galata_Platform,\
+rmse_val_0665p00_zi_Helsinki_Lighthouse,mean_abs_rel_diff_0665p00_zi_Helsinki_Lighthouse, mean_rel_diff_0665p00_zi_Helsinki_Lighthouse, r_sqr_0665p00_zi_Helsinki_Lighthouse,\
+rmse_val_0665p00_zi_Gustav_Dalen_Tower,mean_abs_rel_diff_0665p00_zi_Gustav_Dalen_Tower, mean_rel_diff_0665p00_zi_Gustav_Dalen_Tower, r_sqr_0665p00_zi_Gustav_Dalen_Tower\
+= plot_scatter(\
     matchups_Lwn_0665p00_fq_ins_zi,matchups_Lwn_0665p00_fq_sat_zi,'665.0',path_out,prot_name,sensor_name,\
-    matchups_Lwn_0665p00_fq_ins_zi_station,min_val=-1.00,max_val=2.0) 
+    matchups_Lwn_0665p00_fq_ins_zi_station,min_val=-0.60,max_val=4.0)
 
 #% plots  
 prot_name = 'ba' 
 sensor_name = 'OLCI'
-rmse_val_0412p50_ba, mean_abs_rel_diff_0412p50_ba, mean_rel_diff_0412p50_ba, r_sqr_0412p50_ba = plot_scatter(
+rmse_val_0412p50_ba, mean_abs_rel_diff_0412p50_ba, mean_rel_diff_0412p50_ba, r_sqr_0412p50_ba,\
+rmse_val_0412p50_ba_Venise,mean_abs_rel_diff_0412p50_ba_Venise, mean_rel_diff_0412p50_ba_Venise, r_sqr_0412p50_ba_Venise,\
+rmse_val_0412p50_ba_Gloria,mean_abs_rel_diff_0412p50_ba_Gloria, mean_rel_diff_0412p50_ba_Gloria, r_sqr_0412p50_ba_Gloria,\
+rmse_val_0412p50_ba_Galata_Platform,mean_abs_rel_diff_0412p50_ba_Galata_Platform, mean_rel_diff_0412p50_ba_Galata_Platform, r_sqr_0412p50_ba_Galata_Platform,\
+rmse_val_0412p50_ba_Helsinki_Lighthouse,mean_abs_rel_diff_0412p50_ba_Helsinki_Lighthouse, mean_rel_diff_0412p50_ba_Helsinki_Lighthouse, r_sqr_0412p50_ba_Helsinki_Lighthouse,\
+rmse_val_0412p50_ba_Gustav_Dalen_Tower,mean_abs_rel_diff_0412p50_ba_Gustav_Dalen_Tower, mean_rel_diff_0412p50_ba_Gustav_Dalen_Tower, r_sqr_0412p50_ba_Gustav_Dalen_Tower\
+= plot_scatter(\
     matchups_Lwn_0412p50_fq_ins_ba,matchups_Lwn_0412p50_fq_sat_ba,'412.5',path_out,prot_name,sensor_name,\
-    matchups_Lwn_0412p50_fq_ins_ba_station,min_val=-1.00,max_val=4.0) 
-rmse_val_0442p50_ba, mean_abs_rel_diff_0442p50_ba, mean_rel_diff_0442p50_ba, r_sqr_0442p50_ba = plot_scatter(
+    matchups_Lwn_0412p50_fq_ins_ba_station,min_val=-3.00,max_val=5.0)
+rmse_val_0442p50_ba, mean_abs_rel_diff_0442p50_ba, mean_rel_diff_0442p50_ba, r_sqr_0442p50_ba,\
+rmse_val_0442p50_ba_Venise,mean_abs_rel_diff_0442p50_ba_Venise, mean_rel_diff_0442p50_ba_Venise, r_sqr_0442p50_ba_Venise,\
+rmse_val_0442p50_ba_Gloria,mean_abs_rel_diff_0442p50_ba_Gloria, mean_rel_diff_0442p50_ba_Gloria, r_sqr_0442p50_ba_Gloria,\
+rmse_val_0442p50_ba_Galata_Platform,mean_abs_rel_diff_0442p50_ba_Galata_Platform, mean_rel_diff_0442p50_ba_Galata_Platform, r_sqr_0442p50_ba_Galata_Platform,\
+rmse_val_0442p50_ba_Helsinki_Lighthouse,mean_abs_rel_diff_0442p50_ba_Helsinki_Lighthouse, mean_rel_diff_0442p50_ba_Helsinki_Lighthouse, r_sqr_0442p50_ba_Helsinki_Lighthouse,\
+rmse_val_0442p50_ba_Gustav_Dalen_Tower,mean_abs_rel_diff_0442p50_ba_Gustav_Dalen_Tower, mean_rel_diff_0442p50_ba_Gustav_Dalen_Tower, r_sqr_0442p50_ba_Gustav_Dalen_Tower\
+= plot_scatter(\
     matchups_Lwn_0442p50_fq_ins_ba,matchups_Lwn_0442p50_fq_sat_ba,'442.5',path_out,prot_name,sensor_name,\
-    matchups_Lwn_0442p50_fq_ins_ba_station,min_val=-1.00,max_val=6.0) 
-rmse_val_0490p00_ba, mean_abs_rel_diff_0490p00_ba, mean_rel_diff_0490p00_ba, r_sqr_0490p00_ba = plot_scatter(
+    matchups_Lwn_0442p50_fq_ins_ba_station,min_val=-3.00,max_val=6.2)
+rmse_val_0490p00_ba, mean_abs_rel_diff_0490p00_ba, mean_rel_diff_0490p00_ba, r_sqr_0490p00_ba,\
+rmse_val_0490p00_ba_Venise,mean_abs_rel_diff_0490p00_ba_Venise, mean_rel_diff_0490p00_ba_Venise, r_sqr_0490p00_ba_Venise,\
+rmse_val_0490p00_ba_Gloria,mean_abs_rel_diff_0490p00_ba_Gloria, mean_rel_diff_0490p00_ba_Gloria, r_sqr_0490p00_ba_Gloria,\
+rmse_val_0490p00_ba_Galata_Platform,mean_abs_rel_diff_0490p00_ba_Galata_Platform, mean_rel_diff_0490p00_ba_Galata_Platform, r_sqr_0490p00_ba_Galata_Platform,\
+rmse_val_0490p00_ba_Helsinki_Lighthouse,mean_abs_rel_diff_0490p00_ba_Helsinki_Lighthouse, mean_rel_diff_0490p00_ba_Helsinki_Lighthouse, r_sqr_0490p00_ba_Helsinki_Lighthouse,\
+rmse_val_0490p00_ba_Gustav_Dalen_Tower,mean_abs_rel_diff_0490p00_ba_Gustav_Dalen_Tower, mean_rel_diff_0490p00_ba_Gustav_Dalen_Tower, r_sqr_0490p00_ba_Gustav_Dalen_Tower\
+= plot_scatter(\
     matchups_Lwn_0490p00_fq_ins_ba,matchups_Lwn_0490p00_fq_sat_ba,'490.0',path_out,prot_name,sensor_name,\
-    matchups_Lwn_0490p00_fq_ins_ba_station,min_val=-1.00,max_val=8.0) 
-rmse_val_0560p00_ba, mean_abs_rel_diff_0560p00_ba, mean_rel_diff_0560p00_ba, r_sqr_0560p00_ba = plot_scatter(
+    matchups_Lwn_0490p00_fq_ins_ba_station,min_val=-2.00,max_val=8.0)
+rmse_val_0560p00_ba, mean_abs_rel_diff_0560p00_ba, mean_rel_diff_0560p00_ba, r_sqr_0560p00_ba,\
+rmse_val_0560p00_ba_Venise,mean_abs_rel_diff_0560p00_ba_Venise, mean_rel_diff_0560p00_ba_Venise, r_sqr_0560p00_ba_Venise,\
+rmse_val_0560p00_ba_Gloria,mean_abs_rel_diff_0560p00_ba_Gloria, mean_rel_diff_0560p00_ba_Gloria, r_sqr_0560p00_ba_Gloria,\
+rmse_val_0560p00_ba_Galata_Platform,mean_abs_rel_diff_0560p00_ba_Galata_Platform, mean_rel_diff_0560p00_ba_Galata_Platform, r_sqr_0560p00_ba_Galata_Platform,\
+rmse_val_0560p00_ba_Helsinki_Lighthouse,mean_abs_rel_diff_0560p00_ba_Helsinki_Lighthouse, mean_rel_diff_0560p00_ba_Helsinki_Lighthouse, r_sqr_0560p00_ba_Helsinki_Lighthouse,\
+rmse_val_0560p00_ba_Gustav_Dalen_Tower,mean_abs_rel_diff_0560p00_ba_Gustav_Dalen_Tower, mean_rel_diff_0560p00_ba_Gustav_Dalen_Tower, r_sqr_0560p00_ba_Gustav_Dalen_Tower\
+= plot_scatter(\
     matchups_Lwn_0560p00_fq_ins_ba,matchups_Lwn_0560p00_fq_sat_ba,'560.0',path_out,prot_name,sensor_name,\
-    matchups_Lwn_0560p00_fq_ins_ba_station,min_val=-1.00,max_val=6.0) 
-rmse_val_0665p00_ba, mean_abs_rel_diff_0665p00_ba, mean_rel_diff_0665p00_ba, r_sqr_0665p00_ba = plot_scatter(
+    matchups_Lwn_0560p00_fq_ins_ba_station,min_val=-0.50,max_val=6.0)
+rmse_val_0665p00_ba, mean_abs_rel_diff_0665p00_ba, mean_rel_diff_0665p00_ba, r_sqr_0665p00_ba,\
+rmse_val_0665p00_ba_Venise,mean_abs_rel_diff_0665p00_ba_Venise, mean_rel_diff_0665p00_ba_Venise, r_sqr_0665p00_ba_Venise,\
+rmse_val_0665p00_ba_Gloria,mean_abs_rel_diff_0665p00_ba_Gloria, mean_rel_diff_0665p00_ba_Gloria, r_sqr_0665p00_ba_Gloria,\
+rmse_val_0665p00_ba_Galata_Platform,mean_abs_rel_diff_0665p00_ba_Galata_Platform, mean_rel_diff_0665p00_ba_Galata_Platform, r_sqr_0665p00_ba_Galata_Platform,\
+rmse_val_0665p00_ba_Helsinki_Lighthouse,mean_abs_rel_diff_0665p00_ba_Helsinki_Lighthouse, mean_rel_diff_0665p00_ba_Helsinki_Lighthouse, r_sqr_0665p00_ba_Helsinki_Lighthouse,\
+rmse_val_0665p00_ba_Gustav_Dalen_Tower,mean_abs_rel_diff_0665p00_ba_Gustav_Dalen_Tower, mean_rel_diff_0665p00_ba_Gustav_Dalen_Tower, r_sqr_0665p00_ba_Gustav_Dalen_Tower\
+= plot_scatter(\
     matchups_Lwn_0665p00_fq_ins_ba,matchups_Lwn_0665p00_fq_sat_ba,'665.0',path_out,prot_name,sensor_name,\
-    matchups_Lwn_0665p00_fq_ins_ba_station,min_val=-1.00,max_val=2.0) 
+    matchups_Lwn_0665p00_fq_ins_ba_station,min_val=-0.60,max_val=4.0)
 
 #%%
 # rmse
 rmse_zi = [rmse_val_0412p50_zi,rmse_val_0442p50_zi,rmse_val_0490p00_zi,rmse_val_0560p00_zi,rmse_val_0665p00_zi] 
 rmse_ba = [rmse_val_0412p50_ba,rmse_val_0442p50_ba,rmse_val_0490p00_ba,rmse_val_0560p00_ba,rmse_val_0665p00_ba]
+rmse_zi_Venise = [rmse_val_0412p50_zi_Venise,rmse_val_0442p50_zi_Venise,rmse_val_0490p00_zi_Venise,rmse_val_0560p00_zi_Venise,rmse_val_0665p00_zi_Venise] 
+rmse_ba_Venise = [rmse_val_0412p50_ba_Venise,rmse_val_0442p50_ba_Venise,rmse_val_0490p00_ba_Venise,rmse_val_0560p00_ba_Venise,rmse_val_0665p00_ba_Venise]
+rmse_zi_Gloria = [rmse_val_0412p50_zi_Gloria,rmse_val_0442p50_zi_Gloria,rmse_val_0490p00_zi_Gloria,rmse_val_0560p00_zi_Gloria,rmse_val_0665p00_zi_Gloria] 
+rmse_ba_Gloria = [rmse_val_0412p50_ba_Gloria,rmse_val_0442p50_ba_Gloria,rmse_val_0490p00_ba_Gloria,rmse_val_0560p00_ba_Gloria,rmse_val_0665p00_ba_Gloria]
+rmse_zi_Galata_Platform = [rmse_val_0412p50_zi_Galata_Platform,rmse_val_0442p50_zi_Galata_Platform,rmse_val_0490p00_zi_Galata_Platform,rmse_val_0560p00_zi_Galata_Platform,rmse_val_0665p00_zi_Galata_Platform] 
+rmse_ba_Galata_Platform = [rmse_val_0412p50_ba_Galata_Platform,rmse_val_0442p50_ba_Galata_Platform,rmse_val_0490p00_ba_Galata_Platform,rmse_val_0560p00_ba_Galata_Platform,rmse_val_0665p00_ba_Galata_Platform]
+rmse_zi_Helsinki_Lighthouse = [rmse_val_0412p50_zi_Helsinki_Lighthouse,rmse_val_0442p50_zi_Helsinki_Lighthouse,rmse_val_0490p00_zi_Helsinki_Lighthouse,rmse_val_0560p00_zi_Helsinki_Lighthouse,rmse_val_0665p00_zi_Helsinki_Lighthouse] 
+rmse_ba_Helsinki_Lighthouse = [rmse_val_0412p50_ba_Helsinki_Lighthouse,rmse_val_0442p50_ba_Helsinki_Lighthouse,rmse_val_0490p00_ba_Helsinki_Lighthouse,rmse_val_0560p00_ba_Helsinki_Lighthouse,rmse_val_0665p00_ba_Helsinki_Lighthouse]
+rmse_zi_Gustav_Dalen_Tower = [rmse_val_0412p50_zi_Gustav_Dalen_Tower,rmse_val_0442p50_zi_Gustav_Dalen_Tower,rmse_val_0490p00_zi_Gustav_Dalen_Tower,rmse_val_0560p00_zi_Gustav_Dalen_Tower,rmse_val_0665p00_zi_Gustav_Dalen_Tower] 
+rmse_ba_Gustav_Dalen_Tower = [rmse_val_0412p50_ba_Gustav_Dalen_Tower,rmse_val_0442p50_ba_Gustav_Dalen_Tower,rmse_val_0490p00_ba_Gustav_Dalen_Tower,rmse_val_0560p00_ba_Gustav_Dalen_Tower,rmse_val_0665p00_ba_Gustav_Dalen_Tower]
 wv = [412.5,442.5,490.0,560.0,665.0]
 plt.figure()
-plt.plot(wv,rmse_zi,'-o')
-plt.plot(wv,rmse_ba,'-o')
+kwargs = dict(linewidth=1, markersize=10,markeredgewidth=2)
+kwargs2 = dict(linewidth=2, markersize=10,markeredgewidth=2)
+plt.plot(wv,rmse_zi_Venise,'-+r',**kwargs)
+plt.plot(wv,rmse_ba_Venise,'-xr',**kwargs)
+plt.plot(wv,rmse_zi_Gloria,'-+g',**kwargs)
+plt.plot(wv,rmse_ba_Gloria,'-xg',**kwargs)
+plt.plot(wv,rmse_zi_Galata_Platform,'-+b',**kwargs)
+plt.plot(wv,rmse_ba_Galata_Platform,'-xb',**kwargs)
+plt.plot(wv,rmse_zi_Helsinki_Lighthouse,'-+m',**kwargs)
+plt.plot(wv,rmse_ba_Helsinki_Lighthouse,'-xm',**kwargs)
+plt.plot(wv,rmse_zi_Gustav_Dalen_Tower,'-+c',**kwargs)
+plt.plot(wv,rmse_ba_Gustav_Dalen_Tower,'-xc',**kwargs)
+plt.plot(wv,rmse_zi,'--+k',**kwargs2)
+plt.plot(wv,rmse_ba,'--xk',**kwargs2)
 plt.xlabel('Wavelength [nm]',fontsize=12)
 plt.ylabel('$rmse$',fontsize=12)
 # plt.legend(['Zibordi, Mèlin and Berthon (2018)','Bailey and Werdell (2006)'])
@@ -991,15 +1256,33 @@ ofname = 'OLCI_rmse.pdf'
 ofname = os.path.join(path_out,'source',ofname)   
 plt.savefig(ofname, dpi=300)
 
-# mean_abs_rel_diff
-mean_abs_rel_diff_zi = [mean_abs_rel_diff_0412p50_zi,mean_abs_rel_diff_0442p50_zi,mean_abs_rel_diff_0490p00_zi,\
-    mean_abs_rel_diff_0560p00_zi,mean_abs_rel_diff_0665p00_zi]
-mean_abs_rel_diff_ba = [mean_abs_rel_diff_0412p50_ba,mean_abs_rel_diff_0442p50_ba,mean_abs_rel_diff_0490p00_ba,\
-    mean_abs_rel_diff_0560p00_ba,mean_abs_rel_diff_0665p00_ba]
+#% mean_abs_rel_diff
+mean_abs_rel_diff_zi = [mean_abs_rel_diff_0412p50_zi,mean_abs_rel_diff_0442p50_zi,mean_abs_rel_diff_0490p00_zi,mean_abs_rel_diff_0560p00_zi,mean_abs_rel_diff_0665p00_zi]
+mean_abs_rel_diff_ba = [mean_abs_rel_diff_0412p50_ba,mean_abs_rel_diff_0442p50_ba,mean_abs_rel_diff_0490p00_ba,mean_abs_rel_diff_0560p00_ba,mean_abs_rel_diff_0665p00_ba]
+mean_abs_rel_diff_zi_Venise = [mean_abs_rel_diff_0412p50_zi_Venise,mean_abs_rel_diff_0442p50_zi_Venise,mean_abs_rel_diff_0490p00_zi_Venise,mean_abs_rel_diff_0560p00_zi_Venise,mean_abs_rel_diff_0665p00_zi_Venise] 
+mean_abs_rel_diff_ba_Venise = [mean_abs_rel_diff_0412p50_ba_Venise,mean_abs_rel_diff_0442p50_ba_Venise,mean_abs_rel_diff_0490p00_ba_Venise,mean_abs_rel_diff_0560p00_ba_Venise,mean_abs_rel_diff_0665p00_ba_Venise]
+mean_abs_rel_diff_zi_Gloria = [mean_abs_rel_diff_0412p50_zi_Gloria,mean_abs_rel_diff_0442p50_zi_Gloria,mean_abs_rel_diff_0490p00_zi_Gloria,mean_abs_rel_diff_0560p00_zi_Gloria,mean_abs_rel_diff_0665p00_zi_Gloria] 
+mean_abs_rel_diff_ba_Gloria = [mean_abs_rel_diff_0412p50_ba_Gloria,mean_abs_rel_diff_0442p50_ba_Gloria,mean_abs_rel_diff_0490p00_ba_Gloria,mean_abs_rel_diff_0560p00_ba_Gloria,mean_abs_rel_diff_0665p00_ba_Gloria]
+mean_abs_rel_diff_zi_Galata_Platform = [mean_abs_rel_diff_0412p50_zi_Galata_Platform,mean_abs_rel_diff_0442p50_zi_Galata_Platform,mean_abs_rel_diff_0490p00_zi_Galata_Platform,mean_abs_rel_diff_0560p00_zi_Galata_Platform,mean_abs_rel_diff_0665p00_zi_Galata_Platform] 
+mean_abs_rel_diff_ba_Galata_Platform = [mean_abs_rel_diff_0412p50_ba_Galata_Platform,mean_abs_rel_diff_0442p50_ba_Galata_Platform,mean_abs_rel_diff_0490p00_ba_Galata_Platform,mean_abs_rel_diff_0560p00_ba_Galata_Platform,mean_abs_rel_diff_0665p00_ba_Galata_Platform]
+mean_abs_rel_diff_zi_Helsinki_Lighthouse = [mean_abs_rel_diff_0412p50_zi_Helsinki_Lighthouse,mean_abs_rel_diff_0442p50_zi_Helsinki_Lighthouse,mean_abs_rel_diff_0490p00_zi_Helsinki_Lighthouse,mean_abs_rel_diff_0560p00_zi_Helsinki_Lighthouse,mean_abs_rel_diff_0665p00_zi_Helsinki_Lighthouse] 
+mean_abs_rel_diff_ba_Helsinki_Lighthouse = [mean_abs_rel_diff_0412p50_ba_Helsinki_Lighthouse,mean_abs_rel_diff_0442p50_ba_Helsinki_Lighthouse,mean_abs_rel_diff_0490p00_ba_Helsinki_Lighthouse,mean_abs_rel_diff_0560p00_ba_Helsinki_Lighthouse,mean_abs_rel_diff_0665p00_ba_Helsinki_Lighthouse]
+mean_abs_rel_diff_zi_Gustav_Dalen_Tower = [mean_abs_rel_diff_0412p50_zi_Gustav_Dalen_Tower,mean_abs_rel_diff_0442p50_zi_Gustav_Dalen_Tower,mean_abs_rel_diff_0490p00_zi_Gustav_Dalen_Tower,mean_abs_rel_diff_0560p00_zi_Gustav_Dalen_Tower,mean_abs_rel_diff_0665p00_zi_Gustav_Dalen_Tower] 
+mean_abs_rel_diff_ba_Gustav_Dalen_Tower = [mean_abs_rel_diff_0412p50_ba_Gustav_Dalen_Tower,mean_abs_rel_diff_0442p50_ba_Gustav_Dalen_Tower,mean_abs_rel_diff_0490p00_ba_Gustav_Dalen_Tower,mean_abs_rel_diff_0560p00_ba_Gustav_Dalen_Tower,mean_abs_rel_diff_0665p00_ba_Gustav_Dalen_Tower]    
 wv = [412.5,442.5,490.0,560.0,665.0]
 plt.figure()
-plt.plot(wv,mean_abs_rel_diff_zi,'-o')
-plt.plot(wv,mean_abs_rel_diff_ba,'-o')
+plt.plot(wv,mean_abs_rel_diff_zi_Venise,'-+r',**kwargs)
+plt.plot(wv,mean_abs_rel_diff_ba_Venise,'-xr',**kwargs)
+plt.plot(wv,mean_abs_rel_diff_zi_Gloria,'-+g',**kwargs)
+plt.plot(wv,mean_abs_rel_diff_ba_Gloria,'-xg',**kwargs)
+plt.plot(wv,mean_abs_rel_diff_zi_Galata_Platform,'-+b',**kwargs)
+plt.plot(wv,mean_abs_rel_diff_ba_Galata_Platform,'-xb',**kwargs)
+plt.plot(wv,mean_abs_rel_diff_zi_Helsinki_Lighthouse,'-+m',**kwargs)
+plt.plot(wv,mean_abs_rel_diff_ba_Helsinki_Lighthouse,'-xm',**kwargs)
+plt.plot(wv,mean_abs_rel_diff_zi_Gustav_Dalen_Tower,'-+c',**kwargs)
+plt.plot(wv,mean_abs_rel_diff_ba_Gustav_Dalen_Tower,'-xc',**kwargs)
+plt.plot(wv,mean_abs_rel_diff_zi,'--+k',**kwargs2)
+plt.plot(wv,mean_abs_rel_diff_ba,'--xk',**kwargs2)
 plt.xlabel('Wavelength [nm]',fontsize=12)
 plt.ylabel('MAPD [%]',fontsize=12)
 # plt.legend(['Zibordi','Bailey and Werdell'])
@@ -1014,10 +1297,31 @@ mean_rel_diff_zi = [mean_rel_diff_0412p50_zi,mean_rel_diff_0442p50_zi,mean_rel_d
     mean_rel_diff_0560p00_zi,mean_rel_diff_0665p00_zi]
 mean_rel_diff_ba = [mean_rel_diff_0412p50_ba,mean_rel_diff_0442p50_ba,mean_rel_diff_0490p00_ba,\
     mean_rel_diff_0560p00_ba,mean_rel_diff_0665p00_ba]
+mean_rel_diff_zi_Venise = [mean_rel_diff_0412p50_zi_Venise,mean_rel_diff_0442p50_zi_Venise,mean_rel_diff_0490p00_zi_Venise,mean_rel_diff_0560p00_zi_Venise,mean_rel_diff_0665p00_zi_Venise] 
+mean_rel_diff_ba_Venise = [mean_rel_diff_0412p50_ba_Venise,mean_rel_diff_0442p50_ba_Venise,mean_rel_diff_0490p00_ba_Venise,mean_rel_diff_0560p00_ba_Venise,mean_rel_diff_0665p00_ba_Venise]
+mean_rel_diff_zi_Gloria = [mean_rel_diff_0412p50_zi_Gloria,mean_rel_diff_0442p50_zi_Gloria,mean_rel_diff_0490p00_zi_Gloria,mean_rel_diff_0560p00_zi_Gloria,mean_rel_diff_0665p00_zi_Gloria] 
+mean_rel_diff_ba_Gloria = [mean_rel_diff_0412p50_ba_Gloria,mean_rel_diff_0442p50_ba_Gloria,mean_rel_diff_0490p00_ba_Gloria,mean_rel_diff_0560p00_ba_Gloria,mean_rel_diff_0665p00_ba_Gloria]
+mean_rel_diff_zi_Galata_Platform = [mean_rel_diff_0412p50_zi_Galata_Platform,mean_rel_diff_0442p50_zi_Galata_Platform,mean_rel_diff_0490p00_zi_Galata_Platform,mean_rel_diff_0560p00_zi_Galata_Platform,mean_rel_diff_0665p00_zi_Galata_Platform] 
+mean_rel_diff_ba_Galata_Platform = [mean_rel_diff_0412p50_ba_Galata_Platform,mean_rel_diff_0442p50_ba_Galata_Platform,mean_rel_diff_0490p00_ba_Galata_Platform,mean_rel_diff_0560p00_ba_Galata_Platform,mean_rel_diff_0665p00_ba_Galata_Platform]
+mean_rel_diff_zi_Helsinki_Lighthouse = [mean_rel_diff_0412p50_zi_Helsinki_Lighthouse,mean_rel_diff_0442p50_zi_Helsinki_Lighthouse,mean_rel_diff_0490p00_zi_Helsinki_Lighthouse,mean_rel_diff_0560p00_zi_Helsinki_Lighthouse,mean_rel_diff_0665p00_zi_Helsinki_Lighthouse] 
+mean_rel_diff_ba_Helsinki_Lighthouse = [mean_rel_diff_0412p50_ba_Helsinki_Lighthouse,mean_rel_diff_0442p50_ba_Helsinki_Lighthouse,mean_rel_diff_0490p00_ba_Helsinki_Lighthouse,mean_rel_diff_0560p00_ba_Helsinki_Lighthouse,mean_rel_diff_0665p00_ba_Helsinki_Lighthouse]
+mean_rel_diff_zi_Gustav_Dalen_Tower = [mean_rel_diff_0412p50_zi_Gustav_Dalen_Tower,mean_rel_diff_0442p50_zi_Gustav_Dalen_Tower,mean_rel_diff_0490p00_zi_Gustav_Dalen_Tower,mean_rel_diff_0560p00_zi_Gustav_Dalen_Tower,mean_rel_diff_0665p00_zi_Gustav_Dalen_Tower] 
+mean_rel_diff_ba_Gustav_Dalen_Tower = [mean_rel_diff_0412p50_ba_Gustav_Dalen_Tower,mean_rel_diff_0442p50_ba_Gustav_Dalen_Tower,mean_rel_diff_0490p00_ba_Gustav_Dalen_Tower,mean_rel_diff_0560p00_ba_Gustav_Dalen_Tower,mean_rel_diff_0665p00_ba_Gustav_Dalen_Tower]    
+
 wv = [412.5,442.5,490.0,560.0,665.0]
 plt.figure()
-plt.plot(wv,mean_rel_diff_zi,'-o')
-plt.plot(wv,mean_rel_diff_ba,'-o')
+plt.plot(wv,mean_rel_diff_zi_Venise,'-+r',**kwargs)
+plt.plot(wv,mean_rel_diff_ba_Venise,'-xr',**kwargs)
+plt.plot(wv,mean_rel_diff_zi_Gloria,'-+g',**kwargs)
+plt.plot(wv,mean_rel_diff_ba_Gloria,'-xg',**kwargs)
+plt.plot(wv,mean_rel_diff_zi_Galata_Platform,'-+b',**kwargs)
+plt.plot(wv,mean_rel_diff_ba_Galata_Platform,'-xb',**kwargs)
+plt.plot(wv,mean_rel_diff_zi_Helsinki_Lighthouse,'-+m',**kwargs)
+plt.plot(wv,mean_rel_diff_ba_Helsinki_Lighthouse,'-xm',**kwargs)
+plt.plot(wv,mean_rel_diff_zi_Gustav_Dalen_Tower,'-+c',**kwargs)
+plt.plot(wv,mean_rel_diff_ba_Gustav_Dalen_Tower,'-xc',**kwargs)
+plt.plot(wv,mean_rel_diff_zi,'--+k',**kwargs2)
+plt.plot(wv,mean_rel_diff_ba,'--xk',**kwargs2)
 plt.xlabel('Wavelength [nm]',fontsize=12)
 plt.ylabel('MPD [%]',fontsize=12)
 # plt.legend(['Zibordi','Bailey and Werdell'])
@@ -1032,13 +1336,34 @@ r_sqr_zi = [r_sqr_0412p50_zi,r_sqr_0442p50_zi,r_sqr_0490p00_zi,\
     r_sqr_0560p00_zi,r_sqr_0665p00_zi]
 r_sqr_ba = [r_sqr_0412p50_ba,r_sqr_0442p50_ba,r_sqr_0490p00_ba,\
     r_sqr_0560p00_ba,r_sqr_0665p00_ba]
+r_sqr_zi_Venise = [r_sqr_0412p50_zi_Venise,r_sqr_0442p50_zi_Venise,r_sqr_0490p00_zi_Venise,r_sqr_0560p00_zi_Venise,r_sqr_0665p00_zi_Venise] 
+r_sqr_ba_Venise = [r_sqr_0412p50_ba_Venise,r_sqr_0442p50_ba_Venise,r_sqr_0490p00_ba_Venise,r_sqr_0560p00_ba_Venise,r_sqr_0665p00_ba_Venise]
+r_sqr_zi_Gloria = [r_sqr_0412p50_zi_Gloria,r_sqr_0442p50_zi_Gloria,r_sqr_0490p00_zi_Gloria,r_sqr_0560p00_zi_Gloria,r_sqr_0665p00_zi_Gloria] 
+r_sqr_ba_Gloria = [r_sqr_0412p50_ba_Gloria,r_sqr_0442p50_ba_Gloria,r_sqr_0490p00_ba_Gloria,r_sqr_0560p00_ba_Gloria,r_sqr_0665p00_ba_Gloria]
+r_sqr_zi_Galata_Platform = [r_sqr_0412p50_zi_Galata_Platform,r_sqr_0442p50_zi_Galata_Platform,r_sqr_0490p00_zi_Galata_Platform,r_sqr_0560p00_zi_Galata_Platform,r_sqr_0665p00_zi_Galata_Platform] 
+r_sqr_ba_Galata_Platform = [r_sqr_0412p50_ba_Galata_Platform,r_sqr_0442p50_ba_Galata_Platform,r_sqr_0490p00_ba_Galata_Platform,r_sqr_0560p00_ba_Galata_Platform,r_sqr_0665p00_ba_Galata_Platform]
+r_sqr_zi_Helsinki_Lighthouse = [r_sqr_0412p50_zi_Helsinki_Lighthouse,r_sqr_0442p50_zi_Helsinki_Lighthouse,r_sqr_0490p00_zi_Helsinki_Lighthouse,r_sqr_0560p00_zi_Helsinki_Lighthouse,r_sqr_0665p00_zi_Helsinki_Lighthouse] 
+r_sqr_ba_Helsinki_Lighthouse = [r_sqr_0412p50_ba_Helsinki_Lighthouse,r_sqr_0442p50_ba_Helsinki_Lighthouse,r_sqr_0490p00_ba_Helsinki_Lighthouse,r_sqr_0560p00_ba_Helsinki_Lighthouse,r_sqr_0665p00_ba_Helsinki_Lighthouse]
+r_sqr_zi_Gustav_Dalen_Tower = [r_sqr_0412p50_zi_Gustav_Dalen_Tower,r_sqr_0442p50_zi_Gustav_Dalen_Tower,r_sqr_0490p00_zi_Gustav_Dalen_Tower,r_sqr_0560p00_zi_Gustav_Dalen_Tower,r_sqr_0665p00_zi_Gustav_Dalen_Tower] 
+r_sqr_ba_Gustav_Dalen_Tower = [r_sqr_0412p50_ba_Gustav_Dalen_Tower,r_sqr_0442p50_ba_Gustav_Dalen_Tower,r_sqr_0490p00_ba_Gustav_Dalen_Tower,r_sqr_0560p00_ba_Gustav_Dalen_Tower,r_sqr_0665p00_ba_Gustav_Dalen_Tower]    
+
 wv = [412.5,442.5,490.0,560.0,665.0]
 plt.figure()
-plt.plot(wv,r_sqr_zi,'-o')
-plt.plot(wv,r_sqr_ba,'-o')
+plt.plot(wv,r_sqr_zi_Venise,'-+r',**kwargs)
+plt.plot(wv,r_sqr_ba_Venise,'-xr',**kwargs)
+plt.plot(wv,r_sqr_zi_Gloria,'-+g',**kwargs)
+plt.plot(wv,r_sqr_ba_Gloria,'-xg',**kwargs)
+plt.plot(wv,r_sqr_zi_Galata_Platform,'-+b',**kwargs)
+plt.plot(wv,r_sqr_ba_Galata_Platform,'-xb',**kwargs)
+plt.plot(wv,r_sqr_zi_Helsinki_Lighthouse,'-+m',**kwargs)
+plt.plot(wv,r_sqr_ba_Helsinki_Lighthouse,'-xm',**kwargs)
+plt.plot(wv,r_sqr_zi_Gustav_Dalen_Tower,'-+c',**kwargs)
+plt.plot(wv,r_sqr_ba_Gustav_Dalen_Tower,'-xc',**kwargs)
+plt.plot(wv,r_sqr_zi,'--+k',**kwargs2)
+plt.plot(wv,r_sqr_ba,'--xk',**kwargs2)
 plt.xlabel('Wavelength [nm]',fontsize=12)
 plt.ylabel('$r^2$',fontsize=12)
-plt.legend(['ZMB18','BW06'],fontsize=12)
+# plt.legend(['ZMB18','BW06'],fontsize=12)
 plt.show()    
 
 ofname = 'OLCI_r_sqr.pdf'
@@ -1047,11 +1372,11 @@ plt.savefig(ofname, dpi=300)
 
 #%% 
 notation_flag = 0 # to display percentage difference in the plot
-plot_both_methods('412.5',notation_flag,path_out,min_val=-2.00,max_val=4.0)
-plot_both_methods('442.5',notation_flag,path_out,min_val=-2.00,max_val=6.0)
-plot_both_methods('490.0',notation_flag,path_out,min_val=-1.00,max_val=8.0)
-plot_both_methods('560.0',notation_flag,path_out,min_val=-1.00,max_val=6.0)
-plot_both_methods('665.0',notation_flag,path_out,min_val=-0.60,max_val=2.0) 
+plot_both_methods('412.5',notation_flag,path_out,min_val=-3.00,max_val=5.0)
+plot_both_methods('442.5',notation_flag,path_out,min_val=-3.00,max_val=6.2)
+plot_both_methods('490.0',notation_flag,path_out,min_val=-2.00,max_val=8.0)
+plot_both_methods('560.0',notation_flag,path_out,min_val=-0.50,max_val=6.0)
+plot_both_methods('665.0',notation_flag,path_out,min_val=-0.60,max_val=4.0) 
 #       
 #%
 # if __name__ == '__main__':

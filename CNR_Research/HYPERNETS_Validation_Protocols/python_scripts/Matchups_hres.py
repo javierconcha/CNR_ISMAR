@@ -1132,7 +1132,7 @@ with open(path_to_list,'r') as file_list:
                 
                 CVs = [CV_filtered_rhos_0444p00,CV_filtered_rhos_0497p00, CV_filtered_rhos_0560p00]
                 print(CVs)
-                MedianCV = np.nanmedian(CVs)
+                MedianCV = np.nanmedian(np.abs(CVs))
 
                 print('Median CV={:.4f}'.format(MedianCV))
                
@@ -1289,7 +1289,7 @@ with open(path_to_list,'r') as file_list:
                 
                 CVs = [CV_filtered_rhos_0444p00,CV_filtered_rhos_0497p00, CV_filtered_rhos_0560p00]
                 print(CVs)
-                MedianCV = np.nanmedian(CVs)
+                MedianCV = np.nanmedian(np.abs(CVs))
 
                 print('Median CV={:.4f}'.format(MedianCV))
                

@@ -35,7 +35,7 @@ plt.rc('ytick',labelsize=12)
 # plt.legend(handles=[blue_star, red_square, purple_triangle])
 
 # plt.show()
-#%%
+#%% S2A
 fig = plt.figure()
 ax = fig.add_subplot(111) # 
 
@@ -74,7 +74,7 @@ ax.axes.get_xaxis().set_visible(False)
 ax.axes.get_yaxis().set_visible(False)
 plt.show()
 
-#%%
+#%% S3A/OLCI
 fig = plt.figure()
 ax = fig.add_subplot(111) # 
 
@@ -85,6 +85,37 @@ legend_Helsinki_Lighthouse = mlines.Line2D([], [], linestyle='None', markersize=
 legend_Gustav_Dalen_Tower = mlines.Line2D([], [], linestyle='None', markersize=10, marker='s', color='c', label='Gustav_Dalen_Tower')
 
 leg1 = ax.legend(handles=[legend_Venise,legend_Gloria,legend_Galata_Platform,legend_Helsinki_Lighthouse,legend_Gustav_Dalen_Tower],\
+loc='upper center',bbox_to_anchor=(0.5, 1.0),ncol=3,frameon=False,fontsize=12)
+
+legend_BW06 = mlines.Line2D([],[], linestyle='None', markersize=10, marker='x', color='k', label='BW06    ')
+legend_ZMB18 = mlines.Line2D([],[], linestyle='None', markersize=10, marker='+', color='k', label='ZMB18    ')
+
+leg2 = ax.legend(handles=[legend_BW06, legend_ZMB18],loc='upper center',\
+                 bbox_to_anchor=(0.5, 1.11),ncol=2,frameon=False,fontsize=12)
+
+ax.add_artist(leg1)
+
+ax.spines['right'].set_visible(False)
+ax.spines['left'].set_visible(False)
+ax.spines['bottom'].set_visible(False)
+ax.spines['top'].set_visible(False)
+
+ax.axes.get_xaxis().set_visible(False)
+ax.axes.get_yaxis().set_visible(False)
+plt.show()
+
+#%% S3A with color for all stations
+fig = plt.figure()
+ax = fig.add_subplot(111) # 
+
+legend_Venise = mlines.Line2D([], [], linestyle='None', markersize=10, marker='s', color='r', label='Venise')
+legend_Gloria = mlines.Line2D([], [], linestyle='None', markersize=10, marker='s', color='g', label='Gloria')
+legend_Galata_Platform = mlines.Line2D([], [], linestyle='None', markersize=10, marker='s', color='b', label='Galata_Platform')
+legend_Helsinki_Lighthouse = mlines.Line2D([], [], linestyle='None', markersize=10, marker='s', color='m', label='Helsinki_Lighthouse')
+legend_Gustav_Dalen_Tower = mlines.Line2D([], [], linestyle='None', markersize=10, marker='s', color='c', label='Gustav_Dalen_Tower')
+legend_All_Stations = mlines.Line2D([], [], linestyle='None', markersize=10, marker='s', color='k', label='All Stations')
+
+leg1 = ax.legend(handles=[legend_Venise,legend_Gloria,legend_Galata_Platform,legend_Helsinki_Lighthouse,legend_Gustav_Dalen_Tower,legend_All_Stations],\
 loc='upper center',bbox_to_anchor=(0.5, 1.0),ncol=3,frameon=False,fontsize=12)
 
 legend_BW06 = mlines.Line2D([],[], linestyle='None', markersize=10, marker='x', color='k', label='BW06    ')
