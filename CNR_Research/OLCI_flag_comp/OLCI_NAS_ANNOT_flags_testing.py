@@ -230,8 +230,8 @@ def main():
 #    host = 'vm'
     
     if host == 'mac':
-        path_in = '/Users/javier/Desktop/Javier/2019_ROMA/CNR_Research/OLCI_flag_comp/DataArchive/OLCI_NAS/20160426_20190228/'   
-        path_out = '/Users/javier/Desktop/Javier/2019_ROMA/CNR_Research/OLCI_flag_comp/data/NAS/'        
+        path_in = '/Users/javier.concha/Desktop/Javier/2019_Roma/CNR_Research/OLCI_flag_comp/DataArchive/OLCI_NAS/20160426_20190228/'   
+        path_out = '/Users/javier.concha/Desktop/Javier/2019_Roma/CNR_Research/OLCI_flag_comp/data/NAS/'        
         path_list = path_in
     elif host == 'vm':
         path_in = '/store3/OLCI_NAS/20160426_20190228/'
