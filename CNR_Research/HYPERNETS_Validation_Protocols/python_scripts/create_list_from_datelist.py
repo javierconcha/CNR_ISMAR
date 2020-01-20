@@ -42,7 +42,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import os
 from netCDF4 import Dataset
-import numpy as np
 import datetime
 import subprocess
 import sys
@@ -96,40 +95,20 @@ def main():
         station_name = 'Venise'
     print('The station name is: '+station_name)    
     
-    # open in situ data for specific AOC site
-    path = os.path.join(path_main,'netcdf_file')
+    instrument_name = 'PANTHYR'
     
-    if station_name == 'Venise':
-        filename = 'Venise_20V3_20160101_20190918.nc'
-    elif station_name == 'Galata_Platform':
-        filename = 'Galata_Platform_20V3_20160101_20190918.nc'
-    elif station_name == 'Gloria':
-        filename = 'Gloria_20V3_20160101_20190918.nc'
-    elif station_name == 'Helsinki_Lighthouse':
-        filename = 'Helsinki_Lighthouse_20V3_20160101_20190918.nc'
-    elif station_name == 'Gustav_Dalen_Tower':
-        filename = 'Gustav_Dalen_Tower_20V3_20160101_20190918.nc'
-    
-    filename_insitu = os.path.join(path,filename)
-    if not os.path.exists(filename_insitu):
+    filename = 'date_list_PANTHYR.txt' # Ex: 20190926
+
+    path_to_list = os.path.join(path_main,filename)
+    if not os.path.exists(path_to_list):
         print('File does not exist')
         
-    nc_f0 = Dataset(filename_insitu,'r')
-    
-    Time = nc_f0.variables['Time'][:]
-    Julian_day = nc_f0.variables['Julian_day'][:]
-    
-    nc_f0.close()
-    
-    day_vec =np.array([float(Time[i].replace(' ',':').split(':')[0]) for i in range(0,len(Time))])
-    month_vec =np.array([float(Time[i].replace(' ',':').split(':')[1]) for i in range(0,len(Time))])
-    year_vec =np.array([float(Time[i].replace(' ',':').split(':')[2]) for i in range(0,len(Time))])
-    
-    doy_vec = np.array([int(float(Julian_day[i])) for i in range(0,len(Time))])
     
     lat_ins, lon_ins = common_functions.get_lat_lon_ins(station_name)
     
-    f = open(path_main+'OLCI_list_'+filename.split('.')[0]+'.txt','a+')
+    list_name = 'OLCI_list_'+station_name+'_'+instrument_name+'.txt'
+    
+    f = open(path_main+list_name,'a+')
     
     cmd = 'mkdir ./temp_'+station_name # create temp folder
     (ls_status, ls_output) = subprocess.getstatusoutput(cmd)
@@ -137,65 +116,79 @@ def main():
     last_day = datetime.datetime(1990,1,1)
     
     # open year/month folder
-    for i in range(len(Time)):
+    with open(path_to_list,'r') as file:
+        for cnt, line in enumerate(file):
         
-        date1 = datetime.datetime(int(year_vec[i]),int(month_vec[i]),int(day_vec[i]))
-        
-        if date1 != last_day:
-            print('--------------------------------------------------------')
-            last_day = date1
+            Year = line[0:4]
+            Month = line[4:6]
+            Day = line[6:8]
+            DOY = str(common_functions.doy_from_YYYYMMDD(line[:-1]))
+            if float(DOY) < 100:
+                if float(DOY) < 10:
+                    DOY = '00'+DOY
+                else:
+                    DOY = '0'+DOY
             
-            print(date1)
+            date1 = datetime.datetime(int(Year),int(Month),int(Day))
             
-            # create list in txt file with file starting with "S3A_OL_2_WFR____"
-            cmd = 'ls -1 '+\
-                path_source+str(int(year_vec[i]))+'/'+str(int(doy_vec[i]))+'/S3A_OL_2_WFR____*.zip > ./temp_'+station_name+'/temp_list.txt'
-    #        print(cmd)
-            # New process, connected to the Python interpreter through pipes:
-            prog = subprocess.Popen(cmd, shell=True,stderr=subprocess.PIPE)
-            out, err = prog.communicate()
-            if not err:
-                # iterate list
-                with open('./temp_'+station_name+'/temp_list.txt','r') as file:
-                    for line in file:                    
-                        # unzip and adding exception handling
-                        try:
-                            zip = zipfile.ZipFile(line[:-1])
-                            zip.extractall('./temp_'+station_name)
-                            zip.close()
-                        except IOError as e:
-                            print("Unable to copy file. %s" % e)
-                        except:
-                            print("Unexpected error:", sys.exc_info())
+            if date1 != last_day:
+                print('--------------------------------------------------------')
+                last_day = date1
+                
+                print(date1)
+                
+                # create list in txt file with file starting with "S3A_OL_2_WFR____"
+                cmd = 'ls -1 '+\
+                    path_source+str(Year)+'/'+DOY+'/S3A_OL_2_WFR____*.zip > ./temp_'+station_name+'/temp_list.txt'
+        #        print(cmd)
+                # New process, connected to the Python interpreter through pipes:
+                prog = subprocess.Popen(cmd, shell=True,stderr=subprocess.PIPE)
+                out, err = prog.communicate()
+                if not err:
+                    # iterate list
+                    with open('./temp_'+station_name+'/temp_list.txt','r') as file2:
+                        for line2 in file2:                    
+                            # unzip and adding exception handling
+                            try:
+                                zip = zipfile.ZipFile(line2[:-1])
+                                zip.extractall('./temp_'+station_name)
+                                zip.close()
+
+                                if line2[:-1].split('.')[-2] == 'SEN3': # if ends in SEN3.zip
+                                    prod_name = line2[:-1].split('.')[-3].split('/')[-1]
+                                else: # if ends in .zip
+                                    prod_name = line2[:-1].split('.')[-2].split('/')[-1]    
+                                
+                                path_source2 = './temp_'+station_name+'/'+prod_name+'.SEN3/'
+                                print(path_source2)
+                                
+                                # check if file include lat lon
+                                contain_flag = contain_location(path_source2,lat_ins,lon_ins)    
+                                if contain_flag:
+                                    print('Product contains location!')
+                                    f.write(prod_name+'\n')
+                                else:
+                                    print('Product DOES NOT contains location!')
                             
-                        if line[:-1].split('.')[-2] == 'SEN3': # if ends in SEN3.zip
-                            prod_name = line[:-1].split('.')[-3].split('/')[-1]
-                        else: # if ends in .zip
-                            prod_name = line[:-1].split('.')[-2].split('/')[-1]    
-                        
-                        path_source2 = './temp_'+station_name+'/'+prod_name+'.SEN3/'
-                        print(path_source2)
-                        
-                        # check if file include lat lon
-                        contain_flag = contain_location(path_source2,lat_ins,lon_ins)    
-                        if contain_flag:
-                            print('Product contains location!')
-                            f.write(prod_name+'\n')
-                        else:
-                            print('Product DOES NOT contains location!')
-                    
-                        # delete files
-                        cmd = 'rm -r ./temp_'+station_name+'/*.SEN3' # remove .SEN* folder
-                        (ls_status, ls_output) = subprocess.getstatusoutput(cmd)
-                        cmd = 'rm ./temp_'+station_name+'/temp_list.txt'
-                        (ls_status, ls_output) = subprocess.getstatusoutput(cmd)
+                                # delete files
+                                cmd = 'rm -r ./temp_'+station_name+'/*.SEN3' # remove .SEN* folder
+                                (ls_status, ls_output) = subprocess.getstatusoutput(cmd)
+                                cmd = 'rm ./temp_'+station_name+'/temp_list.txt'
+                                (ls_status, ls_output) = subprocess.getstatusoutput(cmd)
 
-    cmd = 'rm -r ./temp_'+station_name
-    (ls_status, ls_output) = subprocess.getstatusoutput(cmd)
+                            except IOError as e:
+                                print("Unable to copy file. %s" % e)
+                            except:
+                                print("Unexpected error:", sys.exc_info())
+                                
+                            
 
-    f.close()  
-    cmd = 'cat '+path_main+'OLCI_list_'+filename.split('.')[0]+'.txt|sort|uniq > '+path_main+'OLCI_list_'+filename.split('.')[0]+'_uniq.txt'
-    (ls_status, ls_output) = subprocess.getstatusoutput(cmd)
+        cmd = 'rm -r ./temp_'+station_name
+        (ls_status, ls_output) = subprocess.getstatusoutput(cmd)
+    
+        f.close()  
+        cmd = 'cat '+path_main+list_name+'|sort|uniq > '+path_main+list_name.split('.')[0]+'_uniq.txt'
+        (ls_status, ls_output) = subprocess.getstatusoutput(cmd)
 #%%
 if __name__ == '__main__':
     main()        

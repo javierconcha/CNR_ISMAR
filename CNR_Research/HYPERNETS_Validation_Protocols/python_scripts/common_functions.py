@@ -22,7 +22,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import  numpy as np
 import os
 from netCDF4 import Dataset
-
+import datetime
+#%%
 def get_lat_lon_ins(station_name):
     if station_name == 'Galata_Platform': # Black Sea
         Latitude=43.044624
@@ -98,6 +99,13 @@ def find_row_column_from_lat_lon(lat,lon,lat0,lon0):
     dist_squared = (lat-lat0)**2 + (lon-lon0)**2
     r, c = np.unravel_index(np.argmin(dist_squared),lon.shape) # index to the closest in the latitude and longitude arrays
     return r, c
+
+
+    
+def doy_from_YYYYMMDD(date):
+    adate = datetime.datetime.strptime(date,"%Y%m%d")
+    day_of_year = adate.timetuple().tm_yday
+    return day_of_year
 #%%
 def main():
     print('common_functions.py loaded!')
