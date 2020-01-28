@@ -37,7 +37,7 @@ import numpy.ma as ma
 import argparse
 from datetime import datetime
 
-import Matchups_hres # to get the location of the in situ
+import common_functions # to get the location of the in situ
 
 
 import brdf_mario_new as brdf
@@ -101,7 +101,8 @@ def extract_box(station_name,path_source,path_output,in_situ_lat,in_situ_lon):
     #%
   
     coordinates_filename = 'geo_coordinates.nc'
-    
+
+    rhow_0400p00_filename = 'Oa01_reflectance.nc'
     rhow_0412p50_filename = 'Oa02_reflectance.nc'
     rhow_0442p50_filename = 'Oa03_reflectance.nc'
     rhow_0490p00_filename = 'Oa04_reflectance.nc'
@@ -110,7 +111,12 @@ def extract_box(station_name,path_source,path_output,in_situ_lat,in_situ_lon):
     rhow_0620p00_filename = 'Oa07_reflectance.nc'
     rhow_0665p00_filename = 'Oa08_reflectance.nc'
     rhow_0673p75_filename = 'Oa09_reflectance.nc'
+    rhow_0681p25_filename = 'Oa10_reflectance.nc'
+    rhow_0708p75_filename = 'Oa11_reflectance.nc'
+    rhow_0753p75_filename = 'Oa12_reflectance.nc'
+    rhow_0778p75_filename = 'Oa16_reflectance.nc'
     rhow_0865p00_filename = 'Oa17_reflectance.nc'
+    rhow_0885p00_filename = 'Oa18_reflectance.nc'
     rhow_1020p50_filename = 'Oa21_reflectance.nc'
     
     AOT_0865p50_filename = 'w_aer.nc'
@@ -138,65 +144,96 @@ def extract_box(station_name,path_source,path_output,in_situ_lat,in_situ_lon):
         
         if r>=0 and r+1<lat.shape[0] and c>=0 and c+1<lat.shape[1]:
             
+            filepah = os.path.join(path_source,rhow_0400p00_filename)
+            nc_f1 = Dataset(filepah,'r')
+            rhow_0400p00 = nc_f1.variables['Oa01_reflectance'][:]
+            nc_f1.close()
+
             filepah = os.path.join(path_source,rhow_0412p50_filename)
             nc_f1 = Dataset(filepah,'r')
             rhow_0412p50 = nc_f1.variables['Oa02_reflectance'][:]
             nc_f1.close()
             
             filepah = os.path.join(path_source,rhow_0442p50_filename)
-            nc_f2 = Dataset(filepah,'r')
-            rhow_0442p50 = nc_f2.variables['Oa03_reflectance'][:]
-            nc_f2.close()
+            nc_f1 = Dataset(filepah,'r')
+            rhow_0442p50 = nc_f1.variables['Oa03_reflectance'][:]
+            nc_f1.close()
             
             filepah = os.path.join(path_source,rhow_0490p00_filename)
-            nc_f3 = Dataset(filepah,'r')
-            rhow_0490p00 = nc_f3.variables['Oa04_reflectance'][:]
-            nc_f3.close()
+            nc_f1 = Dataset(filepah,'r')
+            rhow_0490p00 = nc_f1.variables['Oa04_reflectance'][:]
+            nc_f1.close()
             
             filepah = os.path.join(path_source,rhow_0510p00_filename)
-            nc_f4 = Dataset(filepah,'r')
-            rhow_0510p00 = nc_f4.variables['Oa05_reflectance'][:]
-            nc_f4.close()
+            nc_f1 = Dataset(filepah,'r')
+            rhow_0510p00 = nc_f1.variables['Oa05_reflectance'][:]
+            nc_f1.close()
             
             filepah = os.path.join(path_source,rhow_0560p00_filename)
-            nc_f5 = Dataset(filepah,'r')
-            rhow_0560p00 = nc_f5.variables['Oa06_reflectance'][:]
-            nc_f5.close()
+            nc_f1 = Dataset(filepah,'r')
+            rhow_0560p00 = nc_f1.variables['Oa06_reflectance'][:]
+            nc_f1.close()
     
             filepah = os.path.join(path_source,rhow_0620p00_filename)
-            nc_f6 = Dataset(filepah,'r')
-            rhow_0620p00 = nc_f6.variables['Oa07_reflectance'][:]
-            nc_f6.close()
+            nc_f1 = Dataset(filepah,'r')
+            rhow_0620p00 = nc_f1.variables['Oa07_reflectance'][:]
+            nc_f1.close()
             
             filepah = os.path.join(path_source,rhow_0665p00_filename)
-            nc_f7 = Dataset(filepah,'r')
-            rhow_0665p00 = nc_f7.variables['Oa08_reflectance'][:]
-            nc_f7.close()
+            nc_f1 = Dataset(filepah,'r')
+            rhow_0665p00 = nc_f1.variables['Oa08_reflectance'][:]
+            nc_f1.close()
             
             filepah = os.path.join(path_source,rhow_0673p75_filename)
-            nc_f8 = Dataset(filepah,'r')
-            rhow_0673p75 = nc_f8.variables['Oa09_reflectance'][:]
-            nc_f8.close()
+            nc_f1 = Dataset(filepah,'r')
+            rhow_0673p75 = nc_f1.variables['Oa09_reflectance'][:]
+            nc_f1.close()
+
+            filepah = os.path.join(path_source,rhow_0681p25_filename)
+            nc_f1 = Dataset(filepah,'r')
+            rhow_0681p25 = nc_f1.variables['Oa10_reflectance'][:]
+            nc_f1.close()
+
+            filepah = os.path.join(path_source,rhow_0708p75_filename)
+            nc_f1 = Dataset(filepah,'r')
+            rhow_0708p75 = nc_f1.variables['Oa11_reflectance'][:]
+            nc_f1.close() 
+
+            filepah = os.path.join(path_source,rhow_0753p75_filename)
+            nc_f1 = Dataset(filepah,'r')
+            rhow_0753p75 = nc_f1.variables['Oa12_reflectance'][:]
+            nc_f1.close()
+
+            filepah = os.path.join(path_source,rhow_0778p75_filename)
+            nc_f1 = Dataset(filepah,'r')
+            rhow_0778p75 = nc_f1.variables['Oa16_reflectance'][:]
+            nc_f1.close()          
             
             filepah = os.path.join(path_source,rhow_0865p00_filename)
-            nc_f9 = Dataset(filepah,'r')
-            rhow_0865p00 = nc_f9.variables['Oa17_reflectance'][:]
-            nc_f9.close()
+            nc_f1 = Dataset(filepah,'r')
+            rhow_0865p00 = nc_f1.variables['Oa17_reflectance'][:]
+            nc_f1.close()
+
+            filepah = os.path.join(path_source,rhow_0885p00_filename)
+            nc_f1 = Dataset(filepah,'r')
+            rhow_0885p00 = nc_f1.variables['Oa18_reflectance'][:]
+            nc_f1.close()
             
             filepah = os.path.join(path_source,rhow_1020p50_filename)
-            nc_f10 = Dataset(filepah,'r')
-            rhow_1020p50 = nc_f10.variables['Oa21_reflectance'][:]
-            nc_f10.close()
+            nc_f1 = Dataset(filepah,'r')
+            rhow_1020p50 = nc_f1.variables['Oa21_reflectance'][:]
+            nc_f1.close()
             
             filepah = os.path.join(path_source,AOT_0865p50_filename)
-            nc_f11 = Dataset(filepah,'r')
-            AOT_0865p50 = nc_f11.variables['T865'][:]
-            nc_f11.close()
+            nc_f1 = Dataset(filepah,'r')
+            AOT_0865p50 = nc_f1.variables['T865'][:]
+            nc_f1.close()
     
             filepah = os.path.join(path_source,WQSF_filename)
-            nc_f12 = Dataset(filepah,'r')
-            WQSF = nc_f12.variables['WQSF'][:]
-            nc_f12.close()
+            nc_f1 = Dataset(filepah,'r')
+            WQSF = nc_f1.variables['WQSF'][:]
+            nc_f1.close()
+
             #%% Calculate BRDF
             ws0, ws1, sza, saa, vza, vaa = extract_wind_and_angles(path_source,in_situ_lat,in_situ_lon)
             
@@ -281,6 +318,10 @@ def extract_box(station_name,path_source,path_output,in_situ_lat,in_situ_lon):
             longitude[:] = lon[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
     
             # NOT BRDF-corrected
+            rhow_0400p00_box=fmb.createVariable('rhow_0400p00', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
+            rhow_0400p00_box[:] = ma.array(rhow_0400p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y])
+            rhow_0400p00_box.description = 'rhow(0400.00) NOT brdf-corrected'
+
             rhow_0412p50_box=fmb.createVariable('rhow_0412p50', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
             rhow_0412p50_box[:] = ma.array(rhow_0412p50[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y])
             rhow_0412p50_box.description = 'rhow(0412.50) NOT brdf-corrected'
@@ -312,10 +353,30 @@ def extract_box(station_name,path_source,path_output,in_situ_lat,in_situ_lon):
             rhow_0673p75_box=fmb.createVariable('rhow_0673p75', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
             rhow_0673p75_box[:] = ma.array(rhow_0673p75[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y])
             rhow_0673p75_box.description = 'rhow(0673.75) NOT brdf-corrected'
+
+            rhow_0681p25_box=fmb.createVariable('rhow_0681p25', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
+            rhow_0681p25_box[:] = ma.array(rhow_0681p25[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y])
+            rhow_0681p25_box.description = 'rhow(0681.25) NOT brdf-corrected'
+
+            rhow_0708p75_box=fmb.createVariable('rhow_0708p75', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
+            rhow_0708p75_box[:] = ma.array(rhow_0708p75[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y])
+            rhow_0708p75_box.description = 'rhow(0708.75) NOT brdf-corrected'
+
+            rhow_0753p75_box=fmb.createVariable('rhow_0753p75', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
+            rhow_0753p75_box[:] = ma.array(rhow_0753p75[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y])
+            rhow_0753p75_box.description = 'rhow(0753.75) NOT brdf-corrected'
+
+            rhow_0778p75_box=fmb.createVariable('rhow_0778p75', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
+            rhow_0778p75_box[:] = ma.array(rhow_0778p75[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y])
+            rhow_0778p75_box.description = 'rhow(0778.75) NOT brdf-corrected'
             
             rhow_0865p00_box=fmb.createVariable('rhow_0865p00', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
             rhow_0865p00_box[:] = ma.array(rhow_0865p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y])
             rhow_0865p00_box.description = 'rhow(0865.00) NOT brdf-corrected'
+
+            rhow_0885p00_box=fmb.createVariable('rhow_0885p00', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
+            rhow_0885p00_box[:] = ma.array(rhow_0885p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y])
+            rhow_0885p00_box.description = 'rhow(0885.00) NOT brdf-corrected'
             
             rhow_1020p50_box=fmb.createVariable('rhow_1020p50', 'f4', ('size_box_x','size_box_y'), fill_value=-999, zlib=True, complevel=6)
             rhow_1020p50_box[:] = ma.array(rhow_1020p50[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y])
@@ -408,7 +469,7 @@ def main():
     else:
         print('Error: host flag is not either mac or vm')
 
-    station_list = ['Venise','Galata_Platform','Gloria','Helsinki_Lighthouse','Gustav_Dalen_Tower']
+    station_list = ['Venise','Galata_Platform','Gloria','Helsinki_Lighthouse','Gustav_Dalen_Tower','Venise_PANTHYR']
     parser = argparse.ArgumentParser(description="Create list of OLCI WFR files from DataArchive in the virtual machine.")
     parser.add_argument("-s", "--station" , help="The Aeronet OC station.", type=str,choices=station_list)
     parser.add_argument("-d", "--debug", help="Debugging mode.",action="store_true")
@@ -418,7 +479,7 @@ def main():
         station_name  = args.station
         if sys.platform == 'linux': 
             if station_name == 'Venise':
-                list_name = 'OLCI_list_Venise_20_201601001_201909011_uniq.txt'
+                list_name = 'OLCI_list_Venise_20V3_20190927_20200110_uniq.txt'
             elif station_name == 'Galata_Platform':
                 list_name = 'OLCI_list_Galata_Platform_20_201601001_201909011_uniq.txt'
             elif station_name == 'Gloria':
@@ -427,6 +488,8 @@ def main():
                 list_name = 'OLCI_list_Helsinki_Lighthouse_20_201601001_201909011_uniq.txt'
             elif station_name == 'Gustav_Dalen_Tower':
                 list_name = 'OLCI_list_Gustav_Dalen_Tower_20_201601001_201909011_uniq.txt'
+            elif station_name == 'Venise_PANTHYR':
+                list_name = 'OLCI_list_Venise_PANTHYR_uniq.txt'    
         elif sys.platform == 'darwin':   
             list_name = 'OLCI_list_test.txt'
     else:
@@ -436,7 +499,7 @@ def main():
     print('The list is: '+list_name) 
     print('The station is: '+station_name)
     # in situ location based on the station name
-    lat_in_situ, lon_in_situ = Matchups_hres.get_lat_lon_ins(station_name)
+    lat_in_situ, lon_in_situ = common_functions.get_lat_lon_ins(station_name)
     
     if sys.platform == 'linux': 
         path_to_list = os.path.join(path_main,'codes',list_name)        

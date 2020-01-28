@@ -737,12 +737,13 @@ matchups_Lwn_0560p00_fq_ins_ba_time = []
 matchups_Lwn_0665p00_fq_ins_ba_time = []        
 
 # station_list = ['Venise','Galata_Platform','Gloria']
-station_list = ['Venise','Galata_Platform','Gloria','Helsinki_Lighthouse','Gustav_Dalen_Tower']
-# station_list = ['Venise']
+# station_list = ['Venise','Galata_Platform','Gloria','Helsinki_Lighthouse','Gustav_Dalen_Tower']
+station_list = ['Venise']
 
 for station_name in station_list:  
-
-    filename = station_name+'_20V3_20160426_20191118.nc'
+    
+    filename = station_name+'_20V3_20190927_20200110.nc'
+    # filename = station_name+'_20V3_20160426_20191118.nc'
     # filename = station_name+'_20V3_20180622_20180822.nc'
     filename_insitu = os.path.join(path,filename)
     if not os.path.exists(filename_insitu):
