@@ -31,6 +31,7 @@ plt.rc('ytick',labelsize=12)
 from scipy import stats
 # to import apply_flags_OLCI.py
 import sys
+import subprocess
 path_main = '/Users/javier.concha/Desktop/Javier/2019_ROMA/CNR_Research/HYPERNETS_Validation_Protocols/python_scripts/'
 sys.path.insert(0,path_main)
 import apply_flags_OLCI as OLCI_flags
@@ -40,6 +41,16 @@ import common_functions
 
 #%%
 def plot_scatter(x,y,str1,path_out,prot_name,sensor_name,station_vec,min_val,max_val): 
+
+    # replace nan in y (sat data)
+    x = np.array(x)
+    y = np.array(y)
+    station_vec = np.array(station_vec)
+
+    x = x[~np.isnan(y)] # it is assumed that only sat data could be nan
+    station_vec = station_vec[~np.isnan(y)]
+    y = y[~np.isnan(y)]
+
 
     rmse_val = np.nan
     mean_abs_rel_diff = np.nan
@@ -222,10 +233,10 @@ def plot_scatter(x,y,str1,path_out,prot_name,sensor_name,station_vec,min_val,max
     print(str_table)
  
     print('count_Venise: '+str(count_Venise))
-    print('count_Gloria: '+str(count_Gloria))
-    print('count_Galata_Platform: '+str(count_Galata_Platform))
-    print('count_Helsinki_Lighthouse: '+str(count_Helsinki_Lighthouse))
-    print('count_Gustav_Dalen_Tower: '+str(count_Gustav_Dalen_Tower))
+    # print('count_Gloria: '+str(count_Gloria))
+    # print('count_Galata_Platform: '+str(count_Galata_Platform))
+    # print('count_Helsinki_Lighthouse: '+str(count_Helsinki_Lighthouse))
+    # print('count_Gustav_Dalen_Tower: '+str(count_Gustav_Dalen_Tower))
 
     # plt.show()   
     return rmse_val, mean_abs_rel_diff, mean_rel_diff, r_value**2,\
@@ -235,7 +246,9 @@ def plot_scatter(x,y,str1,path_out,prot_name,sensor_name,station_vec,min_val,max
         rmse_val_Helsinki_Lighthouse, mean_abs_rel_diff_Helsinki_Lighthouse, mean_rel_diff_Helsinki_Lighthouse, r_value_Helsinki_Lighthouse**2,\
         rmse_val_Gustav_Dalen_Tower, mean_abs_rel_diff_Gustav_Dalen_Tower, mean_rel_diff_Gustav_Dalen_Tower, r_value_Gustav_Dalen_Tower**2
 #%%
-
+# def main():
+    """business logic for when running this module as the primary one!"""
+print('Main Code!')
 #%%
 
 path_main = '/Users/javier.concha/Desktop/Javier/2019_Roma/CNR_Research/PANTHYR/AAOT/'
@@ -246,39 +259,51 @@ date_list.txt created as:
 % cat file_list_local.txt|cut -d _ -f4|sort|uniq>date_list.txt
 ''' 
 # PANTHYR Data
-path_data = '/Users/javier.concha/Desktop/Javier/2019_Roma/CNR_Research/PANTHYR/AAOT/data'
 list_name = 'file_list_PANTHYR.txt'
-path_to_list = os.path.join(path_data,list_name)
-year_vec_PAN   = []
-month_vec_PAN  = []
-day_vec_PAN    = []
-hour_vec_PAN   = []
-minute_vec_PAN = []
-second_vec_PAN = []
-ins_time_PAN   = []
-path_vec_PAN   = []
+path_data = '/Users/javier.concha/Desktop/Javier/2019_Roma/CNR_Research/PANTHYR/AAOT/data'
 
-with open(path_to_list,'r') as file0:
-    for cnt0, line0 in enumerate(file0):
-        date_str = line0.split('_')[3]
-        time_str = line0.split('_')[4]
-        year_vec_PAN.append(float(date_str[0:4]))
-        month_vec_PAN.append(float(date_str[4:6])) 
-        day_vec_PAN.append(float(date_str[6:8]))   
-        hour_vec_PAN.append(float(time_str[0:2]))  
-        minute_vec_PAN.append(float(time_str[2:4]))
-        second_vec_PAN.append(float(time_str[4:6]))
-        ins_time_PAN.append(datetime(int(date_str[0:4]),int(date_str[4:6]),\
-            int(date_str[6:8]),int(time_str[0:2]),int(time_str[2:4]),int(time_str[4:6])))
-        path_vec_PAN.append(line0)
-
-year_vec_PAN   = np.array(year_vec_PAN)
-month_vec_PAN  = np.array(month_vec_PAN)
-day_vec_PAN    = np.array(day_vec_PAN)
-hour_vec_PAN   = np.array(hour_vec_PAN)
-minute_vec_PAN = np.array(minute_vec_PAN)
-second_vec_PAN = np.array(second_vec_PAN)
-ins_time_PAN = np.array(ins_time_PAN)
+# create list in txt file with file starting with "S3A_OL_2_WFR____"
+# cmd = 'find '+path_data+'/20* -name "*data.csv"|sort|uniq>'+path_data+'/'+list_name
+cmd = 'find '+path_data+'/20* -name "*AZI_270_data.csv"|sort|uniq>'+path_data+'/'+list_name # only with AZI 270
+#        print(cmd)
+# New process, connected to the Python interpreter through pipes:
+prog = subprocess.Popen(cmd, shell=True,stderr=subprocess.PIPE)
+out, err = prog.communicate()
+if not err:
+    path_to_list = os.path.join(path_data,list_name)
+    year_vec_PAN   = []
+    month_vec_PAN  = []
+    day_vec_PAN    = []
+    hour_vec_PAN   = []
+    minute_vec_PAN = []
+    second_vec_PAN = []
+    ins_time_PAN   = []
+    path_vec_PAN   = []
+    azi_vec_PAN    = []
+    
+    with open(path_to_list,'r') as file0:
+        for cnt0, line0 in enumerate(file0):
+            date_str = line0.split('_')[5]
+            time_str = line0.split('_')[6]
+            year_vec_PAN.append(float(date_str[0:4]))
+            month_vec_PAN.append(float(date_str[4:6])) 
+            day_vec_PAN.append(float(date_str[6:8]))   
+            hour_vec_PAN.append(float(time_str[0:2]))  
+            minute_vec_PAN.append(float(time_str[2:4]))
+            second_vec_PAN.append(float(time_str[4:6]))
+            ins_time_PAN.append(datetime(int(date_str[0:4]),int(date_str[4:6]),\
+                int(date_str[6:8]),int(time_str[0:2]),int(time_str[2:4]),int(time_str[4:6])))
+            path_vec_PAN.append(line0)
+            azi_vec_PAN.append(float(line0.split('_')[8]))
+    
+    year_vec_PAN   = np.array(year_vec_PAN)
+    month_vec_PAN  = np.array(month_vec_PAN)
+    day_vec_PAN    = np.array(day_vec_PAN)
+    hour_vec_PAN   = np.array(hour_vec_PAN)
+    minute_vec_PAN = np.array(minute_vec_PAN)
+    second_vec_PAN = np.array(second_vec_PAN)
+    ins_time_PAN = np.array(ins_time_PAN)
+    azi_vec_PAN = np.array(azi_vec_PAN)
 
 # AERONET-OC Data
 year_vec_AOC       = []   
@@ -291,7 +316,7 @@ Julian_day_vec_AOC = []
 ins_time_AOC       = [] 
 doy_vec_AOC        = [] 
 
-filename = 'Venise_20V3_20190927_20200110.nc'
+filename = 'Venise_20V3_20190927_20200206.nc'
 # filename = station_name+'_20V3_20180622_20180822.nc'
 path = '/Users/javier.concha/Desktop/Javier/2019_Roma/CNR_Research/HYPERNETS_Validation_Protocols/python_scripts/netcdf_file'
 filename_insitu = os.path.join(path,filename)
@@ -508,21 +533,114 @@ matchups_PAN_rhow_0885p00_ins_ba_time = []
 matchups_PAN_rhow_1020p50_ins_ba_time = []   
 
 station_name = 'Venise_PAN'
-path_to_OLCI = '/Users/javier.concha/Desktop/Javier/2019_Roma/CNR_Research/PANTHYR/OLCI'
-path_to_list = os.path.join(path_to_OLCI,'file_list_Venise_PANTHYR.txt')
+# path_to_OLCI = '/Users/javier.concha/Desktop/Javier/2019_Roma/CNR_Research/PANTHYR/OLCI'
+path_to_OLCI ='/Users/javier.concha/Desktop/Javier/2019_Roma/CNR_Research/HYPERNETS_Validation_Protocols/python_scripts/data/output'
+
+# create list in txt file with file starting with "S3A_OL_2_WFR____"
+list_name_OLCI_PANTHYR = 'file_list_Venise_PANTHYR.txt'
+cmd = 'find '+path_to_OLCI+'/20* -name "*Venise_PANTHYR.nc"|sort|uniq>'+path_to_OLCI+'/'+list_name_OLCI_PANTHYR
+#        print(cmd)
+# New process, connected to the Python interpreter through pipes:
+prog = subprocess.Popen(cmd, shell=True,stderr=subprocess.PIPE)
+out, err = prog.communicate()
+if err:
+    print('ERROR: in '+cmd)
+
+path_to_list = os.path.join(path_to_OLCI,list_name_OLCI_PANTHYR)
 with open(path_to_list,'r') as file:
     for cnt, line in enumerate(file): 
 
-#########################################
+        # print('----------------------------')
+        # print('line '+str(cnt))
+        year_str = line.split('/')[-3]
+        doy_str = line.split('/')[-2]  
+        path_to_extract = os.path.join(path_to_OLCI,line[:-1])     
+        nc_f1 = Dataset(path_to_extract,'r')
+        
+        date_format = "%Y-%m-%dT%H:%M:%S.%fZ" 
+        sat_start_time = datetime.strptime(nc_f1.start_time, date_format)
+        sat_stop_time = datetime.strptime(nc_f1.stop_time, date_format)
+        
+        # from sat
+        rhow_0400p00 = nc_f1.variables['rhow_0400p00'][:]
+        rhow_0412p50_fq = nc_f1.variables['rhow_0412p50_fq'][:]
+        rhow_0442p50_fq = nc_f1.variables['rhow_0442p50_fq'][:]
+        rhow_0490p00_fq = nc_f1.variables['rhow_0490p00_fq'][:]
+        rhow_0510p00_fq = nc_f1.variables['rhow_0510p00_fq'][:]
+        rhow_0560p00_fq = nc_f1.variables['rhow_0560p00_fq'][:]
+        rhow_0620p00_fq = nc_f1.variables['rhow_0620p00_fq'][:]
+        rhow_0665p00_fq = nc_f1.variables['rhow_0665p00_fq'][:]
+        rhow_0673p75 = nc_f1.variables['rhow_0673p75'][:]
+        rhow_0681p25 = nc_f1.variables['rhow_0681p25'][:]
+        rhow_0708p75 = nc_f1.variables['rhow_0708p75'][:]
+        rhow_0753p75 = nc_f1.variables['rhow_0753p75'][:]
+        rhow_0778p75 = nc_f1.variables['rhow_0778p75'][:]
+        rhow_0865p00 = nc_f1.variables['rhow_0865p00'][:]
+        rhow_0885p00 = nc_f1.variables['rhow_0885p00'][:]
+        rhow_1020p50 = nc_f1.variables['rhow_1020p50'][:]
+                
+        WQSF = nc_f1.variables['WQSF'][:]
+        AOT_0865p50 = nc_f1.variables['AOT_0865p50'][:]
+        sza = nc_f1.variables['sza_value'][:]
+        vza = nc_f1.variables['vza_value'][:]
+        
+#############################################
+        # Zibordi et al. 2018
+        delta_time = 2# float in hours       
+        time_diff = ins_time_PAN - sat_stop_time
+        dt_hour = [i.total_seconds()/(60*60) for i in time_diff] # time diffence between in situ measurements and sat in hours
+        idx_min_PAN = np.argmin(np.abs(dt_hour))
+        idxs_min_PAN = np.where(np.abs(dt_hour) == np.abs(dt_hour).min())
+        idxs_allday_PAN = np.where((year_vec_PAN == sat_stop_time.year) & (month_vec_PAN == sat_stop_time.month) & (day_vec_PAN == sat_stop_time.day))
+        matchup_idx_vec_PAN = np.abs(dt_hour) <= delta_time
+        nday_PAN_zi = sum(matchup_idx_vec_PAN) 
+        
+        #########################################
         # plot in situ data
         # plot PANTHYR data
         plt.figure()
-        plt.plot(wl,rhow,'b')
         scatter_legend = []
-        scatter_legend.append('PANTHYR ('+str(ins_time_PAN[idx_min_PAN])[11:-3]+')')
-        # plt.plot([wl_0412p50_PAN,wl_0442p50_PAN,wl_0490p00_PAN,\
-        #     wl_0560p00_PAN,wl_0665p00_PAN],\
-        #     [rhow_0412p50_PAN,rhow_0442p50_PAN,rhow_0490p00_PAN,rhow_0560p00_PAN,rhow_0665p00_PAN],'ob')
+        # plot all PANTHYR data for the day
+        for idx in range(len(idxs_allday_PAN[0])):
+            # extract in situ data
+            name_base = path_vec_PAN[idxs_allday_PAN[0][idx]][:-9]
+            data = pandas.read_csv(os.path.join(path_data,name_base+'data.csv'),parse_dates=['timestamp']) 
+            meta = pandas.read_csv(os.path.join(path_data,name_base+'meta.csv'))      
+            wl0 = data['wavelength']
+            rhow0 = data['rhow']
+
+            if azi_vec_PAN[idxs_allday_PAN[0][idx]] == 135:
+                linestyle = ':'
+            elif azi_vec_PAN[idxs_allday_PAN[0][idx]] == 225:
+                linestyle = '--' 
+            elif azi_vec_PAN[idxs_allday_PAN[0][idx]] == 270:
+                linestyle = '-' 
+
+            plt.plot(wl0,rhow0,color='lightgray',linestyle = linestyle,label='_nolegend_') 
+
+        # plot closest PANTHYR data
+        for idx in range(len(idxs_min_PAN[0])):
+            # extract in situ data
+            name_base = path_vec_PAN[idxs_min_PAN[0][idx]][:-9]
+            data = pandas.read_csv(os.path.join(path_data,name_base+'data.csv'),parse_dates=['timestamp']) 
+            meta = pandas.read_csv(os.path.join(path_data,name_base+'meta.csv'))      
+            wl = data['wavelength']
+            rhow = data['rhow']
+
+            if azi_vec_PAN[idxs_min_PAN[0][idx]] == 135:
+                linestyle = ':'
+            elif azi_vec_PAN[idxs_min_PAN[0][idx]] == 225:
+                linestyle = '--' 
+            elif azi_vec_PAN[idxs_min_PAN[0][idx]] == 270:
+                linestyle = '-' 
+
+            plt.plot(wl,rhow,'b',linestyle = linestyle)
+            scatter_legend.append('PANTHYR '+str(ins_time_PAN[idxs_min_PAN[0][idx]])[11:-3]+' ('+str(int(azi_vec_PAN[idxs_min_PAN[0][idx]]))+')')
+            # plt.plot([wl_0412p50_PAN,wl_0442p50_PAN,wl_0490p00_PAN,\
+            #     wl_0560p00_PAN,wl_0665p00_PAN],\
+            #     [rhow_0412p50_PAN,rhow_0442p50_PAN,rhow_0490p00_PAN,rhow_0560p00_PAN,rhow_0665p00_PAN],'ob')
+
+        
         
         # Matchup with AERONET-OC. Warning: Only when there is matchup with PANTHYR
         time_diff = ins_time_AOC - sat_stop_time
@@ -673,58 +791,11 @@ with open(path_to_list,'r') as file:
                 rhow_AOC_0865p00,\
                 rhow_AOC_0870p00,\
                 rhow_AOC_1020p00],'ob',mfc='none')
-            scatter_legend.append('AERONET-OC ('+str(ins_time_AOC[idx_min_AOC])[11:-3]+')')  
-
-        # print('----------------------------')
-        # print('line '+str(cnt))
-        year_str = line.split('/')[-3]
-        doy_str = line.split('/')[-2]  
-        path_to_extract = os.path.join(path_to_OLCI,line[:-1])     
-        nc_f1 = Dataset(path_to_extract,'r')
-        
-        date_format = "%Y-%m-%dT%H:%M:%S.%fZ" 
-        sat_start_time = datetime.strptime(nc_f1.start_time, date_format)
-        sat_stop_time = datetime.strptime(nc_f1.stop_time, date_format)
-        
-        # from sat
-        rhow_0400p00 = nc_f1.variables['rhow_0400p00'][:]
-        rhow_0412p50_fq = nc_f1.variables['rhow_0412p50_fq'][:]
-        rhow_0442p50_fq = nc_f1.variables['rhow_0442p50_fq'][:]
-        rhow_0490p00_fq = nc_f1.variables['rhow_0490p00_fq'][:]
-        rhow_0510p00_fq = nc_f1.variables['rhow_0510p00_fq'][:]
-        rhow_0560p00_fq = nc_f1.variables['rhow_0560p00_fq'][:]
-        rhow_0620p00_fq = nc_f1.variables['rhow_0620p00_fq'][:]
-        rhow_0665p00_fq = nc_f1.variables['rhow_0665p00_fq'][:]
-        rhow_0673p75 = nc_f1.variables['rhow_0673p75'][:]
-        rhow_0681p25 = nc_f1.variables['rhow_0681p25'][:]
-        rhow_0708p75 = nc_f1.variables['rhow_0708p75'][:]
-        rhow_0753p75 = nc_f1.variables['rhow_0753p75'][:]
-        rhow_0778p75 = nc_f1.variables['rhow_0778p75'][:]
-        rhow_0865p00 = nc_f1.variables['rhow_0865p00'][:]
-        rhow_0885p00 = nc_f1.variables['rhow_0885p00'][:]
-        rhow_1020p50 = nc_f1.variables['rhow_1020p50'][:]
-                
-        WQSF = nc_f1.variables['WQSF'][:]
-        AOT_0865p50 = nc_f1.variables['AOT_0865p50'][:]
-        sza = nc_f1.variables['sza_value'][:]
-        vza = nc_f1.variables['vza_value'][:]
-        
+            scatter_legend.append('AERONET-OC '+str(ins_time_AOC[idx_min_AOC])[11:-3])  
+        #########################################
+        # END plot in situ data
 #############################################
-        # Zibordi et al. 2018
-        delta_time = 2# float in hours       
-        time_diff = ins_time_PAN - sat_stop_time
-        dt_hour = [i.total_seconds()/(60*60) for i in time_diff] # time diffence between in situ measurements and sat in hours
-        idx_min_PAN = np.argmin(np.abs(dt_hour))
-        matchup_idx_vec_PAN = np.abs(dt_hour) <= delta_time
-        nday_PAN_zi = sum(matchup_idx_vec_PAN) 
-
-        # extract in situ data
-        name_base = path_vec_PAN[idx_min_PAN][1:-9]
-        data = pandas.read_csv(path_data+name_base+'data.csv',parse_dates=['timestamp']) 
-        meta = pandas.read_csv(path_data+name_base+'meta.csv')      
-        wl = data['wavelength']
-        rhow = data['rhow']
-
+        # CONTINUE Zibordi et al. 2018
         rhow_0400p00_PAN = rhow[np.argmin(np.abs(wl-400.00))] 
         rhow_0412p50_PAN = rhow[np.argmin(np.abs(wl-412.50))] 
         rhow_0442p50_PAN = rhow[np.argmin(np.abs(wl-442.50))] 
@@ -793,23 +864,34 @@ with open(path_to_list,'r') as file:
             AOT_0865p50_box = AOT_0865p50[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
 
             # plot sat data
-            if not (rhow_0400p00_box.mask.all() and rhow_0412p50_fq_box.mask.all()\
-                and rhow_0442p50_fq_box.mask.all() and rhow_0490p00_fq_box.mask.all()\
-                and rhow_0510p00_fq_box.mask.all() and rhow_0560p00_fq_box.mask.all()\
-                and rhow_0620p00_fq_box.mask.all() and rhow_0665p00_fq_box.mask.all()\
-                and rhow_0673p75_box.mask.all() and rhow_0681p25_box.mask.all()\
-                and rhow_0708p75_box.mask.all() and rhow_0753p75_box.mask.all()\
-                and rhow_0778p75_box.mask.all() and rhow_0865p00_box.mask.all()\
-                and rhow_0885p00_box.mask.all() and rhow_1020p50_box.mask.all()):
+                # numpy.all(a, axis=None, out=None, keepdims=<no value>)[source]
+                # Test whether all array elements along a given axis evaluate to True.
+                # When all .mask are True, i.e. all invalid, .all() is True. Or if at least one is valid -> .all() is False
+                # Therefore, if at least one band extract has a valid number, then plot it. 
+                # This is plot the extract before applying filtering criteria.
+            if not rhow_0400p00_box.mask.all() or not rhow_0412p50_fq_box.mask.all()\
+                or not rhow_0442p50_fq_box.mask.all() or not rhow_0490p00_fq_box.mask.all()\
+                or not rhow_0510p00_fq_box.mask.all() or not rhow_0560p00_fq_box.mask.all()\
+                or not rhow_0620p00_fq_box.mask.all() or not rhow_0665p00_fq_box.mask.all()\
+                or not rhow_0673p75_box.mask.all() or not rhow_0681p25_box.mask.all()\
+                or not rhow_0708p75_box.mask.all() or not rhow_0753p75_box.mask.all()\
+                or not rhow_0778p75_box.mask.all() or not rhow_0865p00_box.mask.all()\
+                or not rhow_0885p00_box.mask.all() or not rhow_1020p50_box.mask.all():
                 # plot Zibordi
                 plt.plot([400.00,412.50,442.50,490.00,510.00,560.00,620.00,665.00,673.75,681.25,708.75,753.75,778.75,865.00,885.00,1020.5],\
                     [rhow_0400p00_box.mean(),rhow_0412p50_fq_box.mean(),rhow_0442p50_fq_box.mean(),rhow_0490p00_fq_box.mean(),\
                     rhow_0510p00_fq_box.mean(),rhow_0560p00_fq_box.mean(),rhow_0620p00_fq_box.mean(),rhow_0665p00_fq_box.mean(),\
                     rhow_0673p75_box.mean(),rhow_0681p25_box.mean(),rhow_0708p75_box.mean(),rhow_0753p75_box.mean(),\
-                    rhow_0778p75_box.mean(),rhow_0865p00_box.mean(),rhow_0885p00_box.mean(),rhow_1020p50_box.mean()],'+r')
-                scatter_legend.append('OLCI: ZMB18')
+                    rhow_0778p75_box.mean(),rhow_0865p00_box.mean(),rhow_0885p00_box.mean(),rhow_1020p50_box.mean()],'+r',markersize=8,linewidth=3)
+                scatter_legend.append('OLCI: ZMB18') 
             
             flags_mask = OLCI_flags.create_mask(WQSF[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y])
+                # Ex. flags_mask when all valid:
+                # [[0 0 0 0 0]
+                #  [0 0 0 0 0]
+                #  [0 0 0 0 0]
+                #  [0 0 0 0 0]
+                #  [0 0 0 0 0]]
             print('flags_mask:')
             print(flags_mask)
 
@@ -841,12 +923,26 @@ with open(path_to_list,'r') as file:
                 rhow_0885p00_sat_passed_plot = np.nan                
                 
                 if Lwn_560_CV <= 0.2 and AOT_0865p50_CV <= 0.2:
-
-
-                    
+                    # if any is invalid, do not calculated matchup
+                    if not ((rhow_0400p00_box.mask.any() or np.isnan(rhow_0400p00_box).any())\
+                        or (rhow_0412p50_fq_box.mask.any() or np.isnan(rhow_0412p50_fq_box).any())\
+                        or (rhow_0442p50_fq_box.mask.any() or np.isnan(rhow_0442p50_fq_box).any())\
+                        or (rhow_0490p00_fq_box.mask.any() or np.isnan(rhow_0490p00_fq_box).any())\
+                        or (rhow_0510p00_fq_box.mask.any() or np.isnan(rhow_0510p00_fq_box).any())\
+                        or (rhow_0560p00_fq_box.mask.any() or np.isnan(rhow_0560p00_fq_box).any())\
+                        or (rhow_0620p00_fq_box.mask.any() or np.isnan(rhow_0620p00_fq_box).any())\
+                        or (rhow_0665p00_fq_box.mask.any() or np.isnan(rhow_0665p00_fq_box).any())\
+                        or (rhow_0673p75_box.mask.any() or np.isnan(rhow_0673p75_box).any())\
+                        or (rhow_0681p25_box.mask.any() or np.isnan(rhow_0681p25_box).any())\
+                        or (rhow_0708p75_box.mask.any() or np.isnan(rhow_0708p75_box).any())\
+                        or (rhow_0753p75_box.mask.any() or np.isnan(rhow_0753p75_box).any())\
+                        or (rhow_0778p75_box.mask.any() or np.isnan(rhow_0778p75_box).any())\
+                        or (rhow_0865p00_box.mask.any() or np.isnan(rhow_0865p00_box).any())\
+                        or (rhow_0885p00_box.mask.any() or np.isnan(rhow_0885p00_box).any())):
+  
                     # Rrs 0400p00
                     # print('400.0')
-                    if not (rhow_0400p00_box.mask.any() == True or np.isnan(rhow_0400p00_box).any() == True):
+                    # if not (rhow_0400p00_box.mask.any() == True or np.isnan(rhow_0400p00_box).any() == True):
                         rhow_0400p00_sat_passed_plot = rhow_0400p00_box.mean()
                     #     print('At least one element in sat product is invalid!')
                     # else:
@@ -858,7 +954,7 @@ with open(path_to_list,'r') as file:
 
                     # Rrs 0412p50
                     # print('412.5')
-                    if not (rhow_0412p50_fq_box.mask.any() == True or np.isnan(rhow_0412p50_fq_box).any() == True):
+                    # if not (rhow_0412p50_fq_box.mask.any() == True or np.isnan(rhow_0412p50_fq_box).any() == True):
                         rhow_0412p50_sat_passed_plot = rhow_0412p50_fq_box.mean()
                     #     print('At least one element in sat product is invalid!')
                     # else:
@@ -870,7 +966,7 @@ with open(path_to_list,'r') as file:
                         
                     # Rrs 0442p50
                     # print('442.5')
-                    if not (rhow_0442p50_fq_box.mask.any() == True or np.isnan(rhow_0442p50_fq_box).any() == True):
+                    # if not (rhow_0442p50_fq_box.mask.any() == True or np.isnan(rhow_0442p50_fq_box).any() == True):
                         rhow_0442p50_sat_passed_plot = rhow_0442p50_fq_box.mean()
                         # print('At least one element in sat product is invalid!')
                     # else:
@@ -882,7 +978,7 @@ with open(path_to_list,'r') as file:
                         
                     # Rrs 0490p00
                     # print('490.0')
-                    if not (rhow_0490p00_fq_box.mask.any() == True or np.isnan(rhow_0490p00_fq_box).any() == True):
+                    # if not (rhow_0490p00_fq_box.mask.any() == True or np.isnan(rhow_0490p00_fq_box).any() == True):
                         rhow_0490p00_sat_passed_plot = rhow_0490p00_fq_box.mean()
                         # print('At least one element in sat product is invalid!')
                     # else:
@@ -894,7 +990,7 @@ with open(path_to_list,'r') as file:
 
                     # Rrs 0510p00
                     # print('510.0')
-                    if not (rhow_0510p00_fq_box.mask.any() == True or np.isnan(rhow_0510p00_fq_box).any() == True):
+                    # if not (rhow_0510p00_fq_box.mask.any() == True or np.isnan(rhow_0510p00_fq_box).any() == True):
                         rhow_0510p00_sat_passed_plot = rhow_0510p00_fq_box.mean()
                         # print('At least one element in sat product is invalid!')
                     # else:
@@ -906,7 +1002,7 @@ with open(path_to_list,'r') as file:
                         
                     # Rrs 0560p00
                     # print('560.0')
-                    if not (rhow_0560p00_fq_box.mask.any() == True or np.isnan(rhow_0560p00_fq_box).any() == True):
+                    # if not (rhow_0560p00_fq_box.mask.any() == True or np.isnan(rhow_0560p00_fq_box).any() == True):
                         rhow_0560p00_sat_passed_plot = rhow_0560p00_fq_box.mean()
                         # print('At least one element in sat product is invalid!')
                         matchups_PAN_rhow_0560p00_fq_sat_zi.append(rhow_0560p00_fq_box.mean())
@@ -917,7 +1013,7 @@ with open(path_to_list,'r') as file:
 
                     # Rrs 0620p00
                     # print('620.0')
-                    if not (rhow_0620p00_fq_box.mask.any() == True or np.isnan(rhow_0620p00_fq_box).any() == True):
+                    # if not (rhow_0620p00_fq_box.mask.any() == True or np.isnan(rhow_0620p00_fq_box).any() == True):
                         rhow_0620p00_sat_passed_plot = rhow_0620p00_fq_box.mean()
                         # print('At least one element in sat product is invalid!')
                         matchups_PAN_rhow_0620p00_fq_sat_zi.append(rhow_0620p00_fq_box.mean())
@@ -928,7 +1024,7 @@ with open(path_to_list,'r') as file:
                         
                     # Rrs 0665p00
                     # print('665.0')
-                    if not (rhow_0665p00_fq_box.mask.any() == True or np.isnan(rhow_0665p00_fq_box).any() == True):
+                    # if not (rhow_0665p00_fq_box.mask.any() == True or np.isnan(rhow_0665p00_fq_box).any() == True):
                         rhow_0665p00_sat_passed_plot = rhow_0665p00_fq_box.mean()
                         # print('At least one element in sat product is invalid!')
                     # else:
@@ -940,7 +1036,7 @@ with open(path_to_list,'r') as file:
 
                     # Rrs 0673p75
                     # print('673.75')
-                    if not (rhow_0673p75_box.mask.any() == True or np.isnan(rhow_0673p75_box).any() == True):
+                    # if not (rhow_0673p75_box.mask.any() == True or np.isnan(rhow_0673p75_box).any() == True):
                         rhow_0673p75_sat_passed_plot = rhow_0673p75_box.mean()
                         # print('At least one element in sat product is invalid!')
                     # else:
@@ -952,7 +1048,7 @@ with open(path_to_list,'r') as file:
 
                     # Rrs 0681p25
                     # print('681.25')
-                    if not (rhow_0681p25_box.mask.any() == True or np.isnan(rhow_0681p25_box).any() == True):
+                    # if not (rhow_0681p25_box.mask.any() == True or np.isnan(rhow_0681p25_box).any() == True):
                         rhow_0681p25_sat_passed_plot = rhow_0681p25_box.mean()
                         # print('At least one element in sat product is invalid!')
                     # else:
@@ -964,7 +1060,7 @@ with open(path_to_list,'r') as file:
 
                     # Rrs 0708p75
                     # print('708.75')
-                    if not (rhow_0708p75_box.mask.any() == True or np.isnan(rhow_0708p75_box).any() == True):
+                    # if not (rhow_0708p75_box.mask.any() == True or np.isnan(rhow_0708p75_box).any() == True):
                         rhow_0708p75_sat_passed_plot = rhow_0708p75_box.mean()
                         # print('At least one element in sat product is invalid!')
                     # else:
@@ -976,7 +1072,7 @@ with open(path_to_list,'r') as file:
 
                     # Rrs 0753p75
                     # print('753.75')
-                    if not (rhow_0753p75_box.mask.any() == True or np.isnan(rhow_0753p75_box).any() == True):
+                    # if not (rhow_0753p75_box.mask.any() == True or np.isnan(rhow_0753p75_box).any() == True):
                         rhow_0753p75_sat_passed_plot = rhow_0753p75_box.mean()
                         # print('At least one element in sat product is invalid!')
                     # else:
@@ -988,7 +1084,7 @@ with open(path_to_list,'r') as file:
 
                     # Rrs 0778p75
                     # print('778.75')
-                    if not (rhow_0778p75_box.mask.any() == True or np.isnan(rhow_0778p75_box).any() == True):
+                    # if not (rhow_0778p75_box.mask.any() == True or np.isnan(rhow_0778p75_box).any() == True):
                         rhow_0778p75_sat_passed_plot = rhow_0778p75_box.mean()
                         # print('At least one element in sat product is invalid!')
                     # else:
@@ -1000,7 +1096,7 @@ with open(path_to_list,'r') as file:
 
                     # Rrs 0865p00
                     # print('865.0')
-                    if not (rhow_0865p00_box.mask.any() == True or np.isnan(rhow_0865p00_box).any() == True):
+                    # if not (rhow_0865p00_box.mask.any() == True or np.isnan(rhow_0865p00_box).any() == True):
                         rhow_0865p00_sat_passed_plot = rhow_0865p00_box.mean()
                         # print('At least one element in sat product is invalid!')
                     # else:
@@ -1012,7 +1108,7 @@ with open(path_to_list,'r') as file:
 
                     # Rrs 0885p00
                     # print('885.0')
-                    if not (rhow_0885p00_box.mask.any() == True or np.isnan(rhow_0885p00_box).any() == True):
+                    # if not (rhow_0885p00_box.mask.any() == True or np.isnan(rhow_0885p00_box).any() == True):
                         rhow_0885p00_sat_passed_plot = rhow_0885p00_box.mean()
                         # print('At least one element in sat product is invalid!')
                     # else:
@@ -1022,22 +1118,6 @@ with open(path_to_list,'r') as file:
                         matchups_PAN_rhow_0885p00_sat_zi_stop_time.append(sat_stop_time)
                         matchups_PAN_rhow_0885p00_ins_zi_time.append(ins_time_PAN[idx_min_PAN])   
 
-
-                    if (not (rhow_0400p00_box.mask.any() == True or np.isnan(rhow_0400p00_box).any() == True)\
-                        or not (rhow_0412p50_fq_box.mask.any() == True or np.isnan(rhow_0412p50_fq_box).any() == True)\
-                        or not (rhow_0442p50_fq_box.mask.any() == True or np.isnan(rhow_0442p50_fq_box).any() == True)\
-                        or not (rhow_0490p00_fq_box.mask.any() == True or np.isnan(rhow_0490p00_fq_box).any() == True)\
-                        or not (rhow_0510p00_fq_box.mask.any() == True or np.isnan(rhow_0510p00_fq_box).any() == True)\
-                        or not (rhow_0560p00_fq_box.mask.any() == True or np.isnan(rhow_0560p00_fq_box).any() == True)\
-                        or not (rhow_0620p00_fq_box.mask.any() == True or np.isnan(rhow_0620p00_fq_box).any() == True)\
-                        or not (rhow_0665p00_fq_box.mask.any() == True or np.isnan(rhow_0665p00_fq_box).any() == True)\
-                        or not (rhow_0673p75_box.mask.any() == True or np.isnan(rhow_0673p75_box).any() == True)\
-                        or not (rhow_0681p25_box.mask.any() == True or np.isnan(rhow_0681p25_box).any() == True)\
-                        or not (rhow_0708p75_box.mask.any() == True or np.isnan(rhow_0708p75_box).any() == True)\
-                        or not (rhow_0753p75_box.mask.any() == True or np.isnan(rhow_0753p75_box).any() == True)\
-                        or not (rhow_0778p75_box.mask.any() == True or np.isnan(rhow_0778p75_box).any() == True)\
-                        or not (rhow_0865p00_box.mask.any() == True or np.isnan(rhow_0865p00_box).any() == True)\
-                        or not (rhow_0885p00_box.mask.any() == True or np.isnan(rhow_0885p00_box).any() == True)):
                         plt.plot([400.00,412.50,442.50,490.00,510.00,560.00,620.00,665.00,673.75,681.25,708.75,753.75,778.75,865.00,885.00],\
                             [rhow_0400p00_sat_passed_plot,rhow_0412p50_sat_passed_plot,rhow_0442p50_sat_passed_plot,\
                             rhow_0490p00_sat_passed_plot,rhow_0510p00_sat_passed_plot,rhow_0560p00_sat_passed_plot,\
@@ -1108,21 +1188,26 @@ with open(path_to_list,'r') as file:
             flags_mask = OLCI_flags.create_mask(WQSF[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y])
             print('flags_mask:')
             print(flags_mask)
-
-            if not (rhow_0400p00_box.mask.all() and rhow_0412p50_fq_box.mask.all()\
-                and rhow_0442p50_fq_box.mask.all() and rhow_0490p00_fq_box.mask.all()\
-                and rhow_0510p00_fq_box.mask.all() and rhow_0560p00_fq_box.mask.all()\
-                and rhow_0620p00_fq_box.mask.all() and rhow_0665p00_fq_box.mask.all()\
-                and rhow_0673p75_box.mask.all() and rhow_0681p25_box.mask.all()\
-                and rhow_0708p75_box.mask.all() and rhow_0753p75_box.mask.all()\
-                and rhow_0778p75_box.mask.all() and rhow_0865p00_box.mask.all()\
-                and rhow_0885p00_box.mask.all() and rhow_1020p50_box.mask.all()):
+            # plot sat data
+                # numpy.all(a, axis=None, out=None, keepdims=<no value>)[source]
+                # Test whether all array elements along a given axis evaluate to True.
+                # When all .mask are True, i.e. all invalid, .all() is True. Or if at least one is valid -> .all() is False
+                # Therefore, if at least one band extract has a valid number, then plot it. 
+                # This is plot the extract before applying filtering criteria.
+            if not rhow_0400p00_box.mask.all() or not rhow_0412p50_fq_box.mask.all()\
+                or not rhow_0442p50_fq_box.mask.all() or not rhow_0490p00_fq_box.mask.all()\
+                or not rhow_0510p00_fq_box.mask.all() or not rhow_0560p00_fq_box.mask.all()\
+                or not rhow_0620p00_fq_box.mask.all() or not rhow_0665p00_fq_box.mask.all()\
+                or not rhow_0673p75_box.mask.all() or not rhow_0681p25_box.mask.all()\
+                or not rhow_0708p75_box.mask.all() or not rhow_0753p75_box.mask.all()\
+                or not rhow_0778p75_box.mask.all() or not rhow_0865p00_box.mask.all()\
+                or not rhow_0885p00_box.mask.all() or not rhow_1020p50_box.mask.all():
                 # plot BW06
                 plt.plot([400.00,412.50,442.50,490.00,510.00,560.00,620.00,665.00,673.75,681.25,708.75,753.75,778.75,865.00,885.00,1020.5],\
                     [rhow_0400p00_box.mean(),rhow_0412p50_fq_box.mean(),rhow_0442p50_fq_box.mean(),rhow_0490p00_fq_box.mean(),\
                     rhow_0510p00_fq_box.mean(),rhow_0560p00_fq_box.mean(),rhow_0620p00_fq_box.mean(),rhow_0665p00_fq_box.mean(),\
                     rhow_0673p75_box.mean(),rhow_0681p25_box.mean(),rhow_0708p75_box.mean(),rhow_0753p75_box.mean(),\
-                    rhow_0778p75_box.mean(),rhow_0865p00_box.mean(),rhow_0885p00_box.mean(),rhow_1020p50_box.mean()],'xr')
+                    rhow_0778p75_box.mean(),rhow_0865p00_box.mean(),rhow_0885p00_box.mean(),rhow_1020p50_box.mean()],'xr',markersize=8,linewidth=3)
                 scatter_legend.append('OLCI: BW06')
             
             NGP = np.count_nonzero(flags_mask == 0) # Number Good Pixels, Bailey and Werdell 2006
@@ -1534,7 +1619,8 @@ with open(path_to_list,'r') as file:
                         matchups_PAN_rhow_0885p00_ins_ba_station.append(station_name)
                         matchups_PAN_rhow_0885p00_sat_ba_stop_time.append(sat_stop_time)
                         matchups_PAN_rhow_0885p00_ins_ba_time.append(ins_time_PAN[idx_min_PAN])
-
+                    
+                    # if any of the bands passes the criteria, plot it
                     if (not NGP_rhow_0400p00<NTP/2+1 or not NGP_rhow_0412p50<NTP/2+1 or not NGP_rhow_0442p50<NTP/2+1\
                         or not NGP_rhow_0490p00<NTP/2+1 or not NGP_rhow_0510p00<NTP/2+1 or not NGP_rhow_0560p00<NTP/2+1\
                         or not NGP_rhow_0620p00<NTP/2+1 or not NGP_rhow_0665p00<NTP/2+1 or not NGP_rhow_0673p75<NTP/2+1\
@@ -1703,7 +1789,7 @@ rmse_val_0865p00_zi_Helsinki_Lighthouse,mean_abs_rel_diff_0865p00_zi_Helsinki_Li
 rmse_val_0865p00_zi_Gustav_Dalen_Tower,mean_abs_rel_diff_0865p00_zi_Gustav_Dalen_Tower, mean_rel_diff_0865p00_zi_Gustav_Dalen_Tower, r_sqr_0865p00_zi_Gustav_Dalen_Tower\
 = plot_scatter(\
     matchups_PAN_rhow_0865p00_ins_zi,matchups_PAN_rhow_0865p00_sat_zi,'865.0',path_out,prot_name,sensor_name,\
-    matchups_PAN_rhow_0865p00_ins_zi_station,min_val=-0.0002,max_val=0.006)
+    matchups_PAN_rhow_0865p00_ins_zi_station,min_val=-0.001,max_val=0.006)
 
 rmse_val_0885p00_zi, mean_abs_rel_diff_0885p00_zi, mean_rel_diff_0885p00_zi, r_sqr_0885p00_zi,\
 rmse_val_0885p00_zi_Venise,mean_abs_rel_diff_0885p00_zi_Venise, mean_rel_diff_0885p00_zi_Venise, r_sqr_0885p00_zi_Venise,\
@@ -1713,7 +1799,7 @@ rmse_val_0885p00_zi_Helsinki_Lighthouse,mean_abs_rel_diff_0885p00_zi_Helsinki_Li
 rmse_val_0885p00_zi_Gustav_Dalen_Tower,mean_abs_rel_diff_0885p00_zi_Gustav_Dalen_Tower, mean_rel_diff_0885p00_zi_Gustav_Dalen_Tower, r_sqr_0885p00_zi_Gustav_Dalen_Tower\
 = plot_scatter(\
     matchups_PAN_rhow_0885p00_ins_zi,matchups_PAN_rhow_0885p00_sat_zi,'885.0',path_out,prot_name,sensor_name,\
-    matchups_PAN_rhow_0885p00_ins_zi_station,min_val=-0.0002,max_val=0.005)
+    matchups_PAN_rhow_0885p00_ins_zi_station,min_val=-0.001,max_val=0.005)
 
 #% plots  
 prot_name = 'ba' 
@@ -1868,3 +1954,6 @@ rmse_val_0885p00_ba_Gustav_Dalen_Tower,mean_abs_rel_diff_0885p00_ba_Gustav_Dalen
     matchups_PAN_rhow_0885p00_ins_ba,matchups_PAN_rhow_0885p00_sat_ba,'885.0',path_out,prot_name,sensor_name,\
     matchups_PAN_rhow_0885p00_ins_ba_station,min_val=-0.001,max_val=0.005)
 
+# #%%
+# if __name__ == '__main__':
+#     main()

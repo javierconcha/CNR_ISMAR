@@ -95,6 +95,16 @@ def get_lat_lon_ins(station_name):
 #%%
 def plot_scatter(x,y,str1,path_out,prot_name,sensor_name,station_vec,min_val,max_val):           
 
+    # replace nan in y (sat data)
+    x = np.array(x)
+    y = np.array(y)
+    station_vec = np.array(station_vec)
+
+    x = x[~np.isnan(y)] # it is assumed that only sat data could be nan
+    station_vec = station_vec[~np.isnan(y)]
+    y = y[~np.isnan(y)]
+
+
     count_Venise = 0
     count_Gloria = 0
     count_Galata_Platform = 0
@@ -774,7 +784,7 @@ def plot_all_methods(vl_str,notation_flag,path_out,min_val,max_val):
 
     ax1.set_ylabel('Frequency',fontsize=12)
 
-    str1 = 'BW06-IPK19\nmin: {:,.2f}\nmax: {:,.2f}\nstd: {:,.2f}\nmedian: {:,.2f}\nmean: {:,.2f}\nN: {:,.0f}'\
+    str1 = 'BW06-IPK19\nmin: {:,.2f}\nmax: {:,.2f}\nstd: {:,.2f}\nmedian: {:,.5f}\nmean: {:,.3f}\nN: {:,.0f}'\
     .format(np.nanmin(diff_ba_pa),
             np.nanmax(diff_ba_pa),
             np.nanstd(diff_ba_pa),
@@ -795,7 +805,7 @@ def plot_all_methods(vl_str,notation_flag,path_out,min_val,max_val):
             len(diff_ba_pa))
     print(str_table)
 
-    str2 = 'BW06-V19\nmin: {:,.2f}\nmax: {:,.2f}\nstd: {:,.2f}\nmedian: {:,.2f}\nmean: {:,.2f}\nN: {:,.0f}'\
+    str2 = 'BW06-V19\nmin: {:,.2f}\nmax: {:,.2f}\nstd: {:,.2f}\nmedian: {:,.5f}\nmean: {:,.3f}\nN: {:,.0f}'\
     .format(np.nanmin(diff_ba_va),
             np.nanmax(diff_ba_va),
             np.nanstd(diff_ba_va),
@@ -816,7 +826,7 @@ def plot_all_methods(vl_str,notation_flag,path_out,min_val,max_val):
             len(diff_ba_va))
     print(str_table)
 
-    str4 = 'IPK19-V19\nmin: {:,.2f}\nmax: {:,.2f}\nstd: {:,.2f}\nmedian: {:,.2f}\nmean: {:,.2f}\nN: {:,.0f}'\
+    str4 = 'IPK19-V19\nmin: {:,.2f}\nmax: {:,.2f}\nstd: {:,.2f}\nmedian: {:,.5f}\nmean: {:,.3f}\nN: {:,.0f}'\
     .format(np.nanmin(diff_pa_va),
             np.nanmax(diff_pa_va),
             np.nanstd(diff_pa_va),

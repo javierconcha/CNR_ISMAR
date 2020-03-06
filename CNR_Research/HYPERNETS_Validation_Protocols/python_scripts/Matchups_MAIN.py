@@ -128,6 +128,15 @@ def rmse(predictions, targets):
 #%%
 def plot_scatter(x,y,str1,path_out,prot_name,sensor_name,station_vec,min_val,max_val): 
 
+    # replace nan in y (sat data)
+    x = np.array(x)
+    y = np.array(y)
+    station_vec = np.array(station_vec)
+
+    x = x[~np.isnan(y)] # it is assumed that only sat data could be nan
+    station_vec = station_vec[~np.isnan(y)]
+    y = y[~np.isnan(y)]
+
     rmse_val = np.nan
     mean_abs_rel_diff = np.nan
     mean_rel_diff = np.nan
@@ -737,13 +746,13 @@ matchups_Lwn_0560p00_fq_ins_ba_time = []
 matchups_Lwn_0665p00_fq_ins_ba_time = []        
 
 # station_list = ['Venise','Galata_Platform','Gloria']
-# station_list = ['Venise','Galata_Platform','Gloria','Helsinki_Lighthouse','Gustav_Dalen_Tower']
-station_list = ['Venise']
+station_list = ['Venise','Galata_Platform','Gloria','Helsinki_Lighthouse','Gustav_Dalen_Tower']
+# station_list = ['Venise']
 
 for station_name in station_list:  
     
-    filename = station_name+'_20V3_20190927_20200110.nc'
-    # filename = station_name+'_20V3_20160426_20191118.nc'
+#    filename = station_name+'_20V3_20190927_20200110.nc'
+    filename = station_name+'_20V3_20160426_20200206.nc'
     # filename = station_name+'_20V3_20180622_20180822.nc'
     filename_insitu = os.path.join(path,filename)
     if not os.path.exists(filename_insitu):
@@ -849,9 +858,17 @@ for station_name in station_list:
                     AOT_0865p50_CV = np.abs(AOT_0865p50_box.std()/AOT_0865p50_box.mean())
                     
                     if Lwn_560_CV <= 0.2 and AOT_0865p50_CV <= 0.2:
+                    # if any is invalid, do not calculated matchup
+                        if not ((rhow_0412p50_fq_box.mask.any() or np.isnan(rhow_0412p50_fq_box).any())\
+                            or (rhow_0442p50_fq_box.mask.any() or np.isnan(rhow_0442p50_fq_box).any())\
+                            or (rhow_0490p00_fq_box.mask.any() or np.isnan(rhow_0490p00_fq_box).any())\
+                            or (rhow_0560p00_fq_box.mask.any() or np.isnan(rhow_0560p00_fq_box).any())\
+                            or (rhow_0665p00_fq_box.mask.any() or np.isnan(rhow_0665p00_fq_box).any())):
+  
+                        
                         # Rrs 0412p50
                         # print('412.5')
-                        if not (rhow_0412p50_fq_box.mask.any() == True or np.isnan(rhow_0412p50_fq_box).any() == True):
+                        # if not (rhow_0412p50_fq_box.mask.any() == True or np.isnan(rhow_0412p50_fq_box).any() == True):
                         #     print('At least one element in sat product is invalid!')
                         # else:
                             matchups_Lwn_0412p50_fq_sat_zi.append(rhow_0412p50_fq_box.mean()*F0_0412p50/np.pi)
@@ -862,7 +879,7 @@ for station_name in station_list:
                             
                         # Rrs 0442p50
                         # print('442.5')
-                        if not (rhow_0442p50_fq_box.mask.any() == True or np.isnan(rhow_0442p50_fq_box).any() == True):
+                        # if not (rhow_0442p50_fq_box.mask.any() == True or np.isnan(rhow_0442p50_fq_box).any() == True):
                             # print('At least one element in sat product is invalid!')
                         # else:
                             matchups_Lwn_0442p50_fq_sat_zi.append(rhow_0442p50_fq_box.mean()*F0_0442p50/np.pi)
@@ -873,7 +890,7 @@ for station_name in station_list:
                             
                         # Rrs 0490p00
                         # print('490.0')
-                        if not (rhow_0490p00_fq_box.mask.any() == True or np.isnan(rhow_0490p00_fq_box).any() == True):
+                        # if not (rhow_0490p00_fq_box.mask.any() == True or np.isnan(rhow_0490p00_fq_box).any() == True):
                             # print('At least one element in sat product is invalid!')
                         # else:
                             matchups_Lwn_0490p00_fq_sat_zi.append(rhow_0490p00_fq_box.mean()*F0_0490p00/np.pi)
@@ -884,7 +901,7 @@ for station_name in station_list:
                             
                         # Rrs 0560p00
                         # print('560.0')
-                        if not (rhow_0560p00_fq_box.mask.any() == True or np.isnan(rhow_0560p00_fq_box).any() == True):
+                        # if not (rhow_0560p00_fq_box.mask.any() == True or np.isnan(rhow_0560p00_fq_box).any() == True):
                             # print('At least one element in sat product is invalid!')
                         # else:
                             if Exact_wavelengths[idx_min,13] != -999:
@@ -901,7 +918,7 @@ for station_name in station_list:
                             
                         # Rrs 0665p00
                         # print('665.0')
-                        if not (rhow_0665p00_fq_box.mask.any() == True or np.isnan(rhow_0665p00_fq_box).any() == True):
+                        # if not (rhow_0665p00_fq_box.mask.any() == True or np.isnan(rhow_0665p00_fq_box).any() == True):
                             # print('At least one element in sat product is invalid!')
                         # else:
                             matchups_Lwn_0665p00_fq_sat_zi.append(rhow_0665p00_fq_box.mean()*F0_0665p00/np.pi)
