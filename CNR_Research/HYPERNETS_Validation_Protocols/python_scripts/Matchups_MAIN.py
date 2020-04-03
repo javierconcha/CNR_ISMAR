@@ -217,12 +217,21 @@ def plot_scatter(x,y,str1,path_out,prot_name,sensor_name,station_vec,min_val,max
     sat_obs = np.asarray(y)
     rmse_val = rmse(sat_obs,ref_obs)
 
-            # the mean of relative (signed) percent differences
-    rel_diff = 100*(ref_obs-sat_obs)/ref_obs
+    diff = sat_obs-ref_obs
+
+    # the mean of relative (signed) percent differences
+    rel_diff = 100*diff/ref_obs
     mean_rel_diff = np.mean(rel_diff)
         
-        #  the mean of absolute (unsigned) percent differences
+    #  the mean of absolute (unsigned) percent differences
     mean_abs_rel_diff = np.mean(np.abs(rel_diff))
+    
+    # mean bias
+    mean_bias = np.mean(diff)
+
+    # mean absolute error (MAE)
+    mean_abs_error = np.mean(np.abs(diff))
+    
 
     cond_station = np.asarray(station_vec)=='Venise'
     if sum(cond_station):
@@ -230,19 +239,25 @@ def plot_scatter(x,y,str1,path_out,prot_name,sensor_name,station_vec,min_val,max
         sat_obs_Venise = sat_obs[cond_station]
         slope_Venise, intercept_Venise, r_value_Venise, p_value_Venise, std_err_Venise = stats.linregress(ref_obs_Venise,sat_obs_Venise)
         rmse_val_Venise = rmse(sat_obs_Venise,ref_obs_Venise)
-        rel_diff_Venise = 100*(ref_obs_Venise-sat_obs_Venise)/ref_obs_Venise
+        diff_Venise = (sat_obs_Venise-ref_obs_Venise)
+        rel_diff_Venise = 100*diff_Venise/ref_obs_Venise
         mean_rel_diff_Venise = np.mean(rel_diff_Venise)
         mean_abs_rel_diff_Venise = np.mean(np.abs(rel_diff_Venise))
-    
+        mean_bias_Venise = np.mean(diff_Venise)
+        mean_abs_error_Venise = np.mean(np.abs(diff_Venise))
+
         cond_station = np.asarray(station_vec)=='Gloria'
     if sum(cond_station):    
         ref_obs_Gloria = ref_obs[cond_station]
         sat_obs_Gloria = sat_obs[cond_station]
         slope_Gloria, intercept_Gloria, r_value_Gloria, p_value_Gloria, std_err_Gloria = stats.linregress(ref_obs_Gloria,sat_obs_Gloria)
         rmse_val_Gloria = rmse(sat_obs_Gloria,ref_obs_Gloria)
-        rel_diff_Gloria = 100*(ref_obs_Gloria-sat_obs_Gloria)/ref_obs_Gloria
+        diff_Gloria = (sat_obs_Gloria-ref_obs_Gloria)
+        rel_diff_Gloria = 100*diff_Gloria/ref_obs_Gloria
         mean_rel_diff_Gloria = np.mean(rel_diff_Gloria)
         mean_abs_rel_diff_Gloria = np.mean(np.abs(rel_diff_Gloria))
+        mean_bias_Gloria = np.mean(diff_Gloria)
+        mean_abs_error_Gloria = np.mean(np.abs(diff_Gloria))
         
         cond_station = np.asarray(station_vec)=='Galata_Platform'
     if sum(cond_station):    
@@ -250,9 +265,12 @@ def plot_scatter(x,y,str1,path_out,prot_name,sensor_name,station_vec,min_val,max
         sat_obs_Galata_Platform = sat_obs[cond_station]
         slope_Galata_Platform, intercept_Galata_Platform, r_value_Galata_Platform, p_value_Galata_Platform, std_err_Galata_Platform = stats.linregress(ref_obs_Galata_Platform,sat_obs_Galata_Platform)
         rmse_val_Galata_Platform = rmse(sat_obs_Galata_Platform,ref_obs_Galata_Platform)
-        rel_diff_Galata_Platform = 100*(ref_obs_Galata_Platform-sat_obs_Galata_Platform)/ref_obs_Galata_Platform
+        diff_Galata_Platform = (sat_obs_Galata_Platform-ref_obs_Galata_Platform)
+        rel_diff_Galata_Platform = 100*diff_Galata_Platform/ref_obs_Galata_Platform
         mean_rel_diff_Galata_Platform = np.mean(rel_diff_Galata_Platform)
         mean_abs_rel_diff_Galata_Platform = np.mean(np.abs(rel_diff_Galata_Platform))
+        mean_bias_Galata_Platform = np.mean(diff_Galata_Platform)
+        mean_abs_error_Galata_Platform = np.mean(np.abs(diff_Galata_Platform))
         
         cond_station = np.asarray(station_vec)=='Helsinki_Lighthouse'
     if sum(cond_station):    
@@ -260,9 +278,12 @@ def plot_scatter(x,y,str1,path_out,prot_name,sensor_name,station_vec,min_val,max
         sat_obs_Helsinki_Lighthouse = sat_obs[cond_station]
         slope_Helsinki_Lighthouse, intercept_Helsinki_Lighthouse, r_value_Helsinki_Lighthouse, p_value_Helsinki_Lighthouse, std_err_Helsinki_Lighthouse = stats.linregress(ref_obs_Helsinki_Lighthouse,sat_obs_Helsinki_Lighthouse)
         rmse_val_Helsinki_Lighthouse = rmse(sat_obs_Helsinki_Lighthouse,ref_obs_Helsinki_Lighthouse)
-        rel_diff_Helsinki_Lighthouse = 100*(ref_obs_Helsinki_Lighthouse-sat_obs_Helsinki_Lighthouse)/ref_obs_Helsinki_Lighthouse
+        diff_Helsinki_Lighthouse = (sat_obs_Helsinki_Lighthouse-ref_obs_Helsinki_Lighthouse)
+        rel_diff_Helsinki_Lighthouse = 100*diff_Helsinki_Lighthouse/ref_obs_Helsinki_Lighthouse
         mean_rel_diff_Helsinki_Lighthouse = np.mean(rel_diff_Helsinki_Lighthouse)
         mean_abs_rel_diff_Helsinki_Lighthouse = np.mean(np.abs(rel_diff_Helsinki_Lighthouse))
+        mean_bias_Helsinki_Lighthouse = np.mean(diff_Helsinki_Lighthouse)
+        mean_abs_error_Helsinki_Lighthouse = np.mean(np.abs(diff_Helsinki_Lighthouse))
         
         cond_station = np.asarray(station_vec)=='Gustav_Dalen_Tower'
     if sum(cond_station):    
@@ -270,9 +291,12 @@ def plot_scatter(x,y,str1,path_out,prot_name,sensor_name,station_vec,min_val,max
         sat_obs_Gustav_Dalen_Tower = sat_obs[cond_station]
         slope_Gustav_Dalen_Tower, intercept_Gustav_Dalen_Tower, r_value_Gustav_Dalen_Tower, p_value_Gustav_Dalen_Tower, std_err_Gustav_Dalen_Tower = stats.linregress(ref_obs_Gustav_Dalen_Tower,sat_obs_Gustav_Dalen_Tower)
         rmse_val_Gustav_Dalen_Tower = rmse(sat_obs_Gustav_Dalen_Tower,ref_obs_Gustav_Dalen_Tower)
-        rel_diff_Gustav_Dalen_Tower = 100*(ref_obs_Gustav_Dalen_Tower-sat_obs_Gustav_Dalen_Tower)/ref_obs_Gustav_Dalen_Tower
+        diff_Gustav_Dalen_Tower = (sat_obs_Gustav_Dalen_Tower-ref_obs_Gustav_Dalen_Tower)
+        rel_diff_Gustav_Dalen_Tower = 100*diff_Gustav_Dalen_Tower/ref_obs_Gustav_Dalen_Tower
         mean_rel_diff_Gustav_Dalen_Tower = np.mean(rel_diff_Gustav_Dalen_Tower)
         mean_abs_rel_diff_Gustav_Dalen_Tower = np.mean(np.abs(rel_diff_Gustav_Dalen_Tower))
+        mean_bias_Gustav_Dalen_Tower = np.mean(diff_Gustav_Dalen_Tower)
+        mean_abs_error_Gustav_Dalen_Tower = np.mean(np.abs(diff_Gustav_Dalen_Tower))
     
 
     str2 = str1
@@ -281,15 +305,17 @@ def plot_scatter(x,y,str1,path_out,prot_name,sensor_name,station_vec,min_val,max
         str2 = str2[:-2]
         
     
-    str0 = '{}nm\nN={:d}\nrmse={:,.2f}\nMAPD={:,.0f}%\nMPD={:,.0f}%\n$r^2$={:,.2f}'\
+    str0 = '{}nm\nN={:d}\nrmse={:,.2f}\nMAPD={:,.0f}%\nMPD={:,.0f}%\nMean Bias={:,.2f}\nMAE={:,.2f}\n$r^2$={:,.2f}'\
     .format(str2,\
             N,\
             rmse_val,\
             mean_abs_rel_diff,\
             mean_rel_diff,\
+            mean_bias,\
+            mean_abs_error,\
             r_value**2)
         
-    plt.text(0.05, 0.65, str0,horizontalalignment='left', fontsize=12,transform=plt.gca().transAxes)
+    plt.text(0.05, 0.58, str0,horizontalalignment='left', fontsize=12,transform=plt.gca().transAxes)
     
     ofname = sensor_name+'_scatter_matchups_'+str1.replace(".","p")+'_'+prot_name+'.pdf'
     ofname = os.path.join(path_out,'source',ofname)
@@ -303,14 +329,16 @@ def plot_scatter(x,y,str1,path_out,prot_name,sensor_name,station_vec,min_val,max
         prot_name_str = 'ZMB18'
 
     if str1 == '412.5':
-        print('proto & nm & N & rmse & MAPD & MPD & $r^2$\n')
-    str_table = '{} & {} & {:d} & {:,.2f} & {:,.1f} & {:,.1f} & {:,.2f}\\\\'\
+        print('proto & nm & N & rmse & MAPD & MPD & mean bias & MAE & $r^2$\n')
+    str_table = '{} & {} & {:d} & {:,.2f} & {:,.1f} & {:,.1f} & {:,.2f} & {:,.2f} & {:,.2f}\\\\'\
     .format(prot_name_str,\
             str2,\
             N,\
             rmse_val,\
             mean_abs_rel_diff,\
             mean_rel_diff,\
+            mean_bias,\
+            mean_abs_error,\
             r_value**2)
 
     print(str_table)
@@ -322,12 +350,12 @@ def plot_scatter(x,y,str1,path_out,prot_name,sensor_name,station_vec,min_val,max
     print('count_Gustav_Dalen_Tower: '+str(count_Gustav_Dalen_Tower))
 
     # plt.show()   
-    return rmse_val, mean_abs_rel_diff, mean_rel_diff, r_value**2,\
-        rmse_val_Venise, mean_abs_rel_diff_Venise, mean_rel_diff_Venise, r_value_Venise**2,\
-        rmse_val_Gloria, mean_abs_rel_diff_Gloria, mean_rel_diff_Gloria, r_value_Gloria**2,\
-        rmse_val_Galata_Platform, mean_abs_rel_diff_Galata_Platform, mean_rel_diff_Galata_Platform, r_value_Galata_Platform**2,\
-        rmse_val_Helsinki_Lighthouse, mean_abs_rel_diff_Helsinki_Lighthouse, mean_rel_diff_Helsinki_Lighthouse, r_value_Helsinki_Lighthouse**2,\
-        rmse_val_Gustav_Dalen_Tower, mean_abs_rel_diff_Gustav_Dalen_Tower, mean_rel_diff_Gustav_Dalen_Tower, r_value_Gustav_Dalen_Tower**2
+    return rmse_val, mean_abs_rel_diff, mean_rel_diff, mean_bias, mean_abs_error,0. r_value**2,\
+        rmse_val_Venise, mean_abs_rel_diff_Venise, mean_rel_diff_Venise, mean_bias_Venise, mean_abs_error_Venise, r_value_Venise**2,\
+        rmse_val_Gloria, mean_abs_rel_diff_Gloria, mean_rel_diff_Gloria, mean_bias_Gloria, mean_abs_error_Gloria, r_value_Gloria**2,\
+        rmse_val_Galata_Platform, mean_abs_rel_diff_Galata_Platform, mean_rel_diff_Galata_Platform, mean_bias_Galata_Platform, mean_abs_error_Galata_Platform, r_value_Galata_Platform**2,\
+        rmse_val_Helsinki_Lighthouse, mean_abs_rel_diff_Helsinki_Lighthouse, mean_rel_diff_Helsinki_Lighthouse, mean_bias_Helsinki_Lighthouse, mean_abs_error_Helsinki_Lighthouse, r_value_Helsinki_Lighthouse**2,\
+        rmse_val_Gustav_Dalen_Tower, mean_abs_rel_diff_Gustav_Dalen_Tower, mean_rel_diff_Gustav_Dalen_Tower, mean_bias_Gustav_Dalen_Tower, mean_abs_error_Gustav_Dalen_Tower, r_value_Gustav_Dalen_Tower**2
 #%%
 def plot_both_methods(vl_str,notation_flag,path_out,min_val,max_val):
 
@@ -1136,52 +1164,52 @@ for station_name in station_list:
 #%% plots   
 prot_name = 'zi'
 sensor_name = 'OLCI'
-rmse_val_0412p50_zi, mean_abs_rel_diff_0412p50_zi, mean_rel_diff_0412p50_zi, r_sqr_0412p50_zi,\
-rmse_val_0412p50_zi_Venise,mean_abs_rel_diff_0412p50_zi_Venise, mean_rel_diff_0412p50_zi_Venise, r_sqr_0412p50_zi_Venise,\
-rmse_val_0412p50_zi_Gloria,mean_abs_rel_diff_0412p50_zi_Gloria, mean_rel_diff_0412p50_zi_Gloria, r_sqr_0412p50_zi_Gloria,\
-rmse_val_0412p50_zi_Galata_Platform,mean_abs_rel_diff_0412p50_zi_Galata_Platform, mean_rel_diff_0412p50_zi_Galata_Platform, r_sqr_0412p50_zi_Galata_Platform,\
-rmse_val_0412p50_zi_Helsinki_Lighthouse,mean_abs_rel_diff_0412p50_zi_Helsinki_Lighthouse, mean_rel_diff_0412p50_zi_Helsinki_Lighthouse, r_sqr_0412p50_zi_Helsinki_Lighthouse,\
-rmse_val_0412p50_zi_Gustav_Dalen_Tower,mean_abs_rel_diff_0412p50_zi_Gustav_Dalen_Tower, mean_rel_diff_0412p50_zi_Gustav_Dalen_Tower, r_sqr_0412p50_zi_Gustav_Dalen_Tower\
+rmse_val_0412p50_zi, mean_abs_rel_diff_0412p50_zi, mean_rel_diff_0412p50_zi, mean_bias_0412p50_zi, mean_abs_error_0412p50_zi, r_sqr_0412p50_zi,\
+rmse_val_0412p50_zi_Venise,mean_abs_rel_diff_0412p50_zi_Venise, mean_rel_diff_0412p50_zi_Venise, mean_bias_0412p50_zi_Venise, mean_abs_error_0412p50_zi_Venise, r_sqr_0412p50_zi_Venise,\
+rmse_val_0412p50_zi_Gloria,mean_abs_rel_diff_0412p50_zi_Gloria, mean_rel_diff_0412p50_zi_Gloria, mean_bias_0412p50_zi_Gloria, mean_abs_error_0412p50_zi_Gloria, r_sqr_0412p50_zi_Gloria,\
+rmse_val_0412p50_zi_Galata_Platform,mean_abs_rel_diff_0412p50_zi_Galata_Platform, mean_rel_diff_0412p50_zi_Galata_Platform, mean_bias_0412p50_zi_Galata_Platform, mean_abs_error_0412p50_zi_Galata_Platform, r_sqr_0412p50_zi_Galata_Platform,\
+rmse_val_0412p50_zi_Helsinki_Lighthouse,mean_abs_rel_diff_0412p50_zi_Helsinki_Lighthouse, mean_rel_diff_0412p50_zi_Helsinki_Lighthouse, mean_bias_0412p50_zi_Helsinki_Lighthouse, mean_abs_error_0412p50_zi_Helsinki_Lighthouse, r_sqr_0412p50_zi_Helsinki_Lighthouse,\
+rmse_val_0412p50_zi_Gustav_Dalen_Tower,mean_abs_rel_diff_0412p50_zi_Gustav_Dalen_Tower, mean_rel_diff_0412p50_zi_Gustav_Dalen_Tower, mean_bias_0412p50_zi_Gustav_Dalen_Tower, mean_abs_error_0412p50_zi_Gustav_Dalen_Tower, r_sqr_0412p50_zi_Gustav_Dalen_Tower\
 = plot_scatter(\
     matchups_Lwn_0412p50_fq_ins_zi,matchups_Lwn_0412p50_fq_sat_zi,'412.5',path_out,prot_name,sensor_name,\
     matchups_Lwn_0412p50_fq_ins_zi_station,min_val=-3.00,max_val=5.0)
 
-rmse_val_0442p50_zi, mean_abs_rel_diff_0442p50_zi, mean_rel_diff_0442p50_zi, r_sqr_0442p50_zi,\
-rmse_val_0442p50_zi_Venise,mean_abs_rel_diff_0442p50_zi_Venise, mean_rel_diff_0442p50_zi_Venise, r_sqr_0442p50_zi_Venise,\
-rmse_val_0442p50_zi_Gloria,mean_abs_rel_diff_0442p50_zi_Gloria, mean_rel_diff_0442p50_zi_Gloria, r_sqr_0442p50_zi_Gloria,\
-rmse_val_0442p50_zi_Galata_Platform,mean_abs_rel_diff_0442p50_zi_Galata_Platform, mean_rel_diff_0442p50_zi_Galata_Platform, r_sqr_0442p50_zi_Galata_Platform,\
-rmse_val_0442p50_zi_Helsinki_Lighthouse,mean_abs_rel_diff_0442p50_zi_Helsinki_Lighthouse, mean_rel_diff_0442p50_zi_Helsinki_Lighthouse, r_sqr_0442p50_zi_Helsinki_Lighthouse,\
-rmse_val_0442p50_zi_Gustav_Dalen_Tower,mean_abs_rel_diff_0442p50_zi_Gustav_Dalen_Tower, mean_rel_diff_0442p50_zi_Gustav_Dalen_Tower, r_sqr_0442p50_zi_Gustav_Dalen_Tower\
+rmse_val_0442p50_zi, mean_abs_rel_diff_0442p50_zi, mean_rel_diff_0442p50_zi, mean_bias_0442p50_zi, mean_abs_error_0442p50_zi, r_sqr_0442p50_zi,\
+rmse_val_0442p50_zi_Venise,mean_abs_rel_diff_0442p50_zi_Venise, mean_rel_diff_0442p50_zi_Venise, mean_bias_0442p50_zi_Venise, mean_abs_error_0442p50_zi_Venise, r_sqr_0442p50_zi_Venise,\
+rmse_val_0442p50_zi_Gloria,mean_abs_rel_diff_0442p50_zi_Gloria, mean_rel_diff_0442p50_zi_Gloria, mean_bias_0442p50_zi_Gloria, mean_abs_error_0442p50_zi_Gloria, r_sqr_0442p50_zi_Gloria,\
+rmse_val_0442p50_zi_Galata_Platform,mean_abs_rel_diff_0442p50_zi_Galata_Platform, mean_rel_diff_0442p50_zi_Galata_Platform, mean_bias_0442p50_zi_Galata_Platform, mean_abs_error_0442p50_zi_Galata_Platform, r_sqr_0442p50_zi_Galata_Platform,\
+rmse_val_0442p50_zi_Helsinki_Lighthouse,mean_abs_rel_diff_0442p50_zi_Helsinki_Lighthouse, mean_rel_diff_0442p50_zi_Helsinki_Lighthouse, mean_bias_0442p50_zi_Helsinki_Lighthouse, mean_abs_error_0442p50_zi_Helsinki_Lighthouse, r_sqr_0442p50_zi_Helsinki_Lighthouse,\
+rmse_val_0442p50_zi_Gustav_Dalen_Tower,mean_abs_rel_diff_0442p50_zi_Gustav_Dalen_Tower, mean_rel_diff_0442p50_zi_Gustav_Dalen_Tower, mean_bias_0442p50_zi_Gustav_Dalen_Tower, mean_abs_error_0442p50_zi_Gustav_Dalen_Tower, r_sqr_0442p50_zi_Gustav_Dalen_Tower\
 = plot_scatter(\
     matchups_Lwn_0442p50_fq_ins_zi,matchups_Lwn_0442p50_fq_sat_zi,'442.5',path_out,prot_name,sensor_name,\
     matchups_Lwn_0442p50_fq_ins_zi_station,min_val=-3.00,max_val=6.2)
 
-rmse_val_0490p00_zi, mean_abs_rel_diff_0490p00_zi, mean_rel_diff_0490p00_zi, r_sqr_0490p00_zi,\
-rmse_val_0490p00_zi_Venise,mean_abs_rel_diff_0490p00_zi_Venise, mean_rel_diff_0490p00_zi_Venise, r_sqr_0490p00_zi_Venise,\
-rmse_val_0490p00_zi_Gloria,mean_abs_rel_diff_0490p00_zi_Gloria, mean_rel_diff_0490p00_zi_Gloria, r_sqr_0490p00_zi_Gloria,\
-rmse_val_0490p00_zi_Galata_Platform,mean_abs_rel_diff_0490p00_zi_Galata_Platform, mean_rel_diff_0490p00_zi_Galata_Platform, r_sqr_0490p00_zi_Galata_Platform,\
-rmse_val_0490p00_zi_Helsinki_Lighthouse,mean_abs_rel_diff_0490p00_zi_Helsinki_Lighthouse, mean_rel_diff_0490p00_zi_Helsinki_Lighthouse, r_sqr_0490p00_zi_Helsinki_Lighthouse,\
-rmse_val_0490p00_zi_Gustav_Dalen_Tower,mean_abs_rel_diff_0490p00_zi_Gustav_Dalen_Tower, mean_rel_diff_0490p00_zi_Gustav_Dalen_Tower, r_sqr_0490p00_zi_Gustav_Dalen_Tower\
+rmse_val_0490p00_zi, mean_abs_rel_diff_0490p00_zi, mean_rel_diff_0490p00_zi, mean_bias_0490p00_zi, mean_abs_error_0490p00_zi, r_sqr_0490p00_zi,\
+rmse_val_0490p00_zi_Venise,mean_abs_rel_diff_0490p00_zi_Venise, mean_rel_diff_0490p00_zi_Venise, mean_bias_0490p00_zi_Venise, mean_abs_error_0490p00_zi_Venise, r_sqr_0490p00_zi_Venise,\
+rmse_val_0490p00_zi_Gloria,mean_abs_rel_diff_0490p00_zi_Gloria, mean_rel_diff_0490p00_zi_Gloria, mean_bias_0490p00_zi_Gloria, mean_abs_error_0490p00_zi_Gloria, r_sqr_0490p00_zi_Gloria,\
+rmse_val_0490p00_zi_Galata_Platform,mean_abs_rel_diff_0490p00_zi_Galata_Platform, mean_rel_diff_0490p00_zi_Galata_Platform, mean_bias_0490p00_zi_Galata_Platform, mean_abs_error_0490p00_zi_Galata_Platform, r_sqr_0490p00_zi_Galata_Platform,\
+rmse_val_0490p00_zi_Helsinki_Lighthouse,mean_abs_rel_diff_0490p00_zi_Helsinki_Lighthouse, mean_rel_diff_0490p00_zi_Helsinki_Lighthouse, mean_bias_0490p00_zi_Helsinki_Lighthouse, mean_abs_error_0490p00_zi_Helsinki_Lighthouse, r_sqr_0490p00_zi_Helsinki_Lighthouse,\
+rmse_val_0490p00_zi_Gustav_Dalen_Tower,mean_abs_rel_diff_0490p00_zi_Gustav_Dalen_Tower, mean_rel_diff_0490p00_zi_Gustav_Dalen_Tower, mean_bias_0490p00_zi_Gustav_Dalen_Tower, mean_abs_error_0490p00_zi_Gustav_Dalen_Tower, r_sqr_0490p00_zi_Gustav_Dalen_Tower\
 = plot_scatter(\
     matchups_Lwn_0490p00_fq_ins_zi,matchups_Lwn_0490p00_fq_sat_zi,'490.0',path_out,prot_name,sensor_name,\
     matchups_Lwn_0490p00_fq_ins_zi_station,min_val=-2.00,max_val=8.0)
 
-rmse_val_0560p00_zi, mean_abs_rel_diff_0560p00_zi, mean_rel_diff_0560p00_zi, r_sqr_0560p00_zi,\
-rmse_val_0560p00_zi_Venise,mean_abs_rel_diff_0560p00_zi_Venise, mean_rel_diff_0560p00_zi_Venise, r_sqr_0560p00_zi_Venise,\
-rmse_val_0560p00_zi_Gloria,mean_abs_rel_diff_0560p00_zi_Gloria, mean_rel_diff_0560p00_zi_Gloria, r_sqr_0560p00_zi_Gloria,\
-rmse_val_0560p00_zi_Galata_Platform,mean_abs_rel_diff_0560p00_zi_Galata_Platform, mean_rel_diff_0560p00_zi_Galata_Platform, r_sqr_0560p00_zi_Galata_Platform,\
-rmse_val_0560p00_zi_Helsinki_Lighthouse,mean_abs_rel_diff_0560p00_zi_Helsinki_Lighthouse, mean_rel_diff_0560p00_zi_Helsinki_Lighthouse, r_sqr_0560p00_zi_Helsinki_Lighthouse,\
-rmse_val_0560p00_zi_Gustav_Dalen_Tower,mean_abs_rel_diff_0560p00_zi_Gustav_Dalen_Tower, mean_rel_diff_0560p00_zi_Gustav_Dalen_Tower, r_sqr_0560p00_zi_Gustav_Dalen_Tower\
+rmse_val_0560p00_zi, mean_abs_rel_diff_0560p00_zi, mean_rel_diff_0560p00_zi, mean_bias_0560p00_zi, mean_abs_error_0560p00_zi, r_sqr_0560p00_zi,\
+rmse_val_0560p00_zi_Venise,mean_abs_rel_diff_0560p00_zi_Venise, mean_rel_diff_0560p00_zi_Venise, mean_bias_0560p00_zi_Venise, mean_abs_error_0560p00_zi_Venise, r_sqr_0560p00_zi_Venise,\
+rmse_val_0560p00_zi_Gloria,mean_abs_rel_diff_0560p00_zi_Gloria, mean_rel_diff_0560p00_zi_Gloria, mean_bias_0560p00_zi_Gloria, mean_abs_error_0560p00_zi_Gloria, r_sqr_0560p00_zi_Gloria,\
+rmse_val_0560p00_zi_Galata_Platform,mean_abs_rel_diff_0560p00_zi_Galata_Platform, mean_rel_diff_0560p00_zi_Galata_Platform, mean_bias_0560p00_zi_Galata_Platform, mean_abs_error_0560p00_zi_Galata_Platform, r_sqr_0560p00_zi_Galata_Platform,\
+rmse_val_0560p00_zi_Helsinki_Lighthouse,mean_abs_rel_diff_0560p00_zi_Helsinki_Lighthouse, mean_rel_diff_0560p00_zi_Helsinki_Lighthouse, mean_bias_0560p00_zi_Helsinki_Lighthouse, mean_abs_error_0560p00_zi_Helsinki_Lighthouse, r_sqr_0560p00_zi_Helsinki_Lighthouse,\
+rmse_val_0560p00_zi_Gustav_Dalen_Tower,mean_abs_rel_diff_0560p00_zi_Gustav_Dalen_Tower, mean_rel_diff_0560p00_zi_Gustav_Dalen_Tower, mean_bias_0560p00_zi_Gustav_Dalen_Tower, mean_abs_error_0560p00_zi_Gustav_Dalen_Tower, r_sqr_0560p00_zi_Gustav_Dalen_Tower\
 = plot_scatter(\
     matchups_Lwn_0560p00_fq_ins_zi,matchups_Lwn_0560p00_fq_sat_zi,'560.0',path_out,prot_name,sensor_name,\
     matchups_Lwn_0560p00_fq_ins_zi_station,min_val=-0.50,max_val=6.0)
 
-rmse_val_0665p00_zi, mean_abs_rel_diff_0665p00_zi, mean_rel_diff_0665p00_zi, r_sqr_0665p00_zi,\
-rmse_val_0665p00_zi_Venise,mean_abs_rel_diff_0665p00_zi_Venise, mean_rel_diff_0665p00_zi_Venise, r_sqr_0665p00_zi_Venise,\
-rmse_val_0665p00_zi_Gloria,mean_abs_rel_diff_0665p00_zi_Gloria, mean_rel_diff_0665p00_zi_Gloria, r_sqr_0665p00_zi_Gloria,\
-rmse_val_0665p00_zi_Galata_Platform,mean_abs_rel_diff_0665p00_zi_Galata_Platform, mean_rel_diff_0665p00_zi_Galata_Platform, r_sqr_0665p00_zi_Galata_Platform,\
-rmse_val_0665p00_zi_Helsinki_Lighthouse,mean_abs_rel_diff_0665p00_zi_Helsinki_Lighthouse, mean_rel_diff_0665p00_zi_Helsinki_Lighthouse, r_sqr_0665p00_zi_Helsinki_Lighthouse,\
-rmse_val_0665p00_zi_Gustav_Dalen_Tower,mean_abs_rel_diff_0665p00_zi_Gustav_Dalen_Tower, mean_rel_diff_0665p00_zi_Gustav_Dalen_Tower, r_sqr_0665p00_zi_Gustav_Dalen_Tower\
+rmse_val_0665p00_zi, mean_abs_rel_diff_0665p00_zi, mean_rel_diff_0665p00_zi, mean_bias_0665p00_zi, mean_abs_error_0665p00_zi, r_sqr_0665p00_zi,\
+rmse_val_0665p00_zi_Venise,mean_abs_rel_diff_0665p00_zi_Venise, mean_rel_diff_0665p00_zi_Venise, mean_bias_0665p00_zi_Venise, mean_abs_error_0665p00_zi_Venise, r_sqr_0665p00_zi_Venise,\
+rmse_val_0665p00_zi_Gloria,mean_abs_rel_diff_0665p00_zi_Gloria, mean_rel_diff_0665p00_zi_Gloria, mean_bias_0665p00_zi_Gloria, mean_abs_error_0665p00_zi_Gloria, r_sqr_0665p00_zi_Gloria,\
+rmse_val_0665p00_zi_Galata_Platform,mean_abs_rel_diff_0665p00_zi_Galata_Platform, mean_rel_diff_0665p00_zi_Galata_Platform, mean_bias_0665p00_zi_Galata_Platform, mean_abs_error_0665p00_zi_Galata_Platform, r_sqr_0665p00_zi_Galata_Platform,\
+rmse_val_0665p00_zi_Helsinki_Lighthouse,mean_abs_rel_diff_0665p00_zi_Helsinki_Lighthouse, mean_rel_diff_0665p00_zi_Helsinki_Lighthouse, mean_bias_0665p00_zi_Helsinki_Lighthouse, mean_abs_error_0665p00_zi_Helsinki_Lighthouse, r_sqr_0665p00_zi_Helsinki_Lighthouse,\
+rmse_val_0665p00_zi_Gustav_Dalen_Tower,mean_abs_rel_diff_0665p00_zi_Gustav_Dalen_Tower, mean_rel_diff_0665p00_zi_Gustav_Dalen_Tower, mean_bias_0665p00_zi_Gustav_Dalen_Tower, mean_abs_error_0665p00_zi_Gustav_Dalen_Tower, r_sqr_0665p00_zi_Gustav_Dalen_Tower\
 = plot_scatter(\
     matchups_Lwn_0665p00_fq_ins_zi,matchups_Lwn_0665p00_fq_sat_zi,'665.0',path_out,prot_name,sensor_name,\
     matchups_Lwn_0665p00_fq_ins_zi_station,min_val=-0.60,max_val=4.0)
@@ -1189,48 +1217,48 @@ rmse_val_0665p00_zi_Gustav_Dalen_Tower,mean_abs_rel_diff_0665p00_zi_Gustav_Dalen
 #% plots  
 prot_name = 'ba' 
 sensor_name = 'OLCI'
-rmse_val_0412p50_ba, mean_abs_rel_diff_0412p50_ba, mean_rel_diff_0412p50_ba, r_sqr_0412p50_ba,\
-rmse_val_0412p50_ba_Venise,mean_abs_rel_diff_0412p50_ba_Venise, mean_rel_diff_0412p50_ba_Venise, r_sqr_0412p50_ba_Venise,\
-rmse_val_0412p50_ba_Gloria,mean_abs_rel_diff_0412p50_ba_Gloria, mean_rel_diff_0412p50_ba_Gloria, r_sqr_0412p50_ba_Gloria,\
-rmse_val_0412p50_ba_Galata_Platform,mean_abs_rel_diff_0412p50_ba_Galata_Platform, mean_rel_diff_0412p50_ba_Galata_Platform, r_sqr_0412p50_ba_Galata_Platform,\
-rmse_val_0412p50_ba_Helsinki_Lighthouse,mean_abs_rel_diff_0412p50_ba_Helsinki_Lighthouse, mean_rel_diff_0412p50_ba_Helsinki_Lighthouse, r_sqr_0412p50_ba_Helsinki_Lighthouse,\
-rmse_val_0412p50_ba_Gustav_Dalen_Tower,mean_abs_rel_diff_0412p50_ba_Gustav_Dalen_Tower, mean_rel_diff_0412p50_ba_Gustav_Dalen_Tower, r_sqr_0412p50_ba_Gustav_Dalen_Tower\
+rmse_val_0412p50_ba, mean_abs_rel_diff_0412p50_ba, mean_rel_diff_0412p50_ba, mean_bias_0412p50_ba, mean_abs_error_0412p50_ba, r_sqr_0412p50_ba,\
+rmse_val_0412p50_ba_Venise,mean_abs_rel_diff_0412p50_ba_Venise, mean_rel_diff_0412p50_ba_Venise, mean_bias_0412p50_ba_Venise, mean_abs_error_0412p50_ba_Venise, r_sqr_0412p50_ba_Venise,\
+rmse_val_0412p50_ba_Gloria,mean_abs_rel_diff_0412p50_ba_Gloria, mean_rel_diff_0412p50_ba_Gloria, mean_bias_0412p50_ba_Gloria, mean_abs_error_0412p50_ba_Gloria, r_sqr_0412p50_ba_Gloria,\
+rmse_val_0412p50_ba_Galata_Platform,mean_abs_rel_diff_0412p50_ba_Galata_Platform, mean_rel_diff_0412p50_ba_Galata_Platform, mean_bias_0412p50_ba_Galata_Platform, mean_abs_error_0412p50_ba_Galata_Platform, r_sqr_0412p50_ba_Galata_Platform,\
+rmse_val_0412p50_ba_Helsinki_Lighthouse,mean_abs_rel_diff_0412p50_ba_Helsinki_Lighthouse, mean_rel_diff_0412p50_ba_Helsinki_Lighthouse, mean_bias_0412p50_ba_Helsinki_Lighthouse, mean_abs_error_0412p50_ba_Helsinki_Lighthouse, r_sqr_0412p50_ba_Helsinki_Lighthouse,\
+rmse_val_0412p50_ba_Gustav_Dalen_Tower,mean_abs_rel_diff_0412p50_ba_Gustav_Dalen_Tower, mean_rel_diff_0412p50_ba_Gustav_Dalen_Tower, mean_bias_0412p50_ba_Gustav_Dalen_Tower, mean_abs_error_0412p50_ba_Gustav_Dalen_Tower, r_sqr_0412p50_ba_Gustav_Dalen_Tower\
 = plot_scatter(\
     matchups_Lwn_0412p50_fq_ins_ba,matchups_Lwn_0412p50_fq_sat_ba,'412.5',path_out,prot_name,sensor_name,\
     matchups_Lwn_0412p50_fq_ins_ba_station,min_val=-3.00,max_val=5.0)
-rmse_val_0442p50_ba, mean_abs_rel_diff_0442p50_ba, mean_rel_diff_0442p50_ba, r_sqr_0442p50_ba,\
-rmse_val_0442p50_ba_Venise,mean_abs_rel_diff_0442p50_ba_Venise, mean_rel_diff_0442p50_ba_Venise, r_sqr_0442p50_ba_Venise,\
-rmse_val_0442p50_ba_Gloria,mean_abs_rel_diff_0442p50_ba_Gloria, mean_rel_diff_0442p50_ba_Gloria, r_sqr_0442p50_ba_Gloria,\
-rmse_val_0442p50_ba_Galata_Platform,mean_abs_rel_diff_0442p50_ba_Galata_Platform, mean_rel_diff_0442p50_ba_Galata_Platform, r_sqr_0442p50_ba_Galata_Platform,\
-rmse_val_0442p50_ba_Helsinki_Lighthouse,mean_abs_rel_diff_0442p50_ba_Helsinki_Lighthouse, mean_rel_diff_0442p50_ba_Helsinki_Lighthouse, r_sqr_0442p50_ba_Helsinki_Lighthouse,\
-rmse_val_0442p50_ba_Gustav_Dalen_Tower,mean_abs_rel_diff_0442p50_ba_Gustav_Dalen_Tower, mean_rel_diff_0442p50_ba_Gustav_Dalen_Tower, r_sqr_0442p50_ba_Gustav_Dalen_Tower\
+rmse_val_0442p50_ba, mean_abs_rel_diff_0442p50_ba, mean_rel_diff_0442p50_ba, mean_bias_0442p50_ba, mean_abs_error_0442p50_ba, r_sqr_0442p50_ba,\
+rmse_val_0442p50_ba_Venise,mean_abs_rel_diff_0442p50_ba_Venise, mean_rel_diff_0442p50_ba_Venise, mean_bias_0442p50_ba_Venise, mean_abs_error_0442p50_ba_Venise, r_sqr_0442p50_ba_Venise,\
+rmse_val_0442p50_ba_Gloria,mean_abs_rel_diff_0442p50_ba_Gloria, mean_rel_diff_0442p50_ba_Gloria, mean_bias_0442p50_ba_Gloria, mean_abs_error_0442p50_ba_Gloria, r_sqr_0442p50_ba_Gloria,\
+rmse_val_0442p50_ba_Galata_Platform,mean_abs_rel_diff_0442p50_ba_Galata_Platform, mean_rel_diff_0442p50_ba_Galata_Platform, mean_bias_0442p50_ba_Galata_Platform, mean_abs_error_0442p50_ba_Galata_Platform, r_sqr_0442p50_ba_Galata_Platform,\
+rmse_val_0442p50_ba_Helsinki_Lighthouse,mean_abs_rel_diff_0442p50_ba_Helsinki_Lighthouse, mean_rel_diff_0442p50_ba_Helsinki_Lighthouse, mean_bias_0442p50_ba_Helsinki_Lighthouse, mean_abs_error_0442p50_ba_Helsinki_Lighthouse, r_sqr_0442p50_ba_Helsinki_Lighthouse,\
+rmse_val_0442p50_ba_Gustav_Dalen_Tower,mean_abs_rel_diff_0442p50_ba_Gustav_Dalen_Tower, mean_rel_diff_0442p50_ba_Gustav_Dalen_Tower, mean_bias_0442p50_ba_Gustav_Dalen_Tower, mean_abs_error_0442p50_ba_Gustav_Dalen_Tower, r_sqr_0442p50_ba_Gustav_Dalen_Tower\
 = plot_scatter(\
     matchups_Lwn_0442p50_fq_ins_ba,matchups_Lwn_0442p50_fq_sat_ba,'442.5',path_out,prot_name,sensor_name,\
     matchups_Lwn_0442p50_fq_ins_ba_station,min_val=-3.00,max_val=6.2)
-rmse_val_0490p00_ba, mean_abs_rel_diff_0490p00_ba, mean_rel_diff_0490p00_ba, r_sqr_0490p00_ba,\
-rmse_val_0490p00_ba_Venise,mean_abs_rel_diff_0490p00_ba_Venise, mean_rel_diff_0490p00_ba_Venise, r_sqr_0490p00_ba_Venise,\
-rmse_val_0490p00_ba_Gloria,mean_abs_rel_diff_0490p00_ba_Gloria, mean_rel_diff_0490p00_ba_Gloria, r_sqr_0490p00_ba_Gloria,\
-rmse_val_0490p00_ba_Galata_Platform,mean_abs_rel_diff_0490p00_ba_Galata_Platform, mean_rel_diff_0490p00_ba_Galata_Platform, r_sqr_0490p00_ba_Galata_Platform,\
-rmse_val_0490p00_ba_Helsinki_Lighthouse,mean_abs_rel_diff_0490p00_ba_Helsinki_Lighthouse, mean_rel_diff_0490p00_ba_Helsinki_Lighthouse, r_sqr_0490p00_ba_Helsinki_Lighthouse,\
-rmse_val_0490p00_ba_Gustav_Dalen_Tower,mean_abs_rel_diff_0490p00_ba_Gustav_Dalen_Tower, mean_rel_diff_0490p00_ba_Gustav_Dalen_Tower, r_sqr_0490p00_ba_Gustav_Dalen_Tower\
+rmse_val_0490p00_ba, mean_abs_rel_diff_0490p00_ba, mean_rel_diff_0490p00_ba, mean_bias_0490p00_ba, mean_abs_error_0490p00_ba, r_sqr_0490p00_ba,\
+rmse_val_0490p00_ba_Venise,mean_abs_rel_diff_0490p00_ba_Venise, mean_rel_diff_0490p00_ba_Venise, mean_bias_0490p00_ba_Venise, mean_abs_error_0490p00_ba_Venise, r_sqr_0490p00_ba_Venise,\
+rmse_val_0490p00_ba_Gloria,mean_abs_rel_diff_0490p00_ba_Gloria, mean_rel_diff_0490p00_ba_Gloria, mean_bias_0490p00_ba_Gloria, mean_abs_error_0490p00_ba_Gloria, r_sqr_0490p00_ba_Gloria,\
+rmse_val_0490p00_ba_Galata_Platform,mean_abs_rel_diff_0490p00_ba_Galata_Platform, mean_rel_diff_0490p00_ba_Galata_Platform, mean_bias_0490p00_ba_Galata_Platform, mean_abs_error_0490p00_ba_Galata_Platform, r_sqr_0490p00_ba_Galata_Platform,\
+rmse_val_0490p00_ba_Helsinki_Lighthouse,mean_abs_rel_diff_0490p00_ba_Helsinki_Lighthouse, mean_rel_diff_0490p00_ba_Helsinki_Lighthouse, mean_bias_0490p00_ba_Helsinki_Lighthouse, mean_abs_error_0490p00_ba_Helsinki_Lighthouse, r_sqr_0490p00_ba_Helsinki_Lighthouse,\
+rmse_val_0490p00_ba_Gustav_Dalen_Tower,mean_abs_rel_diff_0490p00_ba_Gustav_Dalen_Tower, mean_rel_diff_0490p00_ba_Gustav_Dalen_Tower, mean_bias_0490p00_ba_Gustav_Dalen_Tower, mean_abs_error_0490p00_ba_Gustav_Dalen_Tower, r_sqr_0490p00_ba_Gustav_Dalen_Tower\
 = plot_scatter(\
     matchups_Lwn_0490p00_fq_ins_ba,matchups_Lwn_0490p00_fq_sat_ba,'490.0',path_out,prot_name,sensor_name,\
     matchups_Lwn_0490p00_fq_ins_ba_station,min_val=-2.00,max_val=8.0)
-rmse_val_0560p00_ba, mean_abs_rel_diff_0560p00_ba, mean_rel_diff_0560p00_ba, r_sqr_0560p00_ba,\
-rmse_val_0560p00_ba_Venise,mean_abs_rel_diff_0560p00_ba_Venise, mean_rel_diff_0560p00_ba_Venise, r_sqr_0560p00_ba_Venise,\
-rmse_val_0560p00_ba_Gloria,mean_abs_rel_diff_0560p00_ba_Gloria, mean_rel_diff_0560p00_ba_Gloria, r_sqr_0560p00_ba_Gloria,\
-rmse_val_0560p00_ba_Galata_Platform,mean_abs_rel_diff_0560p00_ba_Galata_Platform, mean_rel_diff_0560p00_ba_Galata_Platform, r_sqr_0560p00_ba_Galata_Platform,\
-rmse_val_0560p00_ba_Helsinki_Lighthouse,mean_abs_rel_diff_0560p00_ba_Helsinki_Lighthouse, mean_rel_diff_0560p00_ba_Helsinki_Lighthouse, r_sqr_0560p00_ba_Helsinki_Lighthouse,\
-rmse_val_0560p00_ba_Gustav_Dalen_Tower,mean_abs_rel_diff_0560p00_ba_Gustav_Dalen_Tower, mean_rel_diff_0560p00_ba_Gustav_Dalen_Tower, r_sqr_0560p00_ba_Gustav_Dalen_Tower\
+rmse_val_0560p00_ba, mean_abs_rel_diff_0560p00_ba, mean_rel_diff_0560p00_ba, mean_bias_0560p00_ba, mean_abs_error_0560p00_ba, r_sqr_0560p00_ba,\
+rmse_val_0560p00_ba_Venise,mean_abs_rel_diff_0560p00_ba_Venise, mean_rel_diff_0560p00_ba_Venise, mean_bias_0560p00_ba_Venise, mean_abs_error_0560p00_ba_Venise, r_sqr_0560p00_ba_Venise,\
+rmse_val_0560p00_ba_Gloria,mean_abs_rel_diff_0560p00_ba_Gloria, mean_rel_diff_0560p00_ba_Gloria, mean_bias_0560p00_ba_Gloria, mean_abs_error_0560p00_ba_Gloria, r_sqr_0560p00_ba_Gloria,\
+rmse_val_0560p00_ba_Galata_Platform,mean_abs_rel_diff_0560p00_ba_Galata_Platform, mean_rel_diff_0560p00_ba_Galata_Platform, mean_bias_0560p00_ba_Galata_Platform, mean_abs_error_0560p00_ba_Galata_Platform, r_sqr_0560p00_ba_Galata_Platform,\
+rmse_val_0560p00_ba_Helsinki_Lighthouse,mean_abs_rel_diff_0560p00_ba_Helsinki_Lighthouse, mean_rel_diff_0560p00_ba_Helsinki_Lighthouse, mean_bias_0560p00_ba_Helsinki_Lighthouse, mean_abs_error_0560p00_ba_Helsinki_Lighthouse, r_sqr_0560p00_ba_Helsinki_Lighthouse,\
+rmse_val_0560p00_ba_Gustav_Dalen_Tower,mean_abs_rel_diff_0560p00_ba_Gustav_Dalen_Tower, mean_rel_diff_0560p00_ba_Gustav_Dalen_Tower, mean_bias_0560p00_ba_Gustav_Dalen_Tower, mean_abs_error_0560p00_ba_Gustav_Dalen_Tower, r_sqr_0560p00_ba_Gustav_Dalen_Tower\
 = plot_scatter(\
     matchups_Lwn_0560p00_fq_ins_ba,matchups_Lwn_0560p00_fq_sat_ba,'560.0',path_out,prot_name,sensor_name,\
     matchups_Lwn_0560p00_fq_ins_ba_station,min_val=-0.50,max_val=6.0)
-rmse_val_0665p00_ba, mean_abs_rel_diff_0665p00_ba, mean_rel_diff_0665p00_ba, r_sqr_0665p00_ba,\
-rmse_val_0665p00_ba_Venise,mean_abs_rel_diff_0665p00_ba_Venise, mean_rel_diff_0665p00_ba_Venise, r_sqr_0665p00_ba_Venise,\
-rmse_val_0665p00_ba_Gloria,mean_abs_rel_diff_0665p00_ba_Gloria, mean_rel_diff_0665p00_ba_Gloria, r_sqr_0665p00_ba_Gloria,\
-rmse_val_0665p00_ba_Galata_Platform,mean_abs_rel_diff_0665p00_ba_Galata_Platform, mean_rel_diff_0665p00_ba_Galata_Platform, r_sqr_0665p00_ba_Galata_Platform,\
-rmse_val_0665p00_ba_Helsinki_Lighthouse,mean_abs_rel_diff_0665p00_ba_Helsinki_Lighthouse, mean_rel_diff_0665p00_ba_Helsinki_Lighthouse, r_sqr_0665p00_ba_Helsinki_Lighthouse,\
-rmse_val_0665p00_ba_Gustav_Dalen_Tower,mean_abs_rel_diff_0665p00_ba_Gustav_Dalen_Tower, mean_rel_diff_0665p00_ba_Gustav_Dalen_Tower, r_sqr_0665p00_ba_Gustav_Dalen_Tower\
+rmse_val_0665p00_ba, mean_abs_rel_diff_0665p00_ba, mean_rel_diff_0665p00_ba, mean_bias_0665p00_ba, mean_abs_error_0665p00_ba, r_sqr_0665p00_ba,\
+rmse_val_0665p00_ba_Venise,mean_abs_rel_diff_0665p00_ba_Venise, mean_rel_diff_0665p00_ba_Venise, mean_bias_0665p00_ba_Venise, mean_abs_error_0665p00_ba_Venise, r_sqr_0665p00_ba_Venise,\
+rmse_val_0665p00_ba_Gloria,mean_abs_rel_diff_0665p00_ba_Gloria, mean_rel_diff_0665p00_ba_Gloria, mean_bias_0665p00_ba_Gloria, mean_abs_error_0665p00_ba_Gloria, r_sqr_0665p00_ba_Gloria,\
+rmse_val_0665p00_ba_Galata_Platform,mean_abs_rel_diff_0665p00_ba_Galata_Platform, mean_rel_diff_0665p00_ba_Galata_Platform, mean_bias_0665p00_ba_Galata_Platform, mean_abs_error_0665p00_ba_Galata_Platform, r_sqr_0665p00_ba_Galata_Platform,\
+rmse_val_0665p00_ba_Helsinki_Lighthouse,mean_abs_rel_diff_0665p00_ba_Helsinki_Lighthouse, mean_rel_diff_0665p00_ba_Helsinki_Lighthouse, mean_bias_0665p00_ba_Helsinki_Lighthouse, mean_abs_error_0665p00_ba_Helsinki_Lighthouse, r_sqr_0665p00_ba_Helsinki_Lighthouse,\
+rmse_val_0665p00_ba_Gustav_Dalen_Tower,mean_abs_rel_diff_0665p00_ba_Gustav_Dalen_Tower, mean_rel_diff_0665p00_ba_Gustav_Dalen_Tower, mean_bias_0665p00_ba_Gustav_Dalen_Tower, mean_abs_error_0665p00_ba_Gustav_Dalen_Tower, r_sqr_0665p00_ba_Gustav_Dalen_Tower\
 = plot_scatter(\
     matchups_Lwn_0665p00_fq_ins_ba,matchups_Lwn_0665p00_fq_sat_ba,'665.0',path_out,prot_name,sensor_name,\
     matchups_Lwn_0665p00_fq_ins_ba_station,min_val=-0.60,max_val=4.0)
@@ -1387,6 +1415,84 @@ plt.show()
 ofname = 'OLCI_r_sqr.pdf'
 ofname = os.path.join(path_out,'source',ofname)   
 plt.savefig(ofname, dpi=300)   
+
+# mean_bias
+mean_bias_zi = [mean_bias_0412p50_zi,mean_bias_0442p50_zi,mean_bias_0490p00_zi,\
+    mean_bias_0560p00_zi,mean_bias_0665p00_zi]
+mean_bias_ba = [mean_bias_0412p50_ba,mean_bias_0442p50_ba,mean_bias_0490p00_ba,\
+    mean_bias_0560p00_ba,mean_bias_0665p00_ba]
+mean_bias_zi_Venise = [mean_bias_0412p50_zi_Venise,mean_bias_0442p50_zi_Venise,mean_bias_0490p00_zi_Venise,mean_bias_0560p00_zi_Venise,mean_bias_0665p00_zi_Venise] 
+mean_bias_ba_Venise = [mean_bias_0412p50_ba_Venise,mean_bias_0442p50_ba_Venise,mean_bias_0490p00_ba_Venise,mean_bias_0560p00_ba_Venise,mean_bias_0665p00_ba_Venise]
+mean_bias_zi_Gloria = [mean_bias_0412p50_zi_Gloria,mean_bias_0442p50_zi_Gloria,mean_bias_0490p00_zi_Gloria,mean_bias_0560p00_zi_Gloria,mean_bias_0665p00_zi_Gloria] 
+mean_bias_ba_Gloria = [mean_bias_0412p50_ba_Gloria,mean_bias_0442p50_ba_Gloria,mean_bias_0490p00_ba_Gloria,mean_bias_0560p00_ba_Gloria,mean_bias_0665p00_ba_Gloria]
+mean_bias_zi_Galata_Platform = [mean_bias_0412p50_zi_Galata_Platform,mean_bias_0442p50_zi_Galata_Platform,mean_bias_0490p00_zi_Galata_Platform,mean_bias_0560p00_zi_Galata_Platform,mean_bias_0665p00_zi_Galata_Platform] 
+mean_bias_ba_Galata_Platform = [mean_bias_0412p50_ba_Galata_Platform,mean_bias_0442p50_ba_Galata_Platform,mean_bias_0490p00_ba_Galata_Platform,mean_bias_0560p00_ba_Galata_Platform,mean_bias_0665p00_ba_Galata_Platform]
+mean_bias_zi_Helsinki_Lighthouse = [mean_bias_0412p50_zi_Helsinki_Lighthouse,mean_bias_0442p50_zi_Helsinki_Lighthouse,mean_bias_0490p00_zi_Helsinki_Lighthouse,mean_bias_0560p00_zi_Helsinki_Lighthouse,mean_bias_0665p00_zi_Helsinki_Lighthouse] 
+mean_bias_ba_Helsinki_Lighthouse = [mean_bias_0412p50_ba_Helsinki_Lighthouse,mean_bias_0442p50_ba_Helsinki_Lighthouse,mean_bias_0490p00_ba_Helsinki_Lighthouse,mean_bias_0560p00_ba_Helsinki_Lighthouse,mean_bias_0665p00_ba_Helsinki_Lighthouse]
+mean_bias_zi_Gustav_Dalen_Tower = [mean_bias_0412p50_zi_Gustav_Dalen_Tower,mean_bias_0442p50_zi_Gustav_Dalen_Tower,mean_bias_0490p00_zi_Gustav_Dalen_Tower,mean_bias_0560p00_zi_Gustav_Dalen_Tower,mean_bias_0665p00_zi_Gustav_Dalen_Tower] 
+mean_bias_ba_Gustav_Dalen_Tower = [mean_bias_0412p50_ba_Gustav_Dalen_Tower,mean_bias_0442p50_ba_Gustav_Dalen_Tower,mean_bias_0490p00_ba_Gustav_Dalen_Tower,mean_bias_0560p00_ba_Gustav_Dalen_Tower,mean_bias_0665p00_ba_Gustav_Dalen_Tower]    
+
+wv = [412.5,442.5,490.0,560.0,665.0]
+plt.figure()
+plt.plot(wv,mean_bias_zi_Venise,'-+r',**kwargs)
+plt.plot(wv,mean_bias_ba_Venise,'-xr',**kwargs)
+plt.plot(wv,mean_bias_zi_Gloria,'-+g',**kwargs)
+plt.plot(wv,mean_bias_ba_Gloria,'-xg',**kwargs)
+plt.plot(wv,mean_bias_zi_Galata_Platform,'-+b',**kwargs)
+plt.plot(wv,mean_bias_ba_Galata_Platform,'-xb',**kwargs)
+plt.plot(wv,mean_bias_zi_Helsinki_Lighthouse,'-+m',**kwargs)
+plt.plot(wv,mean_bias_ba_Helsinki_Lighthouse,'-xm',**kwargs)
+plt.plot(wv,mean_bias_zi_Gustav_Dalen_Tower,'-+c',**kwargs)
+plt.plot(wv,mean_bias_ba_Gustav_Dalen_Tower,'-xc',**kwargs)
+plt.plot(wv,mean_bias_zi,'--+k',**kwargs2)
+plt.plot(wv,mean_bias_ba,'--xk',**kwargs2)
+plt.xlabel('Wavelength [nm]',fontsize=12)
+plt.ylabel('Mean Bias',fontsize=12)
+# plt.legend(['ZMB18','BW06'],fontsize=12)
+plt.show()    
+
+ofname = 'OLCI_mean_bias.pdf'
+ofname = os.path.join(path_out,'source',ofname)   
+plt.savefig(ofname, dpi=300) 
+
+# mean_abs_error
+mean_abs_error_zi = [mean_abs_error_0412p50_zi,mean_abs_error_0442p50_zi,mean_abs_error_0490p00_zi,\
+    mean_abs_error_0560p00_zi,mean_abs_error_0665p00_zi]
+mean_abs_error_ba = [mean_abs_error_0412p50_ba,mean_abs_error_0442p50_ba,mean_abs_error_0490p00_ba,\
+    mean_abs_error_0560p00_ba,mean_abs_error_0665p00_ba]
+mean_abs_error_zi_Venise = [mean_abs_error_0412p50_zi_Venise,mean_abs_error_0442p50_zi_Venise,mean_abs_error_0490p00_zi_Venise,mean_abs_error_0560p00_zi_Venise,mean_abs_error_0665p00_zi_Venise] 
+mean_abs_error_ba_Venise = [mean_abs_error_0412p50_ba_Venise,mean_abs_error_0442p50_ba_Venise,mean_abs_error_0490p00_ba_Venise,mean_abs_error_0560p00_ba_Venise,mean_abs_error_0665p00_ba_Venise]
+mean_abs_error_zi_Gloria = [mean_abs_error_0412p50_zi_Gloria,mean_abs_error_0442p50_zi_Gloria,mean_abs_error_0490p00_zi_Gloria,mean_abs_error_0560p00_zi_Gloria,mean_abs_error_0665p00_zi_Gloria] 
+mean_abs_error_ba_Gloria = [mean_abs_error_0412p50_ba_Gloria,mean_abs_error_0442p50_ba_Gloria,mean_abs_error_0490p00_ba_Gloria,mean_abs_error_0560p00_ba_Gloria,mean_abs_error_0665p00_ba_Gloria]
+mean_abs_error_zi_Galata_Platform = [mean_abs_error_0412p50_zi_Galata_Platform,mean_abs_error_0442p50_zi_Galata_Platform,mean_abs_error_0490p00_zi_Galata_Platform,mean_abs_error_0560p00_zi_Galata_Platform,mean_abs_error_0665p00_zi_Galata_Platform] 
+mean_abs_error_ba_Galata_Platform = [mean_abs_error_0412p50_ba_Galata_Platform,mean_abs_error_0442p50_ba_Galata_Platform,mean_abs_error_0490p00_ba_Galata_Platform,mean_abs_error_0560p00_ba_Galata_Platform,mean_abs_error_0665p00_ba_Galata_Platform]
+mean_abs_error_zi_Helsinki_Lighthouse = [mean_abs_error_0412p50_zi_Helsinki_Lighthouse,mean_abs_error_0442p50_zi_Helsinki_Lighthouse,mean_abs_error_0490p00_zi_Helsinki_Lighthouse,mean_abs_error_0560p00_zi_Helsinki_Lighthouse,mean_abs_error_0665p00_zi_Helsinki_Lighthouse] 
+mean_abs_error_ba_Helsinki_Lighthouse = [mean_abs_error_0412p50_ba_Helsinki_Lighthouse,mean_abs_error_0442p50_ba_Helsinki_Lighthouse,mean_abs_error_0490p00_ba_Helsinki_Lighthouse,mean_abs_error_0560p00_ba_Helsinki_Lighthouse,mean_abs_error_0665p00_ba_Helsinki_Lighthouse]
+mean_abs_error_zi_Gustav_Dalen_Tower = [mean_abs_error_0412p50_zi_Gustav_Dalen_Tower,mean_abs_error_0442p50_zi_Gustav_Dalen_Tower,mean_abs_error_0490p00_zi_Gustav_Dalen_Tower,mean_abs_error_0560p00_zi_Gustav_Dalen_Tower,mean_abs_error_0665p00_zi_Gustav_Dalen_Tower] 
+mean_abs_error_ba_Gustav_Dalen_Tower = [mean_abs_error_0412p50_ba_Gustav_Dalen_Tower,mean_abs_error_0442p50_ba_Gustav_Dalen_Tower,mean_abs_error_0490p00_ba_Gustav_Dalen_Tower,mean_abs_error_0560p00_ba_Gustav_Dalen_Tower,mean_abs_error_0665p00_ba_Gustav_Dalen_Tower]    
+
+wv = [412.5,442.5,490.0,560.0,665.0]
+plt.figure()
+plt.plot(wv,mean_abs_error_zi_Venise,'-+r',**kwargs)
+plt.plot(wv,mean_abs_error_ba_Venise,'-xr',**kwargs)
+plt.plot(wv,mean_abs_error_zi_Gloria,'-+g',**kwargs)
+plt.plot(wv,mean_abs_error_ba_Gloria,'-xg',**kwargs)
+plt.plot(wv,mean_abs_error_zi_Galata_Platform,'-+b',**kwargs)
+plt.plot(wv,mean_abs_error_ba_Galata_Platform,'-xb',**kwargs)
+plt.plot(wv,mean_abs_error_zi_Helsinki_Lighthouse,'-+m',**kwargs)
+plt.plot(wv,mean_abs_error_ba_Helsinki_Lighthouse,'-xm',**kwargs)
+plt.plot(wv,mean_abs_error_zi_Gustav_Dalen_Tower,'-+c',**kwargs)
+plt.plot(wv,mean_abs_error_ba_Gustav_Dalen_Tower,'-xc',**kwargs)
+plt.plot(wv,mean_abs_error_zi,'--+k',**kwargs2)
+plt.plot(wv,mean_abs_error_ba,'--xk',**kwargs2)
+plt.xlabel('Wavelength [nm]',fontsize=12)
+plt.ylabel('$MAE$',fontsize=12)
+# plt.legend(['ZMB18','BW06'],fontsize=12)
+plt.show()    
+
+ofname = 'OLCI_mean_abs_error.pdf'
+ofname = os.path.join(path_out,'source',ofname)   
+plt.savefig(ofname, dpi=300) 
 
 #%% 
 notation_flag = 0 # to display percentage difference in the plot

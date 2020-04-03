@@ -194,28 +194,37 @@ def plot_scatter(x,y,str1,path_out,prot_name,sensor_name,station_vec,min_val,max
     ref_obs = np.asarray(x)
     sat_obs = np.asarray(y)
     
-        # the mean of relative (signed) percent differences
-    rel_diff = 100*(ref_obs-sat_obs)/ref_obs
+    diff = sat_obs-ref_obs
+
+    # the mean of relative (signed) percent differences
+    rel_diff = 100*diff/ref_obs
     mean_rel_diff = np.mean(rel_diff)
         
-        #  the mean of absolute (unsigned) percent differences
+    #  the mean of absolute (unsigned) percent differences
     mean_abs_rel_diff = np.mean(np.abs(rel_diff))
     
+    # mean bias
+    mean_bias = np.mean(diff)
+
+    # mean absolute error (MAE)
+    mean_abs_error = np.mean(np.abs(diff))
+
     str2 = str1
     # to print without .0
     if str1[-2:]=='.0':
         str2 = str2[:-2]
         
-    
-    str0 = '{}nm\nN={:d}\nrmse={:,.2f}\nMAPD={:,.0f}%\nMPD={:,.0f}%\n$r^2$={:,.2f}'\
+    str0 = '{}nm\nN={:d}\nrmse={:,.2f}\nMAPD={:,.0f}%\nMPD={:,.0f}%\nMean Bias={:,.2f}\nMAE={:,.2f}\n$r^2$={:,.2f}'\
     .format(str2,\
             N,\
             rmse_val,\
             mean_abs_rel_diff,\
             mean_rel_diff,\
+            mean_bias,\
+            mean_abs_error,\
             r_value**2)
         
-    plt.text(0.05, 0.65, str0,horizontalalignment='left', fontsize=12,transform=plt.gca().transAxes)
+    plt.text(0.05, 0.58, str0,horizontalalignment='left', fontsize=12,transform=plt.gca().transAxes)
     
     ofname = sensor_name+'_scatter_matchups_'+str1.replace(".","p")+'_'+prot_name+'.pdf'
     ofname = os.path.join(path_out,'source',ofname)
@@ -224,16 +233,18 @@ def plot_scatter(x,y,str1,path_out,prot_name,sensor_name,station_vec,min_val,max
     
     # plt.show()   
 
-        # latex table
+    # latex table
     if str1 == '444.0':
-        print('proto & nm & N & rmse & MAPD & MPD & $r^2$')
-    str_table = '{} & {} & {:d} & {:,.2f} & {:,.0f} & {:,.0f} & {:,.2f}\\\\'\
+        print('proto & nm & N & rmse & MAPD & MPD & Mean Bias & MAE & $r^2$')
+    str_table = '{} & {} & {:d} & {:,.2f} & {:,.1f} & {:,.1f} & {:,.2f} & {:,.2f} & {:,.2f}\\\\'\
     .format(prot_name,\
             str2,\
             N,\
             rmse_val,\
             mean_abs_rel_diff,\
             mean_rel_diff,\
+            mean_bias,\
+            mean_abs_error,\
             r_value**2)
 
     print(str_table)
@@ -251,7 +262,7 @@ def plot_scatter(x,y,str1,path_out,prot_name,sensor_name,station_vec,min_val,max
     print('count_USC_SEAPRISM_2: '+str(count_USC_SEAPRISM_2))
     print('count_WaveCIS_Site_CSI_6: '+str(count_WaveCIS_Site_CSI_6))
 
-    return rmse_val, mean_abs_rel_diff, mean_rel_diff, r_value**2
+    return rmse_val, mean_abs_rel_diff, mean_rel_diff, mean_bias, mean_abs_error, r_value**2
 #%%
 def plot_all_methods(vl_str,notation_flag,path_out,min_val,max_val):
     print('=====================================')
@@ -1453,48 +1464,60 @@ with open(path_to_list,'r') as file_list:
 #%% plots  
 prot_name = 'ba' 
 sensor_name = 'MSI'
-rmse_val_0444p00_ba, mean_abs_rel_diff_0444p00_ba, mean_rel_diff_0444p00_ba, r_sqr_0444p00_ba = plot_scatter(
+rmse_val_0444p00_ba, mean_abs_rel_diff_0444p00_ba, mean_rel_diff_0444p00_ba, mean_bias_0444p00_ba, mean_abs_error_0444p00_ba, r_sqr_0444p00_ba \
+    = plot_scatter(\
     matchups_Lwn_0444p00_fq_ins_ba,matchups_Lwn_0444p00_fq_sat_ba,'444.0',path_out,prot_name,sensor_name,\
     matchups_Lwn_0444p00_fq_ins_ba_station,min_val=-0.50,max_val=3.50) 
-rmse_val_0497p00_ba, mean_abs_rel_diff_0497p00_ba, mean_rel_diff_0497p00_ba, r_sqr_0497p00_ba = plot_scatter(
+rmse_val_0497p00_ba, mean_abs_rel_diff_0497p00_ba, mean_rel_diff_0497p00_ba, mean_bias_0497p00_ba, mean_abs_error_0497p00_ba, r_sqr_0497p00_ba \
+    = plot_scatter(\
     matchups_Lwn_0497p00_fq_ins_ba,matchups_Lwn_0497p00_fq_sat_ba,'497.0',path_out,prot_name,sensor_name,\
     matchups_Lwn_0497p00_fq_ins_ba_station,min_val= 0.00,max_val=4.00) 
-rmse_val_0560p00_ba, mean_abs_rel_diff_0560p00_ba, mean_rel_diff_0560p00_ba, r_sqr_0560p00_ba = plot_scatter(
+rmse_val_0560p00_ba, mean_abs_rel_diff_0560p00_ba, mean_rel_diff_0560p00_ba, mean_bias_0560p00_ba, mean_abs_error_0560p00_ba, r_sqr_0560p00_ba \
+    = plot_scatter(\
     matchups_Lwn_0560p00_fq_ins_ba,matchups_Lwn_0560p00_fq_sat_ba,'560.0',path_out,prot_name,sensor_name,\
     matchups_Lwn_0560p00_fq_ins_ba_station,min_val= 0.00,max_val=4.00) 
-rmse_val_0664p00_ba, mean_abs_rel_diff_0664p00_ba, mean_rel_diff_0664p00_ba, r_sqr_0664p00_ba = plot_scatter(
+rmse_val_0664p00_ba, mean_abs_rel_diff_0664p00_ba, mean_rel_diff_0664p00_ba, mean_bias_0664p00_ba, mean_abs_error_0664p00_ba, r_sqr_0664p00_ba \
+    = plot_scatter(\
     matchups_Lwn_0664p00_fq_ins_ba,matchups_Lwn_0664p00_fq_sat_ba,'664.0',path_out,prot_name,sensor_name,\
     matchups_Lwn_0664p00_fq_ins_ba_station,min_val=-0.20,max_val=1.50) 
 
 #% plots  
 prot_name = 'pa' 
 sensor_name = 'MSI'
-rmse_val_0444p00_pa, mean_abs_rel_diff_0444p00_pa, mean_rel_diff_0444p00_pa, r_sqr_0444p00_pa = plot_scatter(
+rmse_val_0444p00_pa, mean_abs_rel_diff_0444p00_pa, mean_rel_diff_0444p00_pa, mean_bias_0444p00_pa, mean_abs_error_0444p00_pa, r_sqr_0444p00_pa \
+    = plot_scatter(\
     matchups_Lwn_0444p00_fq_ins_pa,matchups_Lwn_0444p00_fq_sat_pa,'444.0',path_out,prot_name,sensor_name,\
     matchups_Lwn_0444p00_fq_ins_pa_station,min_val=-0.50,max_val=3.50) 
-rmse_val_0497p00_pa, mean_abs_rel_diff_0497p00_pa, mean_rel_diff_0497p00_pa, r_sqr_0497p00_pa = plot_scatter(
+rmse_val_0497p00_pa, mean_abs_rel_diff_0497p00_pa, mean_rel_diff_0497p00_pa, mean_bias_0497p00_pa, mean_abs_error_0497p00_pa, r_sqr_0497p00_pa \
+    = plot_scatter(\
     matchups_Lwn_0497p00_fq_ins_pa,matchups_Lwn_0497p00_fq_sat_pa,'497.0',path_out,prot_name,sensor_name,\
     matchups_Lwn_0497p00_fq_ins_pa_station,min_val= 0.00,max_val=4.00) 
-rmse_val_0560p00_pa, mean_abs_rel_diff_0560p00_pa, mean_rel_diff_0560p00_pa, r_sqr_0560p00_pa = plot_scatter(
+rmse_val_0560p00_pa, mean_abs_rel_diff_0560p00_pa, mean_rel_diff_0560p00_pa, mean_bias_0560p00_pa, mean_abs_error_0560p00_pa, r_sqr_0560p00_pa \
+    = plot_scatter(\
     matchups_Lwn_0560p00_fq_ins_pa,matchups_Lwn_0560p00_fq_sat_pa,'560.0',path_out,prot_name,sensor_name,\
     matchups_Lwn_0560p00_fq_ins_pa_station,min_val= 0.00,max_val=4.00) 
-rmse_val_0664p00_pa, mean_abs_rel_diff_0664p00_pa, mean_rel_diff_0664p00_pa, r_sqr_0664p00_pa = plot_scatter(
+rmse_val_0664p00_pa, mean_abs_rel_diff_0664p00_pa, mean_rel_diff_0664p00_pa, mean_bias_0664p00_pa, mean_abs_error_0664p00_pa, r_sqr_0664p00_pa \
+    = plot_scatter(\
     matchups_Lwn_0664p00_fq_ins_pa,matchups_Lwn_0664p00_fq_sat_pa,'664.0',path_out,prot_name,sensor_name,\
     matchups_Lwn_0664p00_fq_ins_pa_station,min_val=-0.20,max_val=1.50) 
 
 #% plots  
 prot_name = 'va' 
 sensor_name = 'MSI'
-rmse_val_0444p00_va, mean_abs_rel_diff_0444p00_va, mean_rel_diff_0444p00_va, r_sqr_0444p00_va = plot_scatter(
+rmse_val_0444p00_va, mean_abs_rel_diff_0444p00_va, mean_rel_diff_0444p00_va, mean_bias_0444p00_va, mean_abs_error_0444p00_va, r_sqr_0444p00_va \
+    = plot_scatter(\
     matchups_Lwn_0444p00_fq_ins_va,matchups_Lwn_0444p00_fq_sat_va,'444.0',path_out,prot_name,sensor_name,\
     matchups_Lwn_0444p00_fq_ins_va_station,min_val=-0.50,max_val=3.50) 
-rmse_val_0497p00_va, mean_abs_rel_diff_0497p00_va, mean_rel_diff_0497p00_va, r_sqr_0497p00_va = plot_scatter(
+rmse_val_0497p00_va, mean_abs_rel_diff_0497p00_va, mean_rel_diff_0497p00_va, mean_bias_0497p00_va, mean_abs_error_0497p00_va, r_sqr_0497p00_va \
+    = plot_scatter(\
     matchups_Lwn_0497p00_fq_ins_va,matchups_Lwn_0497p00_fq_sat_va,'497.0',path_out,prot_name,sensor_name,\
     matchups_Lwn_0497p00_fq_ins_va_station,min_val= 0.00,max_val=4.00) 
-rmse_val_0560p00_va, mean_abs_rel_diff_0560p00_va, mean_rel_diff_0560p00_va, r_sqr_0560p00_va = plot_scatter(
+rmse_val_0560p00_va, mean_abs_rel_diff_0560p00_va, mean_rel_diff_0560p00_va, mean_bias_0560p00_va, mean_abs_error_0560p00_va, r_sqr_0560p00_va \
+    = plot_scatter(\
     matchups_Lwn_0560p00_fq_ins_va,matchups_Lwn_0560p00_fq_sat_va,'560.0',path_out,prot_name,sensor_name,\
     matchups_Lwn_0560p00_fq_ins_va_station,min_val= 0.00,max_val=4.00) 
-rmse_val_0664p00_va, mean_abs_rel_diff_0664p00_va, mean_rel_diff_0664p00_va, r_sqr_0664p00_va = plot_scatter(
+rmse_val_0664p00_va, mean_abs_rel_diff_0664p00_va, mean_rel_diff_0664p00_va, mean_bias_0664p00_va, mean_abs_error_0664p00_va, r_sqr_0664p00_va \
+    = plot_scatter(\
     matchups_Lwn_0664p00_fq_ins_va,matchups_Lwn_0664p00_fq_sat_va,'664.0',path_out,prot_name,sensor_name,\
     matchups_Lwn_0664p00_fq_ins_va_station,min_val=-0.20,max_val=1.50) 
 
@@ -1578,6 +1601,48 @@ plt.ylabel('$r^2$',fontsize=12)
 plt.show()    
 
 ofname = 'S2A_r_sqr.pdf'
+ofname = os.path.join(path_out,'source',ofname)   
+plt.savefig(ofname, dpi=300)  
+
+# mean_bias
+mean_bias_ba = [mean_bias_0444p00_ba,mean_bias_0497p00_ba,\
+    mean_bias_0560p00_ba,mean_bias_0664p00_ba]
+mean_bias_pa = [mean_bias_0444p00_pa,mean_bias_0497p00_pa,\
+    mean_bias_0560p00_pa,mean_bias_0664p00_pa]
+mean_bias_va = [mean_bias_0444p00_va,mean_bias_0497p00_va,\
+    mean_bias_0560p00_va,mean_bias_0664p00_va]    
+wv = [444.0,497.0,560.0,664.0]
+plt.figure()
+plt.plot(wv,mean_bias_ba,'-o')
+plt.plot(wv,mean_bias_pa,'-o')
+plt.plot(wv,mean_bias_va,'-o')
+plt.xlabel('Wavelength [nm]',fontsize=12)
+plt.ylabel('Mean Bias',fontsize=12)
+# plt.legend(['Bailey and Werdell','Pahlevan','Vanhellemont'])
+plt.show()    
+
+ofname = 'S2A_mean_bias.pdf'
+ofname = os.path.join(path_out,'source',ofname)   
+plt.savefig(ofname, dpi=300)  
+
+# mean_abs_error
+mean_abs_error_ba = [mean_abs_error_0444p00_ba,mean_abs_error_0497p00_ba,\
+    mean_abs_error_0560p00_ba,mean_abs_error_0664p00_ba]
+mean_abs_error_pa = [mean_abs_error_0444p00_pa,mean_abs_error_0497p00_pa,\
+    mean_abs_error_0560p00_pa,mean_abs_error_0664p00_pa]
+mean_abs_error_va = [mean_abs_error_0444p00_va,mean_abs_error_0497p00_va,\
+    mean_abs_error_0560p00_va,mean_abs_error_0664p00_va]    
+wv = [444.0,497.0,560.0,664.0]
+plt.figure()
+plt.plot(wv,mean_abs_error_ba,'-o')
+plt.plot(wv,mean_abs_error_pa,'-o')
+plt.plot(wv,mean_abs_error_va,'-o')
+plt.xlabel('Wavelength [nm]',fontsize=12)
+plt.ylabel('MAE',fontsize=12)
+# plt.legend(['Bailey and Werdell','Pahlevan','Vanhellemont'])
+plt.show()    
+
+ofname = 'S2A_mean_abs_error.pdf'
 ofname = os.path.join(path_out,'source',ofname)   
 plt.savefig(ofname, dpi=300)  
 
