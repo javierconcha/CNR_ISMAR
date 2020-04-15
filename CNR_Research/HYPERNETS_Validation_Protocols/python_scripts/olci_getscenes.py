@@ -62,7 +62,7 @@ def olci_get(date,lat1,lat2,lon1,lon2):
         
 #        os.system('rm -r /Users/javier.concha/dhusget_tmp/')
         
-        cmd = './dhusget.sh -u jaconcha -p a1b2c3d4 '+\
+        cmd = './dhusget.sh -u username -p password '+\
         '-d '+site+' -m Sentinel-3 -i OLCI -T OL_2_WFR___ '+\
         '-S '+datestart+'T00:00:00Z -E '+dateend+'T23:59:59Z '+\
         '-c '+location_str+' '+\
@@ -105,13 +105,13 @@ def olci_get_L1(date):
     day='0'*(2-len(str(date.day)))+str(date.day)
     datestart=year+'-'+month+'-'+day
     dateend=datestart
-    #os.system("./dhusget.sh -u javier.concha -p a1b2c3d4 -d coda.eumetsat.int -m Sentinel-3 -i OLCI -T OL_2_WFR___ -S "+datestart+"T00:00:00Z -E "+dateend+"T23:59:59Z -c 12.0,44.0:14.0,46.00 -F"+' timeliness:"Non Time Critical"'\
+    #os.system("./dhusget.sh -u javier.concha -p password -d coda.eumetsat.int -m Sentinel-3 -i OLCI -T OL_2_WFR___ -S "+datestart+"T00:00:00Z -E "+dateend+"T23:59:59Z -c 12.0,44.0:14.0,46.00 -F"+' timeliness:"Non Time Critical"'\
     #+" -q /home/Marco.Bracaglia/progetti/VGOCS/OLCI/xml_file/"+datestart.replace(':','')+"_"+dateend.replace(':','')+".xml"+\
     #" -C /home/Marco.Bracaglia/progetti/VGOCS/OLCI/xls_file/"+datestart.replace(':','')+"_"+dateend.replace(':','')+".xls")
-    print ("./dhusget.sh -u jaconcha -p a1b2c3d4 -d "+site+" -m Sentinel-3 -i OLCI -T OL_1_EFR___ -S "+datestart+"T00:00:00Z -E "+dateend+"T23:59:59Z -c 12.0,44.0:14.0,46.00"+" -F'timeliness:"+'"Non Time Critical"'+"'"+" -o product -O . -C pippo.csv")
-    os.system("./dhusget.sh -u jaconcha -p a1b2c3d4 -d "+site+" -m Sentinel-3 -i OLCI -T OL_1_EFR___ -S "+datestart+"T00:00:00Z -E "+dateend+"T23:59:59Z -c 12.0,44.0:14.0,46.00"+" -F'timeliness:"+'"Non Time Critical"'+"'"+" -o product -O /home/Marco.Bracaglia/progetti/VGOCS/OLCI/L1_temp/ -C /home/Marco.Bracaglia/progetti/VGOCS/OLCI/csv_file/"+datestart.replace('-','')+"_"+dateend.replace('-','')+"_L1.csv")
+    print ("./dhusget.sh -u username -p password -d "+site+" -m Sentinel-3 -i OLCI -T OL_1_EFR___ -S "+datestart+"T00:00:00Z -E "+dateend+"T23:59:59Z -c 12.0,44.0:14.0,46.00"+" -F'timeliness:"+'"Non Time Critical"'+"'"+" -o product -O . -C pippo.csv")
+    os.system("./dhusget.sh -u username -p password -d "+site+" -m Sentinel-3 -i OLCI -T OL_1_EFR___ -S "+datestart+"T00:00:00Z -E "+dateend+"T23:59:59Z -c 12.0,44.0:14.0,46.00"+" -F'timeliness:"+'"Non Time Critical"'+"'"+" -o product -O /home/Marco.Bracaglia/progetti/VGOCS/OLCI/L1_temp/ -C /home/Marco.Bracaglia/progetti/VGOCS/OLCI/csv_file/"+datestart.replace('-','')+"_"+dateend.replace('-','')+"_L1.csv")
 
-    """os.system("./dhusget.sh -u javier.concha -p a1b2c3d4 -d "+site+" -m Sentinel-3 -i OLCI -T OL_1_EFR___ -S "+datestart+"T00:00:00Z -E "+dateend+"T23:59:59Z -c 12.0,44.0:14.0,46.00 -F"+"'timeliness:"+\
+    """os.system("./dhusget.sh -u javier.concha -p password -d "+site+" -m Sentinel-3 -i OLCI -T OL_1_EFR___ -S "+datestart+"T00:00:00Z -E "+dateend+"T23:59:59Z -c 12.0,44.0:14.0,46.00 -F"+"'timeliness:"+\
     '"Non Time Critical"'+"'"+" -C /Users/javier.concha/Desktop/Javier/2019_Roma/CNR_Research/HYPERNETS_Validation_Protocols/python_scripts/csv_file/"+datestart.replace('-','')+"_"+dateend.replace('-','')+".csv -o 'all' -O home/Marco.Bracaglia/progetti/VGOCS/OLCI/L1_temp/")"""
     #os.system('rm '+'/home/Marco.Bracaglia/progetti/VGOCS/OLCI/xml_file/'+datestart.replace(':','')+"_"+dateend.replace(':','')+'.xml')
     csv_f='/Users/javier.concha/Desktop/Javier/2019_Roma/CNR_Research/HYPERNETS_Validation_Protocols/python_scripts/csv_file/'+datestart.replace('-','')+"_"+dateend.replace('-','')+'_L1.csv'
