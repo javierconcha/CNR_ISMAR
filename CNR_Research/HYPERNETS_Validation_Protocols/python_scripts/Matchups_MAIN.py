@@ -350,32 +350,32 @@ def plot_scatter(x,y,str1,path_out,prot_name,sensor_name,station_vec,min_val,max
     print('count_Gustav_Dalen_Tower: '+str(count_Gustav_Dalen_Tower))
 
     # plt.show()   
-    return rmse_val, mean_abs_rel_diff, mean_rel_diff, mean_bias, mean_abs_error,0. r_value**2,\
+    return rmse_val, mean_abs_rel_diff, mean_rel_diff, mean_bias, mean_abs_error, r_value**2,\
         rmse_val_Venise, mean_abs_rel_diff_Venise, mean_rel_diff_Venise, mean_bias_Venise, mean_abs_error_Venise, r_value_Venise**2,\
         rmse_val_Gloria, mean_abs_rel_diff_Gloria, mean_rel_diff_Gloria, mean_bias_Gloria, mean_abs_error_Gloria, r_value_Gloria**2,\
         rmse_val_Galata_Platform, mean_abs_rel_diff_Galata_Platform, mean_rel_diff_Galata_Platform, mean_bias_Galata_Platform, mean_abs_error_Galata_Platform, r_value_Galata_Platform**2,\
         rmse_val_Helsinki_Lighthouse, mean_abs_rel_diff_Helsinki_Lighthouse, mean_rel_diff_Helsinki_Lighthouse, mean_bias_Helsinki_Lighthouse, mean_abs_error_Helsinki_Lighthouse, r_value_Helsinki_Lighthouse**2,\
         rmse_val_Gustav_Dalen_Tower, mean_abs_rel_diff_Gustav_Dalen_Tower, mean_rel_diff_Gustav_Dalen_Tower, mean_bias_Gustav_Dalen_Tower, mean_abs_error_Gustav_Dalen_Tower, r_value_Gustav_Dalen_Tower**2
 #%%
-def plot_both_methods(vl_str,notation_flag,path_out,min_val,max_val):
+def plot_both_methods(wl_str,notation_flag,path_out,min_val,max_val):
 
     np.warnings.filterwarnings('ignore')
 
     print('=====================================')
-    print(vl_str)
-    if vl_str == '412.5':
+    print(wl_str)
+    if wl_str == '412.5':
         str0 = '0412p50'
         str3 = '412.5'
-    elif vl_str == '442.5':
+    elif wl_str == '442.5':
         str0 = '0442p50'
         str3 = '442.5'
-    elif vl_str == '490.0':
+    elif wl_str == '490.0':
         str0 = '0490p00'
         str3 = '490'
-    elif vl_str == '560.0':
+    elif wl_str == '560.0':
         str0 = '0560p00'
         str3 = '560'
-    elif vl_str == '665.0':
+    elif wl_str == '665.0':
         str0 = '0665p00'
         str3 = '665'
     
@@ -494,7 +494,7 @@ def plot_both_methods(vl_str,notation_flag,path_out,min_val,max_val):
     plt.text(0.05, 0.95, str3+'nm',horizontalalignment='left',fontsize=12,transform=plt.gca().transAxes)
 
     # save fig
-    ofname = sensor_name+'_timeseries_diff_ba_zi_'+vl_str.replace(".","p")+'.pdf'
+    ofname = sensor_name+'_timeseries_diff_ba_zi_'+wl_str.replace(".","p")+'.pdf'
     ofname = os.path.join(path_out,'source',ofname)
     plt.savefig(ofname, dpi=300)
 
@@ -536,17 +536,17 @@ def plot_both_methods(vl_str,notation_flag,path_out,min_val,max_val):
     fig.text(0.5,0.01,'$L^{'+sensor_name+'}_{WN}$',ha='center',fontsize=12)
 
     # save fig
-    ofname = sensor_name+'_hist_ba_zi_'+vl_str.replace(".","p")+'.pdf'
+    ofname = sensor_name+'_hist_ba_zi_'+wl_str.replace(".","p")+'.pdf'
     ofname = os.path.join(path_out,'source',ofname)
     plt.savefig(ofname, dpi=300)
 
     plt.show()
 
     #latex table
-    if vl_str == '412.5':
+    if wl_str == '412.5':
         print('proto & nm & min & max & std & median & mean & N\\\\')
     str_table = 'ZMB18 & {} & {:,.2f} & {:,.2f} & {:,.2f} & {:,.2f} & {:,.2f} & {:,.0f}\\\\'\
-    .format(vl_str,\
+    .format(wl_str,\
             np.nanmin(sat_zi),
             np.nanmax(sat_zi),
             np.nanstd(sat_zi),
@@ -555,7 +555,7 @@ def plot_both_methods(vl_str,notation_flag,path_out,min_val,max_val):
             len(sat_zi))
     print(str_table)
     str_table = 'BW06 & {} & {:,.2f} & {:,.2f} & {:,.2f} & {:,.2f} & {:,.2f} & {:,.0f}\\\\'\
-    .format(vl_str,\
+    .format(wl_str,\
             np.nanmin(sat_ba),
             np.nanmax(sat_ba),
             np.nanstd(sat_ba),
@@ -570,6 +570,9 @@ def plot_both_methods(vl_str,notation_flag,path_out,min_val,max_val):
     ax1.hist(diff, **kwargs2)
     # x0, x1 = ax1.get_xlim()
     # ax1.set_xlim([x0,x0+0.15*(x1-x0)])
+    
+    # normality test
+    plot_normality(np.array(diff),wl_str)
 
     ax1.set_ylabel('Frequency',fontsize=12)
 
@@ -582,7 +585,7 @@ def plot_both_methods(vl_str,notation_flag,path_out,min_val,max_val):
             np.nanmean(diff),
             len(diff))
 
-    if vl_str == '412.5':
+    if wl_str == '412.5':
         print('diff & nm & min & max & std & median & mean & N\\\\')
     str_table = 'diff & {} & {:,.2f} & {:,.2f} & {:,.2f} & {:,.4f} & {:,.4f} & {:,.0f}'\
     .format(str3,
@@ -620,7 +623,7 @@ def plot_both_methods(vl_str,notation_flag,path_out,min_val,max_val):
     # ax2.plot((- d,  d), (1 - d, 1 + d), **kwargs)  # bottom-right diagonal
 
     # save fig
-    ofname = sensor_name+'_hist_diff_ba_zi_'+vl_str.replace(".","p")+'.pdf'
+    ofname = sensor_name+'_hist_diff_ba_zi_'+wl_str.replace(".","p")+'.pdf'
     ofname = os.path.join(path_out,'source',ofname)
     plt.savefig(ofname, dpi=300)
     plt.show()
@@ -688,11 +691,69 @@ def plot_both_methods(vl_str,notation_flag,path_out,min_val,max_val):
     plt.text(0.05, 0.95, str3+'nm',horizontalalignment='left', fontsize=12,transform=plt.gca().transAxes)
 
     # save fig
-    ofname = sensor_name+'_scatter_diff_ba_zi_'+vl_str.replace(".","p")+'.pdf'
+    ofname = sensor_name+'_scatter_diff_ba_zi_'+wl_str.replace(".","p")+'.pdf'
     ofname = os.path.join(path_out,'source',ofname)
     plt.savefig(ofname, dpi=300)
 
     plt.show()    
+    
+#%% normality test
+def plot_normality(data,wl_str):
+    # plot distribution
+    kwargs = dict(bins='auto', histtype='step',density=True)
+    plt.figure(figsize=(12, 7))
+    plt.subplot(1,2,1)
+    plt.hist(data, **kwargs)
+    x = np.arange(np.min(data),np.max(data),(np.max(data)-np.min(data))/100)
+    norm_dist = stats.norm.pdf(x,np.mean(data),np.std(data))
+    plt.plot(x,norm_dist)
+    
+    # ks test using scipy.stats.kstest        
+    D_value, p_value = stats.kstest(data,'norm',args=(np.mean(data), np.std(data)))
+    print(f'KS: D: {D_value:.4f}; p-value: {p_value:.4f}')
+
+    # ks test using statsmodels.stats.diagnostic.ktest  
+    import statsmodels.stats.diagnostic as smd
+    D_value, p_value = smd.kstest_normal(data, dist='norm')
+    print(f'KS2: D: {D_value:.4f}; p-value: {p_value:.4f}')
+    
+    # jb test using scipy.stats.jarque_bera 
+    D_value, p_value = stats.jarque_bera(data)
+    print(f'JB: D: {D_value:.4f}; p-value: {p_value:.4f}')
+    
+    # jb test using statsmodels.stats.stattools.jarque_bera 
+    import statsmodels.stats.stattools as sms
+    D_value, p_value, skew, kurtosis = sms.jarque_bera(data, axis=0)
+    print(f'JB2: D: {D_value:.4f}; p-value: {p_value:.4f}')
+    
+    plt.subplot(1,2,2)
+    plt.plot(np.sort(data), np.arange(len(data)) / len(data))
+    X,CY = cdf(data)
+    plt.plot(X, CY)
+    # plt.plot(np.sort(norm_dist), np.arange(len(norm_dist)) / len(norm_dist))
+    # plt.plot(np.sort(norm_dist), np.linspace(0, 1, len(norm_dist), endpoint=False))
+    # plt.hist(norm_dist,normed=True)
+    # plt.legend('top right')
+    plt.legend(['Data', 'Theoretical Values'])
+    plt.title('Comparing CDFs for KS-Test')
+    plt.suptitle(wl_str)
+
+def cdf(data):
+    # Create some test data
+    dx = (np.max(data)-np.min(data))/100
+    X = np.arange(np.min(data),np.max(data),(np.max(data)-np.min(data))/100)
+    Y = stats.norm.pdf(X,np.mean(data),np.std(data))
+    
+    # Normalize the data to a proper PDF
+    Y /= (dx * Y).sum()
+    
+    # Compute the CDF
+    CY = np.cumsum(Y * dx)
+    
+    # # Plot both
+    # plt.plot(X, Y)
+    # plt.plot(X, CY, 'r--')
+    return X,CY    
 #%%
 #def main():
 #    """business logic for when running this module as the primary one!"""
@@ -1501,7 +1562,168 @@ plot_both_methods('442.5',notation_flag,path_out,min_val=-3.00,max_val=6.2)
 plot_both_methods('490.0',notation_flag,path_out,min_val=-2.00,max_val=8.0)
 plot_both_methods('560.0',notation_flag,path_out,min_val=-0.50,max_val=6.0)
 plot_both_methods('665.0',notation_flag,path_out,min_val=-0.60,max_val=4.0) 
-#       
-#%
+
+#%%
+
+cond1 = np.array(matchups_Lwn_0412p50_fq_ins_zi_station) == 'Venise' 
+idx=np.where(cond1)
+time_vec = np.array(matchups_Lwn_0412p50_fq_sat_zi_stop_time)
+sat_vec = np.array(matchups_Lwn_0412p50_fq_ins_zi)
+station_vec = np.array(matchups_Lwn_0412p50_fq_ins_zi_station)
+plt.figure()
+plt.plot(time_vec,sat_vec,'o',mfc='none')
+plt.plot(time_vec[idx],sat_vec[idx],'ro',mfc='none')
+#%%
+def plot_hist_delta(station,n_matchups,df0):
+    
+    # if protocol_name == 'zi':
+    #     protocol_str = 'ZMB18'
+    # elif protocol_name == 'ba':
+    #     protocol_str = 'BW06'
+    
+    protocol_list = ['zi','ba']
+    
+    for protocol_name in protocol_list:    
+    
+        time_vec = np.array(globals()['matchups_Lwn_0412p50_fq_sat_'+protocol_name+'_stop_time'])
+        date_vec = [dt.date() for dt in time_vec]
+        date_vec = np.array(date_vec)
+        
+        station_vec = np.array(globals()['matchups_Lwn_0412p50_fq_ins_'+protocol_name+'_station'])
+    
+        cond1 = station_vec == station
+        
+        date_vec = date_vec[cond1]
+        date_vec = np.sort(date_vec)
+        
+        i = 0
+        
+        date_diff = []
+        
+        while i < len(date_vec)-n_matchups:
+            date_diff.append((date_vec[i+n_matchups]-date_vec[i]).days)
+            i += 1
+        globals()['date_diff_'+protocol_name]=date_diff
+        
+    # histograms of both dataset: zi and ba
+    kwargs2 = dict(bins='auto', histtype='step')
+    fig, ax1=plt.subplots(1,1,sharey=True, facecolor='w')
+    ax1.hist(date_diff_zi,color='red', **kwargs2)
+    ax1.hist(date_diff_ba,color='black', **kwargs2)
+    x0, x1 = ax1.get_xlim()
+    ax1.set_xlim([x0,x0+1*(x1-x0)])
+
+    ax1.set_ylabel('Frequency (counts)',fontsize=12)
+    ax1.set_xlabel('Days needed to have '+str(n_matchups)+' matchups.')
+    plt.title('Station '+station)
+    
+    str1 = 'ZMB18\nmin: {:,.0f}\nmax: {:,.0f}\nmedian: {:,.0f}\nmean: {:,.0f}\nN: {:,.0f}'\
+    .format(np.nanmin(date_diff_zi),
+            np.nanmax(date_diff_zi),
+            np.nanmedian(date_diff_zi),
+            np.nanmean(date_diff_zi),
+            len(date_diff_zi))
+
+    str2 = 'BW06\nmin: {:,.0f}\nmax: {:,.0f}\nmedian: {:,.0f}\nmean: {:,.0f}\nN: {:,.0f}'\
+    .format(np.nanmin(date_diff_ba),
+            np.nanmax(date_diff_ba),
+            np.nanmedian(date_diff_ba),
+            np.nanmean(date_diff_ba),
+            len(date_diff_ba))
+
+    bottom, top = ax1.get_ylim()
+    left, right = ax1.get_xlim()
+    ax1.text(left+0.55*(right-left),bottom+0.73*(top-bottom), str2, fontsize=11,color='black')
+    ax1.text(left+0.77*(right-left),bottom+0.73*(top-bottom), str1, fontsize=11,color='red')
+    
+    
+
+    # save fig
+    ofname = sensor_name+'_hist_ba_zi_goal_'+station+'.pdf'
+    ofname = os.path.join(path_out,'source',ofname)
+    plt.savefig(ofname, dpi=300)
+
+    plt.show()
+    
+    df0 = df0.append(dict(mininum=np.nanmin(date_diff_zi), \
+                          maximum=np.nanmax(date_diff_zi),\
+                              median=np.nanmedian(date_diff_zi),\
+                                  mean=np.nanmean(date_diff_zi),\
+                                      N=len(date_diff_zi),\
+                                          station=station,\
+                                              protocol='ZMB18',\
+                                                  median_diff=0),
+                     ignore_index=True) 
+    df0 = df0.append(dict(mininum=np.nanmin(date_diff_ba),\
+                          maximum=np.nanmax(date_diff_ba),\
+                              median=np.nanmedian(date_diff_ba),\
+                                  mean=np.nanmean(date_diff_ba),\
+                                      N=len(date_diff_ba),\
+                                          station=station,\
+                                              protocol='BW06',\
+                                                  median_diff=(np.nanmedian(date_diff_zi)-np.nanmedian(date_diff_ba))),\
+                     ignore_index=True)
+    return df0
+
+import pandas as pd   
+from tabulate import tabulate
+df0 = pd.DataFrame()
+station_list = ['Venise','Galata_Platform','Gloria']
+n_matchups = 30
+for station in station_list:
+    df0 = plot_hist_delta(station,n_matchups,df0)
+    
+df = df0[['station','protocol','mean','median','median_diff']]    
+print(tabulate(df, tablefmt='pipe', headers='keys'))
+
+print(tabulate(df, tablefmt='latex', headers='keys'))
+
+#%%
+
+data = stats.norm.rvs(loc=0, scale=1, size=(1000,))
+cdf(data)
+plot_normality(data,'test')
+#%%
+
+    
+#%%    
+# data = stats.norm.rvs(loc=5, scale=3, size=(450,))
+# cdf_plot(data)
+# x = np.arange(np.min(data),np.max(data),(np.max(data)-np.min(data))/100)
+# norm_dist = stats.norm.pdf(x,np.mean(data),np.std(data))
+# plt.figure()
+# plt.plot(x,norm_dist)
+# cdf_plot(norm_dist)
+#%% plotly example
+# from plotly.offline import plot
+# import plotly.graph_objs as go
+
+# fig = go.Figure(data=[go.Bar(y=[1, 3, 2])])
+# plot(fig, auto_open=True)
+
+#% x and y given as array_like objects
+# from plotly.offline import plot
+# import plotly.express as px
+
+ 
+
+# time_vec = np.array(matchups_Lwn_0412p50_fq_sat_zi_stop_time)
+# sat_vec = np.array(matchups_Lwn_0412p50_fq_sat_zi)
+# station_vec = np.array(matchups_Lwn_0412p50_fq_ins_zi_station)
+# df1 = pd.DataFrame(dict(time=time_vec, sat=sat_vec, station=station_vec,protocol='ZMB18'))    
+    
+    
+# time_vec = np.array(matchups_Lwn_0412p50_fq_sat_ba_stop_time)
+# sat_vec = np.array(matchups_Lwn_0412p50_fq_sat_ba)
+# station_vec = np.array(matchups_Lwn_0412p50_fq_ins_ba_station)
+# df2 = pd.DataFrame(dict(time=time_vec, sat=sat_vec, station=station_vec,protocol='BW06'))
+# df = pd.concat([df1,df2])
+
+# fig = px.scatter(df1,x=df.time,y=df.sat,color=df.station,symbol=df.protocol)
+# fig.update_traces(mode="markers", hovertemplate=None)
+# fig.update_layout(hovermode="x unified")
+# plot(fig, auto_open=True)
+
+#%%
 # if __name__ == '__main__':
 #     main()   
