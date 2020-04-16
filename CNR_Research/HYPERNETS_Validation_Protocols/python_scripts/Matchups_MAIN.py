@@ -31,6 +31,7 @@ import sys
 
 from datetime import datetime
 from scipy import stats
+# from statsmodels.graphics.gofplots import qqplot
 
 # to import apply_flags_OLCI.py
 path_main = '/Users/javier.concha/Desktop/Javier/2019_ROMA/CNR_Research/HYPERNETS_Validation_Protocols/python_scripts/'
@@ -564,15 +565,15 @@ def plot_both_methods(wl_str,notation_flag,path_out,min_val,max_val):
             len(sat_ba))
     print(str_table)
     
+    # normality test
+    plot_normality(np.array(diff),wl_str)
+    
     # histogram of the difference
     kwargs2 = dict(bins='auto', histtype='step')
     fig, ax1=plt.subplots(1,1,sharey=True, facecolor='w')
     ax1.hist(diff, **kwargs2)
     # x0, x1 = ax1.get_xlim()
     # ax1.set_xlim([x0,x0+0.15*(x1-x0)])
-    
-    # normality test
-    plot_normality(np.array(diff),wl_str)
 
     ax1.set_ylabel('Frequency',fontsize=12)
 
@@ -699,44 +700,57 @@ def plot_both_methods(wl_str,notation_flag,path_out,min_val,max_val):
     
 #%% normality test
 def plot_normality(data,wl_str):
+    # print(data)
     # plot distribution
     kwargs = dict(bins='auto', histtype='step',density=True)
-    plt.figure(figsize=(12, 7))
-    plt.subplot(1,2,1)
+    plt.figure(figsize=(16, 7))
+    plt.subplot(1,3,1)
     plt.hist(data, **kwargs)
     x = np.arange(np.min(data),np.max(data),(np.max(data)-np.min(data))/100)
     norm_dist = stats.norm.pdf(x,np.mean(data),np.std(data))
     plt.plot(x,norm_dist)
+    plt.legend(['Theoretical Values','Data'],loc='upper left')
+    plt.title('Histogram')
     
     # ks test using scipy.stats.kstest        
-    D_value, p_value = stats.kstest(data,'norm',args=(np.mean(data), np.std(data)))
-    print(f'KS: D: {D_value:.4f}; p-value: {p_value:.4f}')
+    D_value0, p_value0 = stats.kstest(data,'norm',args=(np.mean(data), np.std(data)))
+    print(f'KS: D: {D_value0:.4f}; p-value: {p_value0:.5f}')
 
     # ks test using statsmodels.stats.diagnostic.ktest  
     import statsmodels.stats.diagnostic as smd
-    D_value, p_value = smd.kstest_normal(data, dist='norm')
-    print(f'KS2: D: {D_value:.4f}; p-value: {p_value:.4f}')
+    D_value1, p_value1 = smd.kstest_normal(data, dist='norm')
+    print(f'KS2: D: {D_value1:.4f}; p-value: {p_value1:.5f}')
     
     # jb test using scipy.stats.jarque_bera 
-    D_value, p_value = stats.jarque_bera(data)
-    print(f'JB: D: {D_value:.4f}; p-value: {p_value:.4f}')
+    D_value2, p_value2 = stats.jarque_bera(data)
+    print(f'JB: JB: {D_value2:.4f}; p-value: {p_value2:.5f}')
     
     # jb test using statsmodels.stats.stattools.jarque_bera 
     import statsmodels.stats.stattools as sms
-    D_value, p_value, skew, kurtosis = sms.jarque_bera(data, axis=0)
-    print(f'JB2: D: {D_value:.4f}; p-value: {p_value:.4f}')
+    D_value3, p_value3, skew, kurtosis = sms.jarque_bera(data, axis=0)
+    print(f'JB2: D: {D_value3:.4f}; p-value: {p_value3:.5f}')
     
-    plt.subplot(1,2,2)
+    plt.subplot(1,3,2)
     plt.plot(np.sort(data), np.arange(len(data)) / len(data))
     X,CY = cdf(data)
     plt.plot(X, CY)
+    plt.title('Comparing CDFs for KS-Test')
     # plt.plot(np.sort(norm_dist), np.arange(len(norm_dist)) / len(norm_dist))
     # plt.plot(np.sort(norm_dist), np.linspace(0, 1, len(norm_dist), endpoint=False))
     # plt.hist(norm_dist,normed=True)
-    # plt.legend('top right')
-    plt.legend(['Data', 'Theoretical Values'])
-    plt.title('Comparing CDFs for KS-Test')
-    plt.suptitle(wl_str)
+    
+    plt.subplot(1,3,3)
+    stats.probplot(data, dist="norm", plot=plt)
+    plt.title('Q-Q Plot (Probability Plot)')
+    
+    plt.suptitle(f'{wl_str}nm; p-value: KS={p_value0:.5f}, KS2={p_value1:.5f}, JB={p_value2:.5f}, JB2={p_value3:.5f}')
+    plt.tight_layout(rect=[0, 0.03, 1, 0.95])
+    # plot_histogram_and_qq(data, data.mean(), data.std())
+    # save fig
+    ofname = 'OLCI_norm_test_diff_'+wl_str.replace(".","p")+'.pdf'
+    ofname = os.path.join(path_out,'source',ofname)
+    plt.savefig(ofname, dpi=300)
+    
 
 def cdf(data):
     # Create some test data
@@ -1679,10 +1693,30 @@ print(tabulate(df, tablefmt='pipe', headers='keys'))
 print(tabulate(df, tablefmt='latex', headers='keys'))
 
 #%%
+def plot_histogram_and_qq(points, mu, sigma, distribution_type="norm"):
+  # Plot histogram of the 1000 points
+  plt.figure(figsize=(12,6))
+  ax = plt.subplot(1,2,1)
+  count, bins, ignored = plt.hist(points, 30, normed=True)
+  ax.set_title('Histogram')
+  ax.set_xlabel('Value bin')
+  ax.set_ylabel('Frequency')
 
-data = stats.norm.rvs(loc=0, scale=1, size=(1000,))
-cdf(data)
-plot_normality(data,'test')
+  # Overlay the bell curve (normal distribution) on the bins data
+  bell_curve = 1/(sigma * np.sqrt(2 * np.pi)) * np.exp( - (bins - mu)**2 / (2 * sigma**2))
+  plt.plot(bins, bell_curve, linewidth=2, color='r')
+
+  # Q-Q plot
+  plt.subplot(1,2,2)
+  res = stats.probplot(points, dist=distribution_type, plot=plt)
+  (osm, osr) = res[0]
+  (slope, intercept, r) = res[1]
+  # For details see: https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.stats.probplot.html
+  print("slope, intercept, r:", slope, intercept, r)
+  print("r is the square root of the coefficient of determination")
+
+  plt.show()
+
 #%%
 
     
