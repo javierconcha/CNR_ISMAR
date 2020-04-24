@@ -1,0 +1,63 @@
+
+\documentclass[preview]{standalone}
+
+\standaloneenv{my}
+
+%%% MY PACKAGES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{graphicx}
+% \usepackage[outdir=./]{epstopdf}
+\usepackage{epstopdf}
+\epstopdfsetup{update} % only regenerate pdf files when eps file is newer
+\usepackage{amsmath,epsfig}
+
+\usepackage{tikz} % for flow charts
+  \usetikzlibrary{shapes,arrows,positioning,shadows,calc}
+  % \usetikzlibrary{external}
+  % \tikzexternalize[prefix=Figures/]
+
+% \usepackage[nostamp]{draftwatermark}
+% \SetWatermarkLightness{0.8}
+% \SetWatermarkScale{4}
+
+\usepackage[percent]{overpic}
+\usepackage{morefloats} % for the error "Too many unprocessed floats"
+
+\usepackage{multirow}
+
+\usepackage{float}
+\usepackage{hyperref}
+
+\usepackage[utf8]{inputenc}
+% \usepackage[x11names]{xcolor}
+\usepackage{fourier}
+\usepackage{booktabs}
+\usepackage{threeparttable, tablefootnote}
+
+\usepackage{cellspace}
+\setlength\cellspacetoplimit{3pt}
+\setlength\cellspacebottomlimit{0pt}
+%%% END MY PACKAGES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+\begin{table}
+\begin{tabular}{lcccc}\hline
+
+Station 			& Avail.& BW06 	& IPK19 & V19	\\\hline
+Venise 				& 13 	& 9 	& 6 	& 9 	\\
+Gloria 				& 7 	& 0 	& 0 	& 0 	\\
+Galata Platform 	& 7 	& 1 	& 2 	& 5 	\\
+Helsinki Lighthouse & 7 	& 1 	& 4 	& 6 	\\
+Gustav Dalen Tower 	& 1 	& 1 	& 0 	& 1 	\\
+Lake Erie 			& 2 	& 1 	& 1 	& 1 	\\
+LISCO 				& 9 	& 0 	& 0 	& 8 	\\
+Palgrunden 			& 7 	& 6 	& 6 	& 6 	\\
+Thornton C power 	& 10 	& 0 	& 0 	& 6 	\\
+USC SEAPRISM 		& 1 	& 0 	& 0 	& 0 	\\
+USC SEAPRISM 2 		& 3 	& 0 	& 0 	& 3 	\\
+WaveCIS Site CSI 6 	& 17 	& 13 	& 11 	& 13 	\\\hline
+$N_{total}$ 		& 84 	& 32 (38.0\%)	& 30 (35.7\%)	& 58 (69.0\%)	\\
+
+\end{tabular}
+\end{table}
+
+\end{document}

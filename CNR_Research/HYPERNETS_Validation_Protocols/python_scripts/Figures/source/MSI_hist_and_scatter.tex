@@ -1,0 +1,98 @@
+\documentclass[preview]{standalone}
+
+\standaloneenv{my}
+
+%%% MY PACKAGES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{graphicx}
+% \usepackage[outdir=./]{epstopdf}
+\usepackage{epstopdf}
+\epstopdfsetup{update} % only regenerate pdf files when eps file is newer
+\usepackage{amsmath,epsfig}
+
+\usepackage{tikz} % for flow charts
+  \usetikzlibrary{shapes,arrows,positioning,shadows,calc}
+  % \usetikzlibrary{external}
+  % \tikzexternalize[prefix=Figures/]
+
+% \usepackage[nostamp]{draftwatermark}
+% \SetWatermarkLightness{0.8}
+% \SetWatermarkScale{4}
+
+\usepackage[percent]{overpic}
+\usepackage{morefloats} % for the error "Too many unprocessed floats"
+
+\usepackage{multirow}
+
+\usepackage{float}
+\usepackage{hyperref}
+%%% END MY PACKAGES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+\tiny
+    \begin{minipage}[c]{0.33\linewidth}
+    \centering
+      \begin{overpic}[trim=10 200 0 0,clip,height=1.3cm]{./legend_MSI_allstations.pdf} 
+      \end{overpic}
+    \end{minipage}    
+
+    \begin{minipage}[c]{0.33\linewidth}
+      \begin{overpic}[trim=60 0 90 0,clip,height=3.5cm]{./MSI_scatter_diff_ba_pa_va_444p0.pdf}  
+      \end{overpic}
+    \end{minipage}
+    \begin{minipage}[c]{0.33\linewidth}
+    \hspace{-0.8cm}
+      \begin{overpic}[trim=20 0 0 0,clip,height=3.5cm]{./MSI_hist_ba_pa_va_444p0.pdf}  
+      \end{overpic}
+    \end{minipage} 
+    \hspace{-0.5cm} 
+    \begin{minipage}[c]{0.330\linewidth}
+      \begin{overpic}[trim=20 0 0 0,clip,height=3.5cm]{./MSI_hist_diff_ba_pa_va_444p0.pdf}  
+      \end{overpic}
+    \end{minipage}
+
+    \begin{minipage}[c]{0.33\linewidth}
+      \begin{overpic}[trim=60 0 90 0,clip,height=3.5cm]{./MSI_scatter_diff_ba_pa_va_497p0.pdf}  
+      \end{overpic}
+    \end{minipage}
+    \begin{minipage}[c]{0.33\linewidth}
+    \hspace{-0.8cm}
+      \begin{overpic}[trim=0 0 0 0,clip,height=3.5cm]{./MSI_hist_ba_pa_va_497p0.pdf}  
+      \end{overpic}
+    \end{minipage} 
+    \hspace{-0.5cm} 
+    \begin{minipage}[c]{0.330\linewidth}
+      \begin{overpic}[trim=20 0 0 0,clip,height=3.5cm]{./MSI_hist_diff_ba_pa_va_497p0.pdf}  
+      \end{overpic}
+    \end{minipage}
+
+    \begin{minipage}[c]{0.33\linewidth}
+      \begin{overpic}[trim=60 0 90 0,clip,height=3.5cm]{./MSI_scatter_diff_ba_pa_va_560p0.pdf}  
+      \end{overpic}
+    \end{minipage}
+    \begin{minipage}[c]{0.33\linewidth}
+    \hspace{-0.8cm}
+      \begin{overpic}[trim=20 0 0 0,clip,height=3.5cm]{./MSI_hist_ba_pa_va_560p0.pdf}  
+      \end{overpic}
+    \end{minipage} 
+    \hspace{-0.5cm} 
+    \begin{minipage}[c]{0.330\linewidth}
+      \begin{overpic}[trim=20 0 0 0,clip,height=3.5cm]{./MSI_hist_diff_ba_pa_va_560p0.pdf}  
+      \end{overpic}
+    \end{minipage} 
+
+    \begin{minipage}[c]{0.33\linewidth}
+      \begin{overpic}[trim=60 0 90 0,clip,height=3.5cm]{./MSI_scatter_diff_ba_pa_va_664p0.pdf}  
+      \end{overpic}
+    \end{minipage}
+    \begin{minipage}[c]{0.33\linewidth}
+    \hspace{-0.8cm}
+      \begin{overpic}[trim=20 0 0 0,clip,height=3.5cm]{./MSI_hist_ba_pa_va_664p0.pdf}  
+      \end{overpic}
+    \end{minipage} 
+    \hspace{-0.5cm} 
+    \begin{minipage}[c]{0.330\linewidth}
+      \begin{overpic}[trim=20 0 0 0,clip,height=3.5cm]{./MSI_hist_diff_ba_pa_va_664p0.pdf}  
+      \end{overpic}
+    \end{minipage} 
+
+\end{document}

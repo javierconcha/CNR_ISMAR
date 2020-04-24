@@ -1,0 +1,52 @@
+\documentclass[preview]{standalone}
+
+\standaloneenv{my}
+
+%%% MY PACKAGES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{graphicx}
+% \usepackage[outdir=./]{epstopdf}
+\usepackage{epstopdf}
+\epstopdfsetup{update} % only regenerate pdf files when eps file is newer
+\usepackage{amsmath,epsfig}
+
+\usepackage{tikz} % for flow charts
+  \usetikzlibrary{shapes,arrows,positioning,shadows,calc}
+  % \usetikzlibrary{external}
+  % \tikzexternalize[prefix=Figures/]
+
+% \usepackage[nostamp]{draftwatermark}
+% \SetWatermarkLightness{0.8}
+% \SetWatermarkScale{4}
+
+\usepackage[percent]{overpic}
+\usepackage{morefloats} % for the error "Too many unprocessed floats"
+
+\usepackage{multirow}
+
+\usepackage{float}
+\usepackage{hyperref}
+%%% END MY PACKAGES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+\tiny
+
+\begin{table}
+\begin{tabular}{cccccccc}
+
+
+proto & nm & min & max & std & median & mean & N\\
+ZMB18 & 412.5 & -1.925999 & 3.213539 & 0.573879 & 0.252391 & 0.329721 & 197\\
+BW06 & 412.5 & -1.139929 & 3.220808 & 0.671725 & 0.260597 & 0.368213 & 279\\
+ZMB18 & 442.5 & -1.579853 & 4.772980 & 0.692380 & 0.447517 & 0.551073 & 197\\
+BW06 & 442.5 & -0.840802 & 4.793702 & 0.770410 & 0.423045 & 0.597782 & 279\\
+ZMB18 & 490.0 & -0.769120 & 6.395816 & 0.852957 & 0.771510 & 0.927562 & 197\\
+BW06 & 490.0 & -0.244423 & 6.420448 & 0.923409 & 0.755054 & 0.985202 & 279\\
+ZMB18 & 560.0 & -0.354199 & 5.506664 & 0.765304 & 0.761938 & 0.999461 & 197\\
+BW06 & 560.0 & 0.194438 & 5.530712 & 0.790423 & 0.743085 & 1.016181 & 279\\
+ZMB18 & 665.0 & -0.482899 & 3.149019 & 0.281090 & 0.108276 & 0.155866 & 197\\
+BW06 & 665.0 & -0.139407 & 3.145786 & 0.262891 & 0.105761 & 0.160835 & 279\\
+
+\end{tabular}
+\end{table}
+
+\end{document}

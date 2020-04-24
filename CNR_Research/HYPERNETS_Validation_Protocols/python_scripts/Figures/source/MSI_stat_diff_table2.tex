@@ -1,0 +1,65 @@
+
+\documentclass[preview]{standalone}
+
+\standaloneenv{my}
+
+%%% MY PACKAGES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{graphicx}
+% \usepackage[outdir=./]{epstopdf}
+\usepackage{epstopdf}
+\epstopdfsetup{update} % only regenerate pdf files when eps file is newer
+\usepackage{amsmath,epsfig}
+
+\usepackage{tikz} % for flow charts
+  \usetikzlibrary{shapes,arrows,positioning,shadows,calc}
+  % \usetikzlibrary{external}
+  % \tikzexternalize[prefix=Figures/]
+
+% \usepackage[nostamp]{draftwatermark}
+% \SetWatermarkLightness{0.8}
+% \SetWatermarkScale{4}
+
+\usepackage[percent]{overpic}
+\usepackage{morefloats} % for the error "Too many unprocessed floats"
+
+\usepackage{multirow}
+
+\usepackage{float}
+\usepackage{hyperref}
+
+\usepackage[utf8]{inputenc}
+% \usepackage[x11names]{xcolor}
+\usepackage{fourier}
+\usepackage{booktabs}
+\usepackage{threeparttable, tablefootnote}
+
+\usepackage{cellspace}
+\setlength\cellspacetoplimit{3pt}
+\setlength\cellspacebottomlimit{0pt}
+%%% END MY PACKAGES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+\begin{table}
+\begin{tabular}{cccccccc}\hline
+Protocol Diff. &  $\lambda$[nm] & min & max & std & median & mean & N\\\hline
+BW06-IPK19 & 444 & -0.01 & 0.11 & 0.03 & 0.0000 & 0.0145 & 26\\
+BW06-V19 & 444 & -0.06 & 0.40 & 0.09 & 0.0154 & 0.0476 & 32\\
+IPK19-V19 & 444 & -0.04 & 0.33 & 0.07 & 0.0102 & 0.0257 & 30\\\hline
+
+BW06-IPK19 & 497 & -0.03 & 0.39 & 0.08 & 0.0056 & 0.0186 & 26\\
+BW06-V19 & 497 & -0.04 & 0.89 & 0.16 & 0.0061 & 0.0497 & 32\\
+IPK19-V19 & 497 & -0.09 & 0.50 & 0.11 & 0.0106 & 0.0341 & 30\\\hline
+
+BW06-IPK19 & 560 & -0.06 & 0.08 & 0.03 & -0.0050 & 0.0020 & 26\\
+BW06-V19 & 560 & -0.08 & 0.32 & 0.07 & -0.0040 & 0.0147 & 32\\
+IPK19-V19 & 560 & -0.11 & 0.33 & 0.07 & 0.0036 & 0.0140 & 30\\\hline
+
+BW06-IPK19 & 664 & -0.06 & 0.07 & 0.03 & 0.0009 & 0.0011 & 26\\
+BW06-V19 & 664 & -0.04 & 0.08 & 0.03 & 0.0072 & 0.0116 & 32\\
+IPK19-V19 & 664 & -0.06 & 0.10 & 0.03 & 0.0088 & 0.0104 & 30\\\hline
+
+
+\end{tabular}
+\end{table}
+
+\end{document}

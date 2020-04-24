@@ -527,8 +527,8 @@ def plot_all_methods(vl_str,notation_flag,path_out,min_val,max_val):
     xmin, xmax = plt.gca().get_xlim()
     ymin, ymax = plt.gca().get_ylim()
     ax.plot([xmin,xmax],[ymin, ymax],'--k')        
-    plt.xlabel('$L^{PRS}_{WN}$')
-    plt.ylabel('$L^{'+sensor_name+'}_{WN}$')
+    plt.xlabel('$L^{PRS}_{WN}$',fontsize=12)
+    plt.ylabel('$L^{'+sensor_name+'}_{WN}$',fontsize=12)
     if (xmin<0 or ymin<0):
         ax.plot([xmin,xmax],[0, 0],'--k',linewidth = 0.7)  
     plt.text(0.05, 0.95, str3+'nm',horizontalalignment='left', fontsize=12,transform=plt.gca().transAxes)
@@ -712,39 +712,24 @@ def plot_all_methods(vl_str,notation_flag,path_out,min_val,max_val):
     x0, x1 = ax1.get_xlim()
     ax1.set_xlim([x0,x0+1*(x1-x0)])
 
-    ax1.set_ylabel('Frequency')
+    ax1.set_ylabel('Frequency (counts)',fontsize=12)
 
-    str1 = 'BW06\nmin: {:,.2f}\nmax: {:,.2f}\nstd: {:,.2f}\nmedian: {:,.2f}\nmean: {:,.2f}\nN: {:,.0f}'\
-    .format(np.nanmin(sat_ba),
-            np.nanmax(sat_ba),
-            np.nanstd(sat_ba),
-            np.nanmedian(sat_ba),
-            np.nanmean(sat_ba),
-            len(sat_ba))
+    str1 = f'BW06\nmedian: {np.nanmedian(sat_ba):,.2f}\
+                \nmean: {np.nanmean(sat_ba):,.2f}\nN: {len(sat_ba):,.0f}'
 
-    str2 = 'IPK19\nmin: {:,.2f}\nmax: {:,.2f}\nstd: {:,.2f}\nmedian: {:,.2f}\nmean: {:,.2f}\nN: {:,.0f}'\
-    .format(np.nanmin(sat_pa),
-            np.nanmax(sat_pa),
-            np.nanstd(sat_pa),
-            np.nanmedian(sat_pa),
-            np.nanmean(sat_pa),
-            len(sat_pa))
+    str2 = f'IPK19\nmedian: {np.nanmedian(sat_pa):,.2f}\
+                \nmean: {np.nanmean(sat_pa):,.2f}\nN: {len(sat_pa):,.0f}'
 
-    str4 = 'V19\nmin: {:,.2f}\nmax: {:,.2f}\nstd: {:,.2f}\nmedian: {:,.2f}\nmean: {:,.2f}\nN: {:,.0f}'\
-    .format(np.nanmin(sat_va),
-            np.nanmax(sat_va),
-            np.nanstd(sat_va),
-            np.nanmedian(sat_va),
-            np.nanmean(sat_va),
-            len(sat_va))
+    str4 = f'V19\nmedian: {np.nanmedian(sat_va):,.2f}\
+                \nmean: {np.nanmean(sat_va):,.2f}\nN: {len(sat_va):,.0f}'
 
     bottom, top = ax1.get_ylim()
     left, right = ax1.get_xlim()
     xpos = left+0.70*(right-left)
     ax1.text(left+0.01*(right-left),bottom+0.95*(top-bottom), '{}nm'.format(str3), fontsize=12,color='black')
-    ax1.text(xpos,bottom+0.70*(top-bottom), str1, fontsize=10,color='red')
-    ax1.text(xpos,bottom+0.40*(top-bottom), str2, fontsize=10,color='black')
-    ax1.text(xpos,bottom+0.10*(top-bottom), str4, fontsize=10,color='blue')
+    ax1.text(xpos,bottom+0.80*(top-bottom), str1, fontsize=12,color='red')
+    ax1.text(xpos,bottom+0.55*(top-bottom), str2, fontsize=12,color='black')
+    ax1.text(xpos,bottom+0.30*(top-bottom), str4, fontsize=12,color='blue')
 
     fig.text(0.5,0.01,'$L^{'+sensor_name+'}_{WN}$',ha='center',fontsize=12)
 
@@ -793,13 +778,10 @@ def plot_all_methods(vl_str,notation_flag,path_out,min_val,max_val):
     ax1.hist(diff_ba_va,color='#ff7f0e', **kwargs2)
     ax1.hist(diff_pa_va,color='#2ca02c', **kwargs2)
 
-    ax1.set_ylabel('Frequency',fontsize=12)
+    ax1.set_ylabel('Frequency (counts)',fontsize=12)
 
-    str1 = 'BW06-IPK19\nmin: {:,.2f}\nmax: {:,.2f}\nstd: {:,.2f}\nmedian: {:,.5f}\nmean: {:,.3f}\nN: {:,.0f}'\
-    .format(np.nanmin(diff_ba_pa),
-            np.nanmax(diff_ba_pa),
-            np.nanstd(diff_ba_pa),
-            np.nanmedian(diff_ba_pa),
+    str1 = 'BW06-IPK19\nmedian: {:,.5f}\nmean: {:,.3f}\nN: {:,.0f}'\
+    .format(np.nanmedian(diff_ba_pa),
             np.nanmean(diff_ba_pa),
             len(diff_ba_pa))
 
@@ -816,11 +798,8 @@ def plot_all_methods(vl_str,notation_flag,path_out,min_val,max_val):
             len(diff_ba_pa))
     print(str_table)
 
-    str2 = 'BW06-V19\nmin: {:,.2f}\nmax: {:,.2f}\nstd: {:,.2f}\nmedian: {:,.5f}\nmean: {:,.3f}\nN: {:,.0f}'\
-    .format(np.nanmin(diff_ba_va),
-            np.nanmax(diff_ba_va),
-            np.nanstd(diff_ba_va),
-            np.nanmedian(diff_ba_va),
+    str2 = 'BW06-V19\nmedian: {:,.5f}\nmean: {:,.3f}\nN: {:,.0f}'\
+    .format(np.nanmedian(diff_ba_va),
             np.nanmean(diff_ba_va),
             len(diff_ba_va))
 
@@ -837,11 +816,8 @@ def plot_all_methods(vl_str,notation_flag,path_out,min_val,max_val):
             len(diff_ba_va))
     print(str_table)
 
-    str4 = 'IPK19-V19\nmin: {:,.2f}\nmax: {:,.2f}\nstd: {:,.2f}\nmedian: {:,.5f}\nmean: {:,.3f}\nN: {:,.0f}'\
-    .format(np.nanmin(diff_pa_va),
-            np.nanmax(diff_pa_va),
-            np.nanstd(diff_pa_va),
-            np.nanmedian(diff_pa_va),
+    str4 = 'IPK19-V19\nmedian: {:,.5f}\nmean: {:,.3f}\nN: {:,.0f}'\
+    .format(np.nanmedian(diff_pa_va),
             np.nanmean(diff_pa_va),
             len(diff_pa_va))
 
@@ -860,11 +836,11 @@ def plot_all_methods(vl_str,notation_flag,path_out,min_val,max_val):
 
     bottom, top = ax1.get_ylim()
     left, right = ax1.get_xlim()
-    ax1.text(left+0.700*(right-left),bottom+0.70*(top-bottom), str1, fontsize=10,color='#1f77b4')
-    ax1.text(left+0.700*(right-left),bottom+0.40*(top-bottom), str2, fontsize=10,color='#ff7f0e')
-    ax1.text(left+0.700*(right-left),bottom+0.10*(top-bottom), str4, fontsize=10,color='#2ca02c')
+    ax1.text(left+0.700*(right-left),bottom+0.80*(top-bottom), str1, fontsize=12,color='#1f77b4')
+    ax1.text(left+0.700*(right-left),bottom+0.55*(top-bottom), str2, fontsize=12,color='#ff7f0e')
+    ax1.text(left+0.700*(right-left),bottom+0.30*(top-bottom), str4, fontsize=12,color='#2ca02c')
 
-    ax1.text(left+0.05*(right-left),bottom+0.95*(top-bottom), str3+'nm', fontsize=10,color='black')
+    ax1.text(left+0.01*(right-left),bottom+0.95*(top-bottom), str3+'nm', fontsize=12,color='black')
 
     fig.text(0.5,0.01,'Diff. $L^{'+sensor_name+'}_{WN}$',ha='center',fontsize=12)
 
@@ -1533,8 +1509,7 @@ plt.plot(wv,rmse_ba,'-o')
 plt.plot(wv,rmse_pa,'-o')
 plt.plot(wv,rmse_va,'-o')
 plt.xlabel('Wavelength [nm]',fontsize=12)
-plt.ylabel('rmse',fontsize=12)
-plt.legend(['BW06','IPK19','V19'])
+plt.ylabel('RMSD',fontsize=12)
 plt.show()
 
 ofname = 'S2A_rmse.pdf'
@@ -1617,7 +1592,7 @@ plt.plot(wv,mean_bias_ba,'-o')
 plt.plot(wv,mean_bias_pa,'-o')
 plt.plot(wv,mean_bias_va,'-o')
 plt.xlabel('Wavelength [nm]',fontsize=12)
-plt.ylabel('Mean Bias',fontsize=12)
+plt.ylabel('MB',fontsize=12)
 # plt.legend(['Bailey and Werdell','Pahlevan','Vanhellemont'])
 plt.show()    
 
@@ -1625,7 +1600,7 @@ ofname = 'S2A_mean_bias.pdf'
 ofname = os.path.join(path_out,'source',ofname)   
 plt.savefig(ofname, dpi=300)  
 
-# mean_abs_error
+# mean_abs_error or MAD
 mean_abs_error_ba = [mean_abs_error_0444p00_ba,mean_abs_error_0497p00_ba,\
     mean_abs_error_0560p00_ba,mean_abs_error_0664p00_ba]
 mean_abs_error_pa = [mean_abs_error_0444p00_pa,mean_abs_error_0497p00_pa,\
@@ -1638,7 +1613,8 @@ plt.plot(wv,mean_abs_error_ba,'-o')
 plt.plot(wv,mean_abs_error_pa,'-o')
 plt.plot(wv,mean_abs_error_va,'-o')
 plt.xlabel('Wavelength [nm]',fontsize=12)
-plt.ylabel('MAE',fontsize=12)
+plt.ylabel('MAD',fontsize=12)
+plt.legend(['BW06','IPK19','V19'])
 # plt.legend(['Bailey and Werdell','Pahlevan','Vanhellemont'])
 plt.show()    
 

@@ -509,30 +509,20 @@ def plot_both_methods(wl_str,notation_flag,path_out,min_val,max_val):
     x0, x1 = ax1.get_xlim()
     ax1.set_xlim([x0,x0+1*(x1-x0)])
 
-    ax1.set_ylabel('Frequency',fontsize=12)
+    ax1.set_ylabel('Frequency (counts)',fontsize=12)
 
-    str1 = 'ZMB18\nmin: {:,.2f}\nmax: {:,.2f}\nstd: {:,.2f}\nmedian: {:,.2f}\nmean: {:,.2f}\nN: {:,.0f}'\
-    .format(np.nanmin(sat_zi),
-            np.nanmax(sat_zi),
-            np.nanstd(sat_zi),
-            np.nanmedian(sat_zi),
-            np.nanmean(sat_zi),
-            len(sat_zi))
+    str1 = f'ZMB18\nmedian: {np.nanmedian(sat_zi):,.2f}\
+            \nmean: {np.nanmean(sat_zi):,.2f}\nN: {len(sat_zi):,.0f}'
 
-    str2 = 'BW06\nmin: {:,.2f}\nmax: {:,.2f}\nstd: {:,.2f}\nmedian: {:,.2f}\nmean: {:,.2f}\nN: {:,.0f}'\
-    .format(np.nanmin(sat_ba),
-            np.nanmax(sat_ba),
-            np.nanstd(sat_ba),
-            np.nanmedian(sat_ba),
-            np.nanmean(sat_ba),
-            len(sat_ba))
+    str2 = f'BW06\nmedian: {np.nanmedian(sat_ba):,.2f}\
+            \nmean: {np.nanmean(sat_ba):,.2f}\nN: {len(sat_ba):,.0f}'
 
     bottom, top = ax1.get_ylim()
     left, right = ax1.get_xlim()
-    xpos = left+0.65*(right-left)
-    ax1.text(left+0.01*(right-left),bottom+0.95*(top-bottom), '{}nm'.format(str3), fontsize=12,color='black')
-    ax1.text(xpos,bottom+0.55*(top-bottom), str1, fontsize=12,color='red')
-    ax1.text(xpos,bottom+0.15*(top-bottom), str2, fontsize=12,color='black')
+    ypos = bottom+0.78*(top-bottom)
+    ax1.text(left+0.01*(right-left),bottom+0.95*(top-bottom), f'{str3}nm', fontsize=12,color='black')
+    ax1.text(left+0.50*(right-left),ypos, str1, fontsize=12,color='red')
+    ax1.text(left+0.75*(right-left),ypos, str2, fontsize=12,color='black')
 
     fig.text(0.5,0.01,'$L^{'+sensor_name+'}_{WN}$',ha='center',fontsize=12)
 
@@ -565,8 +555,8 @@ def plot_both_methods(wl_str,notation_flag,path_out,min_val,max_val):
             len(sat_ba))
     print(str_table)
     
-    # normality test
-    plot_normality(np.array(diff),wl_str)
+    # # normality test
+    # plot_normality(np.array(diff),wl_str)
     
     # histogram of the difference
     kwargs2 = dict(bins='auto', histtype='step')
@@ -575,16 +565,10 @@ def plot_both_methods(wl_str,notation_flag,path_out,min_val,max_val):
     # x0, x1 = ax1.get_xlim()
     # ax1.set_xlim([x0,x0+0.15*(x1-x0)])
 
-    ax1.set_ylabel('Frequency',fontsize=12)
+    ax1.set_ylabel('Frequency (counts)',fontsize=12)
 
-    str1 = '{}nm\nmin: {:,.2f}\nmax: {:,.2f}\nstd: {:,.2f}\nmedian: {:,.4f}\nmean: {:,.4f}\nN: {:,.0f}'\
-    .format(str3,
-            np.nanmin(diff),
-            np.nanmax(diff),
-            np.nanstd(diff),
-            np.nanmedian(diff),
-            np.nanmean(diff),
-            len(diff))
+    str1 = f'{str3}nm\nmedian: {np.nanmedian(diff):,.4f}\
+            \nmean: {np.nanmean(diff):,.4f}\nN: {len(diff):,.0f}'
 
     if wl_str == '412.5':
         print('diff & nm & min & max & std & median & mean & N\\\\')
@@ -601,7 +585,7 @@ def plot_both_methods(wl_str,notation_flag,path_out,min_val,max_val):
     bottom, top = ax1.get_ylim()
     left, right = ax1.get_xlim()
     xpos = left+0.02*(right-left)
-    ax1.text(xpos,bottom+0.60*(top-bottom), str1, fontsize=12)
+    ax1.text(xpos,bottom+0.78*(top-bottom), str1, fontsize=12)
 
     fig.text(0.5,0.01,'Diff. $L^{'+sensor_name+'}_{WN}$',ha='center',fontsize=12)
 
@@ -1369,7 +1353,7 @@ plt.plot(wv,rmse_ba_Gustav_Dalen_Tower,'-xc',**kwargs)
 plt.plot(wv,rmse_zi,'--+k',**kwargs2)
 plt.plot(wv,rmse_ba,'--xk',**kwargs2)
 plt.xlabel('Wavelength [nm]',fontsize=12)
-plt.ylabel('$rmse$',fontsize=12)
+plt.ylabel('$RMSD$',fontsize=12)
 # plt.legend(['Zibordi, Mèlin and Berthon (2018)','Bailey and Werdell (2006)'])
 plt.show()
 
@@ -1522,7 +1506,7 @@ plt.plot(wv,mean_bias_ba_Gustav_Dalen_Tower,'-xc',**kwargs)
 plt.plot(wv,mean_bias_zi,'--+k',**kwargs2)
 plt.plot(wv,mean_bias_ba,'--xk',**kwargs2)
 plt.xlabel('Wavelength [nm]',fontsize=12)
-plt.ylabel('Mean Bias',fontsize=12)
+plt.ylabel('MB',fontsize=12)
 # plt.legend(['ZMB18','BW06'],fontsize=12)
 plt.show()    
 
@@ -1561,7 +1545,7 @@ plt.plot(wv,mean_abs_error_ba_Gustav_Dalen_Tower,'-xc',**kwargs)
 plt.plot(wv,mean_abs_error_zi,'--+k',**kwargs2)
 plt.plot(wv,mean_abs_error_ba,'--xk',**kwargs2)
 plt.xlabel('Wavelength [nm]',fontsize=12)
-plt.ylabel('$MAE$',fontsize=12)
+plt.ylabel('$MAD$',fontsize=12)
 # plt.legend(['ZMB18','BW06'],fontsize=12)
 plt.show()    
 
@@ -1575,7 +1559,7 @@ plot_both_methods('412.5',notation_flag,path_out,min_val=-3.00,max_val=5.0)
 plot_both_methods('442.5',notation_flag,path_out,min_val=-3.00,max_val=6.2)
 plot_both_methods('490.0',notation_flag,path_out,min_val=-2.00,max_val=8.0)
 plot_both_methods('560.0',notation_flag,path_out,min_val=-0.50,max_val=6.0)
-plot_both_methods('665.0',notation_flag,path_out,min_val=-0.60,max_val=4.0) 
+plot_both_methods('665.0',notation_flag,path_out,min_val=-0.60,max_val=4.0)
 
 #%%
 
@@ -1621,15 +1605,15 @@ def plot_hist_delta(station,n_matchups,df0):
         
     # histograms of both dataset: zi and ba
     kwargs2 = dict(bins='auto', histtype='step')
-    fig, ax1=plt.subplots(1,1,sharey=True, facecolor='w')
+    fig, ax1=plt.subplots(1,1,sharey=True, facecolor='w',figsize=(5,6))
     ax1.hist(date_diff_zi,color='red', **kwargs2)
     ax1.hist(date_diff_ba,color='black', **kwargs2)
     x0, x1 = ax1.get_xlim()
     ax1.set_xlim([x0,x0+1*(x1-x0)])
 
     ax1.set_ylabel('Frequency (counts)',fontsize=12)
-    ax1.set_xlabel('Days needed to have '+str(n_matchups)+' matchups.')
-    plt.title('Station '+station)
+    ax1.set_xlabel('Days needed to have '+str(n_matchups)+' matchups.',fontsize=12)
+    plt.title(f'{station.replace("_"," ")} Station')
     
     str1 = 'ZMB18\nmin: {:,.0f}\nmax: {:,.0f}\nmedian: {:,.0f}\nmean: {:,.0f}\nN: {:,.0f}'\
     .format(np.nanmin(date_diff_zi),
@@ -1647,8 +1631,9 @@ def plot_hist_delta(station,n_matchups,df0):
 
     bottom, top = ax1.get_ylim()
     left, right = ax1.get_xlim()
-    ax1.text(left+0.55*(right-left),bottom+0.73*(top-bottom), str2, fontsize=11,color='black')
-    ax1.text(left+0.77*(right-left),bottom+0.73*(top-bottom), str1, fontsize=11,color='red')
+    ypos = bottom+0.75*(top-bottom)
+    ax1.text(left+0.45*(right-left),ypos, str2, fontsize=11,color='black')
+    ax1.text(left+0.73*(right-left),ypos, str1, fontsize=11,color='red')
     
     
 

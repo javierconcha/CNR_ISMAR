@@ -1,0 +1,69 @@
+\documentclass[preview]{standalone}
+
+\standaloneenv{my}
+
+%%% MY PACKAGES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{graphicx}
+% \usepackage[outdir=./]{epstopdf}
+\usepackage{epstopdf}
+\epstopdfsetup{update} % only regenerate pdf files when eps file is newer
+\usepackage{amsmath,epsfig}
+
+\usepackage{tikz} % for flow charts
+  \usetikzlibrary{shapes,arrows,positioning,shadows,calc}
+  % \usetikzlibrary{external}
+  % \tikzexternalize[prefix=Figures/]
+
+% \usepackage[nostamp]{draftwatermark}
+% \SetWatermarkLightness{0.8}
+% \SetWatermarkScale{4}
+
+\usepackage[percent]{overpic}
+\usepackage{morefloats} % for the error "Too many unprocessed floats"
+
+\usepackage{multirow}
+
+\usepackage{float}
+\usepackage{hyperref}
+
+\usepackage[utf8]{inputenc}
+% \usepackage[x11names]{xcolor}
+\usepackage{fourier}
+\usepackage{booktabs}
+\usepackage{threeparttable, tablefootnote}
+
+\usepackage{cellspace}
+\setlength\cellspacetoplimit{3pt}
+\setlength\cellspacebottomlimit{0pt}
+%%% END MY PACKAGES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\begin{table}
+\begin{tabular}{cccccccc}\hline
+Protocol & $\lambda$[nm] & min & max & std & median & mean & N\\\hline
+BW06 & 444.0 & -0.75 & 3.91 & 0.89 & 1.18 & 1.28 & 32\\
+IPK19 & 444.0 & -0.75 & 3.91 & 0.87 & 1.12 & 1.19 & 30\\
+V19 & 444.0 & -0.76 & 3.93 & 0.75 & 1.13 & 1.18 & 58\\\hline
+
+BW06 & 497.0 & -0.04 & 5.45 & 1.02 & 1.32 & 1.54 & 32\\
+IPK19 & 497.0 & -0.03 & 5.06 & 0.99 & 1.06 & 1.46 & 30\\
+V19 & 497.0 & -0.04 & 4.56 & 0.77 & 1.35 & 1.44 & 58\\\hline
+
+BW06 & 560.0 & 0.42 & 4.68 & 0.82 & 1.26 & 1.41 & 32\\
+IPK19 & 560.0 & 0.43 & 4.67 & 0.84 & 1.11 & 1.37 & 30\\
+V19 & 560.0 & 0.35 & 4.73 & 0.72 & 1.30 & 1.38 & 58\\\hline
+
+BW06 & 664.0 & 0.15 & 2.12 & 0.35 & 0.53 & 0.59 & 32\\
+IPK19 & 664.0 & 0.22 & 2.06 & 0.34 & 0.51 & 0.58 & 30\\
+V19 & 664.0 & 0.14 & 2.12 & 0.32 & 0.52 & 0.59 & 58\\\hline
+
+
+
+\end{tabular}
+\end{table}
+
+\end{document}
+
+
+
