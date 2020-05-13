@@ -88,9 +88,9 @@ leg1 = ax.legend(handles=[legend_Venise,legend_Gloria,legend_Galata_Platform,leg
 loc='upper center',bbox_to_anchor=(0.5, 1.0),ncol=3,frameon=False,fontsize=12)
 
 legend_BW06 = mlines.Line2D([],[], linestyle='None', markersize=10, marker='x', color='k', label='BW06    ')
-legend_ZMB18 = mlines.Line2D([],[], linestyle='None', markersize=10, marker='+', color='k', label='ZMB18    ')
+legend_Z09 = mlines.Line2D([],[], linestyle='None', markersize=10, marker='+', color='k', label='Z09    ')
 
-leg2 = ax.legend(handles=[legend_BW06, legend_ZMB18],loc='upper center',\
+leg2 = ax.legend(handles=[legend_BW06, legend_Z09],loc='upper center',\
                  bbox_to_anchor=(0.5, 1.11),ncol=2,frameon=False,fontsize=12)
 
 ax.add_artist(leg1)
@@ -119,9 +119,9 @@ leg1 = ax.legend(handles=[legend_Venise,legend_Gloria,legend_Galata_Platform,leg
 loc='upper center',bbox_to_anchor=(0.5, 1.0),ncol=3,frameon=False,fontsize=12)
 
 legend_BW06 = mlines.Line2D([],[], linestyle='None', markersize=10, marker='x', color='k', label='BW06    ')
-legend_ZMB18 = mlines.Line2D([],[], linestyle='None', markersize=10, marker='+', color='k', label='ZMB18    ')
+legend_Z09 = mlines.Line2D([],[], linestyle='None', markersize=10, marker='+', color='k', label='Z09    ')
 
-leg2 = ax.legend(handles=[legend_BW06, legend_ZMB18],loc='upper center',\
+leg2 = ax.legend(handles=[legend_BW06, legend_Z09],loc='upper center',\
                  bbox_to_anchor=(0.5, 1.11),ncol=2,frameon=False,fontsize=12)
 
 ax.add_artist(leg1)

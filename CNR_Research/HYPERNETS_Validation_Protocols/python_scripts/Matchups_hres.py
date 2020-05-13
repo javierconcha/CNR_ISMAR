@@ -106,7 +106,7 @@ def plot_scatter(x,y,str1,path_out,prot_name,sensor_name,station_vec,min_val,max
 
 
     count_Venise = 0
-    count_Gloria = 0
+    # count_Gloria = 0
     count_Galata_Platform = 0
     count_Helsinki_Lighthouse = 0
     count_Gustav_Dalen_Tower = 0
@@ -125,10 +125,10 @@ def plot_scatter(x,y,str1,path_out,prot_name,sensor_name,station_vec,min_val,max
             mrk_style = 'o'
             mrk_color = 'r' 
             count_Venise = count_Venise+1
-        elif station_vec[cnt] == 'Gloria': # Black Sea    
-            mrk_style = 'o'
-            mrk_color = 'g'       
-            count_Gloria = count_Gloria+1
+        # elif station_vec[cnt] == 'Gloria': # Black Sea    
+        #     mrk_style = 'o'
+        #     mrk_color = 'g'       
+            # count_Gloria = count_Gloria+1
         elif station_vec[cnt] == 'Galata_Platform': # Black Sea
             mrk_style = 'o'
             mrk_color = 'b'
@@ -250,7 +250,7 @@ def plot_scatter(x,y,str1,path_out,prot_name,sensor_name,station_vec,min_val,max
     print(str_table)
 
     print('count_Venise: '+str(count_Venise))
-    print('count_Gloria: '+str(count_Gloria))
+    # print('count_Gloria: '+str(count_Gloria))
     print('count_Galata_Platform: '+str(count_Galata_Platform))
     print('count_Helsinki_Lighthouse: '+str(count_Helsinki_Lighthouse))
     print('count_Gustav_Dalen_Tower: '+str(count_Gustav_Dalen_Tower))
@@ -310,7 +310,7 @@ def plot_all_methods(vl_str,notation_flag,path_out,min_val,max_val):
     diff_pa_va = []
 
     count_Venise = 0
-    count_Gloria = 0
+    # count_Gloria = 0
     count_Galata_Platform = 0
     count_Helsinki_Lighthouse = 0
     count_Gustav_Dalen_Tower = 0
@@ -332,10 +332,10 @@ def plot_all_methods(vl_str,notation_flag,path_out,min_val,max_val):
             mrk_style = 'x'
             mrk_color = 'r' 
             count_Venise = count_Venise+1
-        elif ins_ba_station[cnt] == 'Gloria': # Black Sea    
-            mrk_style = 'x'
-            mrk_color = 'g'       
-            count_Gloria = count_Gloria+1
+        # elif ins_ba_station[cnt] == 'Gloria': # Black Sea    
+        #     mrk_style = 'x'
+        #     mrk_color = 'g'       
+            # count_Gloria = count_Gloria+1
         elif ins_ba_station[cnt] == 'Galata_Platform': # Black Sea
             mrk_style = 'x'
             mrk_color = 'b'
@@ -412,10 +412,10 @@ def plot_all_methods(vl_str,notation_flag,path_out,min_val,max_val):
             mrk_style = '+'
             mrk_color = 'r' 
             count_Venise = count_Venise+1
-        elif ins_pa_station[cnt] == 'Gloria': # Black Sea    
-            mrk_style = '+'
-            mrk_color = 'g'       
-            count_Gloria = count_Gloria+1
+        # elif ins_pa_station[cnt] == 'Gloria': # Black Sea    
+        #     mrk_style = '+'
+        #     mrk_color = 'g'       
+            # count_Gloria = count_Gloria+1
         elif ins_pa_station[cnt] == 'Galata_Platform': # Black Sea
             mrk_style = '+'
             mrk_color = 'b'
@@ -475,10 +475,10 @@ def plot_all_methods(vl_str,notation_flag,path_out,min_val,max_val):
             mrk_style = 'o'
             mrk_color = 'r' 
             count_Venise = count_Venise+1
-        elif ins_va_station[cnt] == 'Gloria': # Black Sea    
-            mrk_style = 'o'
-            mrk_color = 'g'       
-            count_Gloria = count_Gloria+1
+        # elif ins_va_station[cnt] == 'Gloria': # Black Sea    
+        #     mrk_style = 'o'
+        #     mrk_color = 'g'       
+            # count_Gloria = count_Gloria+1
         elif ins_va_station[cnt] == 'Galata_Platform': # Black Sea
             mrk_style = 'o'
             mrk_color = 'b'
@@ -1060,7 +1060,9 @@ with open(path_to_list,'r') as file_list:
             rhos_1614p00_box = rhos_1614p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
             rhos_2202p00_box = rhos_2202p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]  
             
-            # for cloud screening
+            # cloud screening over the individual pixels in the box
+            ''' From Quentin: For cloud screening I generally use also the 1.6 micron band with the 0.0215 threshold, 
+            but this will also mask high sun glint and adjacency effects. (Which is not necessarily a problem!)'''
             rhot_1614p00_box = rhot_1614p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y] 
             
             flags_mask = rhot_1614p00_box>0.0215
@@ -1135,7 +1137,7 @@ with open(path_to_list,'r') as file_list:
                
                 if MedianCV <= 0.15:
                     # Rrs 0444p00
-                    print('444.0')
+                    # print('444.0')
                     if NGP_rhos_0444p00<NTP/2+1:
                         print('Exceeded: NGP_rhos_0444p00={:.0f}'.format(NGP_rhos_0444p00))
                     else:
@@ -1144,7 +1146,7 @@ with open(path_to_list,'r') as file_list:
                         matchups_Lwn_0444p00_fq_ins_ba_station.append(station_name)
                         matchups_Lwn_0444p00_fq_sat_ba_time.append(sat_time)
                     # Rrs 0497p00
-                    print('497.0')
+                    # print('497.0')
                     if NGP_rhos_0497p00<NTP/2+1:
                         print('Exceeded: NGP_rhos_0497p00={:.0f}'.format(NGP_rhos_0497p00))
                     else:
@@ -1153,7 +1155,7 @@ with open(path_to_list,'r') as file_list:
                         matchups_Lwn_0497p00_fq_ins_ba_station.append(station_name)
                         matchups_Lwn_0497p00_fq_sat_ba_time.append(sat_time)
                     # Rrs 0560p00
-                    print('560.0')
+                    # print('560.0')
                     if NGP_rhos_0560p00<NTP/2+1:
                         print('Exceeded: NGP_rhos_0560p00={:.0f}'.format(NGP_rhos_0560p00))
                     else:
@@ -1162,7 +1164,7 @@ with open(path_to_list,'r') as file_list:
                         matchups_Lwn_0560p00_fq_ins_ba_station.append(station_name)
                         matchups_Lwn_0560p00_fq_sat_ba_time.append(sat_time)
                     # Rrs 0664p00
-                    print('664.0')
+                    # print('664.0')
                     if NGP_rhos_0664p00<NTP/2+1:
                         print('Exceeded: NGP_rhos_0664p00={:.0f}'.format(NGP_rhos_0664p00))
                     else:
@@ -1217,7 +1219,10 @@ with open(path_to_list,'r') as file_list:
             rhos_1614p00_box = rhos_1614p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
             rhos_2202p00_box = rhos_2202p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]  
             
-            # for cloud screening
+            # cloud screening over the individual pixels in the box
+            ''' From Quentin: For cloud screening I generally use also the 1.6 micron band with the 0.0215 threshold, 
+            but this will also mask high sun glint and adjacency effects. (Which is not necessarily a problem!)'''
+
             rhot_1614p00_box = rhot_1614p00[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y] 
             
             flags_mask = rhot_1614p00_box>0.0215
@@ -1292,7 +1297,7 @@ with open(path_to_list,'r') as file_list:
                
                 if MedianCV <= 0.15:
                     # Rrs 0444p00
-                    print('444.0')
+                    # print('444.0')
                     if NGP_rhos_0444p00<NTP/2+1:
                         print('Exceeded: NGP_rhos_0444p00={:.0f}'.format(NGP_rhos_0444p00))
                     else:
@@ -1301,7 +1306,7 @@ with open(path_to_list,'r') as file_list:
                         matchups_Lwn_0444p00_fq_ins_pa_station.append(station_name)
                         matchups_Lwn_0444p00_fq_sat_pa_time.append(sat_time)
                     # Rrs 0497p00
-                    print('497.0')
+                    # print('497.0')
                     if NGP_rhos_0497p00<NTP/2+1:
                         print('Exceeded: NGP_rhos_0497p00={:.0f}'.format(NGP_rhos_0497p00))
                     else:
@@ -1310,7 +1315,7 @@ with open(path_to_list,'r') as file_list:
                         matchups_Lwn_0497p00_fq_ins_pa_station.append(station_name)
                         matchups_Lwn_0497p00_fq_sat_pa_time.append(sat_time)
                     # Rrs 0560p00
-                    print('560.0')
+                    # print('560.0')
                     if NGP_rhos_0560p00<NTP/2+1:
                         print('Exceeded: NGP_rhos_0560p00={:.0f}'.format(NGP_rhos_0560p00))
                     else:
@@ -1319,7 +1324,7 @@ with open(path_to_list,'r') as file_list:
                         matchups_Lwn_0560p00_fq_ins_pa_station.append(station_name)
                         matchups_Lwn_0560p00_fq_sat_pa_time.append(sat_time)
                     # Rrs 0664p00
-                    print('664.0')
+                    # print('664.0')
                     if NGP_rhos_0664p00<NTP/2+1:
                         print('Exceeded: NGP_rhos_0664p00={:.0f}'.format(NGP_rhos_0664p00))
                     else:
@@ -1337,8 +1342,8 @@ with open(path_to_list,'r') as file_list:
         else:
             print('Not matchups for '+folder_name) 
 
-        # Vanhellemot
-        print('--Vanhellemot')
+        # Vanhellemont
+        print('--Vanhellemont')
 
         # in situ from aeronet_i.log
         # in_situ_lat, in_situ_lon = get_lat_lon_ins(station_name)
@@ -1371,15 +1376,15 @@ with open(path_to_list,'r') as file_list:
         # idx_min = np.argmin(np.abs(dt_hour))
         # matchup_idx_vec = np.abs(dt_hour) <= delta_time 
 
-   #      # from aeronet_i.log
-   #         101  Lwn(412)=0.5702557894736842
-   # 102  Lwn(441)=0.7611690526315789
-   # 103  Lwn(489)=0.9938783157894736
-   # 104  Lwn(530)=0.7793456842105263
-   # 105  Lwn(551)=0.5839507894736842
-   # 106  Lwn(668)=0.06526310526315791
-   # 107  Lwn(869)=-0.004366210526315784
-   # 108  Lwn(1018)=-0.0016966842105263127
+        # from aeronet_i.log
+        # 101  Lwn(412)=0.5702557894736842
+        # 102  Lwn(441)=0.7611690526315789
+        # 103  Lwn(489)=0.9938783157894736
+        # 104  Lwn(530)=0.7793456842105263
+        # 105  Lwn(551)=0.5839507894736842
+        # 106  Lwn(668)=0.06526310526315791
+        # 107  Lwn(869)=-0.004366210526315784
+        # 108  Lwn(1018)=-0.0016966842105263127
         # 109  Lwn_f/Q(412)=0.5564285789473684
         # 110  Lwn_f/Q(441)=0.7373514736842104
         # 111  Lwn_f/Q(489)=0.9496013157894736
@@ -1415,6 +1420,10 @@ with open(path_to_list,'r') as file_list:
             mean_filtered_rhos_0560p00 = float(ins_all_lines[97-1][:-1].replace('=',',').split(',')[3])
             mean_filtered_rhos_0664p00 = float(ins_all_lines[97-1][:-1].replace('=',',').split(',')[4])
 
+        ''' From Quinten: I filtered out data where the mean of the extract gave negative reflectances or had rho_t SWIR > 0.01. 
+        I did not take CV or std explicitly into account - but the mean rho_t SWIR > 0.01 in the 3x3 box could be achieved by 5/9 pixels being >= 0.0215, 
+        or there being a really bright pixel in the box.     '''
+
         if sza<=75 and vza<=60 and mean_filtered_rhot_1614p00<=0.01:
             matchups_Lwn_0444p00_fq_sat_va.append(mean_filtered_rhos_0444p00*F0_0444p00/np.pi)
             matchups_Lwn_0444p00_fq_ins_va.append(Lwn_fq_0442p00)
@@ -1435,6 +1444,9 @@ with open(path_to_list,'r') as file_list:
             matchups_Lwn_0664p00_fq_ins_va.append(Lwn_fq_0668p00)
             matchups_Lwn_0664p00_fq_ins_va_station.append(station_name)
             matchups_Lwn_0664p00_fq_sat_va_time.append(sat_time)
+        else:
+            print('Matchup did not pass V19')
+            print(f'sza={sza}; vza={vza}; mrhot_1614={mean_filtered_rhot_1614p00}')
                   
 
 #%% plots  

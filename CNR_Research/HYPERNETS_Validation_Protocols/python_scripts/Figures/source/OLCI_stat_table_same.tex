@@ -1,0 +1,153 @@
+\documentclass[preview]{standalone}
+
+\standaloneenv{my}
+
+%%% MY PACKAGES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{graphicx}
+% \usepackage[outdir=./]{epstopdf}
+\usepackage{epstopdf}
+\epstopdfsetup{update} % only regenerate pdf files when eps file is newer
+\usepackage{amsmath,epsfig}
+
+\usepackage{tikz} % for flow charts
+  \usetikzlibrary{shapes,arrows,positioning,shadows,calc}
+  % \usetikzlibrary{external}
+  % \tikzexternalize[prefix=Figures/]
+
+% \usepackage[nostamp]{draftwatermark}
+% \SetWatermarkLightness{0.8}
+% \SetWatermarkScale{4}
+
+\usepackage[percent]{overpic}
+\usepackage{morefloats} % for the error "Too many unprocessed floats"
+
+\usepackage{multirow}
+
+\usepackage{float}
+\usepackage{hyperref}
+
+\usepackage[utf8]{inputenc}
+% \usepackage[x11names]{xcolor}
+\usepackage{fourier}
+\usepackage{booktabs}
+\usepackage{threeparttable, tablefootnote}
+
+\usepackage{cellspace}
+\setlength\cellspacetoplimit{3pt}
+\setlength\cellspacebottomlimit{0pt}
+%%% END MY PACKAGES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+\small
+
+\begin{table}
+\begin{tabular}{ccccccccc}
+
+\hline
+Protocol & $\lambda$[nm] & N & RMSD & MAPD[\%] & MPD[\%] & MB & MAD & $r^2$  \\\hline
+ 
+BW06 & 412.5 & 451 & 0.44 & 309.9 & 2.2 & 0.17 & 0.34 & 0.56\\
+Z09 & 412.5 & 451 & 0.43 & 311.9 & 49.4 & 0.16 & 0.33 & 0.57\\\hline
+
+BW06 & 442.5 & 451 & 0.37 & 170.0 & -21.8 & 0.07 & 0.26 & 0.77\\
+Z09 & 442.5 & 451 & 0.37 & 152.4 & -6.5 & 0.06 & 0.26 & 0.77\\\hline
+
+BW06 & 490 & 451 & 0.32 & 38.0 & -1.5 & -0.03 & 0.19 & 0.89\\
+Z09 & 490 & 451 & 0.32 & 45.8 & -19.4 & -0.03 & 0.19 & 0.89\\\hline
+
+BW06 & 560 & 451 & 0.27 & 13.9 & 4.1 & 0.02 & 0.15 & 0.88\\
+Z09 & 560 & 451 & 0.27 & 13.6 & 3.8 & 0.01 & 0.14 & 0.88\\\hline
+
+BW06 & 665 & 451 & 0.20 & 262.0 & 105.7 & 0.01 & 0.06 & 0.43\\
+Z09 & 665 & 451 & 0.20 & 280.7 & 107.8 & 0.01 & 0.06 & 0.43\\\hline
+
+
+\end{tabular}
+\end{table}
+
+\end{document}
+
+BW06 & 412.5 & 451 & 0.44 & 309.9 & 2.2 & 0.17 & 0.34 & 0.56
+Z09 & 412.5 & 451 & 0.43 & 311.9 & 49.4 & 0.16 & 0.33 & 0.57\\\hline
+
+BW06 & 442.5 & 451 & 0.37 & 170.0 & -21.8 & 0.07 & 0.26 & 0.77
+Z09 & 442.5 & 451 & 0.37 & 152.4 & -6.5 & 0.06 & 0.26 & 0.77\\\hline
+
+BW06 & 490 & 451 & 0.32 & 38.0 & -1.5 & -0.03 & 0.19 & 0.89
+Z09 & 490 & 451 & 0.32 & 45.8 & -19.4 & -0.03 & 0.19 & 0.89\\\hline
+
+BW06 & 560 & 451 & 0.27 & 13.9 & 4.1 & 0.02 & 0.15 & 0.88
+Z09 & 560 & 451 & 0.27 & 13.6 & 3.8 & 0.01 & 0.14 & 0.88\\\hline
+
+BW06 & 665 & 451 & 0.20 & 262.0 & 105.7 & 0.01 & 0.06 & 0.43
+Z09 & 665 & 451 & 0.20 & 280.7 & 107.8 & 0.01 & 0.06 & 0.43\\\hline
+
+
+
+
+
+
+
+
+Z09 & 412.5 & 451 & 0.43 & 311.9 & 49.4 & 0.16 & 0.33 & 0.57\\
+count_Venise: 127
+count_Gloria: 150
+count_Galata_Platform: 134
+count_Helsinki_Lighthouse: 20
+count_Gustav_Dalen_Tower: 20
+Z09 & 442.5 & 451 & 0.37 & 152.4 & -6.5 & 0.06 & 0.26 & 0.77\\
+count_Venise: 127
+count_Gloria: 150
+count_Galata_Platform: 134
+count_Helsinki_Lighthouse: 20
+count_Gustav_Dalen_Tower: 20
+Z09 & 490 & 451 & 0.32 & 45.8 & -19.4 & -0.03 & 0.19 & 0.89\\
+count_Venise: 127
+count_Gloria: 150
+count_Galata_Platform: 134
+count_Helsinki_Lighthouse: 20
+count_Gustav_Dalen_Tower: 20
+Z09 & 560 & 451 & 0.27 & 13.6 & 3.8 & 0.01 & 0.14 & 0.88\\
+count_Venise: 127
+count_Gloria: 150
+count_Galata_Platform: 134
+count_Helsinki_Lighthouse: 20
+count_Gustav_Dalen_Tower: 20
+Z09 & 665 & 451 & 0.20 & 280.7 & 107.8 & 0.01 & 0.06 & 0.43\\
+count_Venise: 127
+count_Gloria: 150
+count_Galata_Platform: 134
+count_Helsinki_Lighthouse: 20
+count_Gustav_Dalen_Tower: 20
+proto & nm & N & rmse & MAPD & MPD & mean bias & MAE & $r^2$
+
+BW06 & 412.5 & 451 & 0.44 & 309.9 & 2.2 & 0.17 & 0.34 & 0.56\\
+count_Venise: 127
+count_Gloria: 150
+count_Galata_Platform: 134
+count_Helsinki_Lighthouse: 20
+count_Gustav_Dalen_Tower: 20
+BW06 & 442.5 & 451 & 0.37 & 170.0 & -21.8 & 0.07 & 0.26 & 0.77\\
+count_Venise: 127
+count_Gloria: 150
+count_Galata_Platform: 134
+count_Helsinki_Lighthouse: 20
+count_Gustav_Dalen_Tower: 20
+BW06 & 490 & 451 & 0.32 & 38.0 & -1.5 & -0.03 & 0.19 & 0.89\\
+count_Venise: 127
+count_Gloria: 150
+count_Galata_Platform: 134
+count_Helsinki_Lighthouse: 20
+count_Gustav_Dalen_Tower: 20
+BW06 & 560 & 451 & 0.27 & 13.9 & 4.1 & 0.02 & 0.15 & 0.88\\
+count_Venise: 127
+count_Gloria: 150
+count_Galata_Platform: 134
+count_Helsinki_Lighthouse: 20
+count_Gustav_Dalen_Tower: 20
+BW06 & 665 & 451 & 0.20 & 262.0 & 105.7 & 0.01 & 0.06 & 0.43\\
+count_Venise: 127
+count_Gloria: 150
+count_Galata_Platform: 134
+count_Helsinki_Lighthouse: 20
+count_Gustav_Dalen_Tower: 20

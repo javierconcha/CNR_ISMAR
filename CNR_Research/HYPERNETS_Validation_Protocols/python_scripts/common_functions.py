@@ -105,7 +105,10 @@ def find_row_column_from_lat_lon(lat,lon,lat0,lon0):
         c = np.nan
     return r, c
 
-
+def extract_box(granule,r,c,size_box):
+    offset = int(size_box/2)
+    extract = granule[r-offset:r+offset+1,c-offset:c+offset+1]
+    return extract
     
 def doy_from_YYYYMMDD(date):
     adate = datetime.datetime.strptime(date,"%Y%m%d")
