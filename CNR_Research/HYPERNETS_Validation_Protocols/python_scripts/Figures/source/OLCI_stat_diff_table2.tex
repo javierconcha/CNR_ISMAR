@@ -1,0 +1,63 @@
+\documentclass[preview]{standalone}
+
+\standaloneenv{my}
+
+%%% MY PACKAGES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{graphicx}
+% \usepackage[outdir=./]{epstopdf}
+\usepackage{epstopdf}
+\epstopdfsetup{update} % only regenerate pdf files when eps file is newer
+\usepackage{amsmath,epsfig}
+
+\usepackage{tikz} % for flow charts
+  \usetikzlibrary{shapes,arrows,positioning,shadows,calc}
+  % \usetikzlibrary{external}
+  % \tikzexternalize[prefix=Figures/]
+
+% \usepackage[nostamp]{draftwatermark}
+% \SetWatermarkLightness{0.8}
+% \SetWatermarkScale{4}
+
+\usepackage[percent]{overpic}
+\usepackage{morefloats} % for the error "Too many unprocessed floats"
+
+\usepackage{multirow}
+
+\usepackage{float}
+\usepackage{hyperref}
+
+\usepackage[utf8]{inputenc}
+% \usepackage[x11names]{xcolor}
+\usepackage{fourier}
+\usepackage{booktabs}
+\usepackage{threeparttable, tablefootnote}
+
+\usepackage{cellspace}
+\setlength\cellspacetoplimit{3pt}
+\setlength\cellspacebottomlimit{0pt}
+%%% END MY PACKAGES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+\footnotesize
+\centering
+\setlength\tabcolsep{3pt} % default value: 6pt
+\begin{table}
+\begin{tabular}{@{\extracolsep{4pt}}ScSlScScScScScSc @{}}
+\hline
+Protocol Diff. & $\lambda$[nm] & min & max & std & median & mean  & N\\ \hline
+BW06-Z09 & 412.5 & -0.39 & 0.24 & 0.05 & 0.0070 & 0.0116 & 451\\
+BW06-Z09 & 442.5 & -0.28 & 0.21 & 0.05 & 0.0046 & 0.0089 & 451\\
+BW06-Z09 & 490   & -0.26 & 0.15 & 0.03 & 0.0042 & 0.0059 & 451\\
+BW06-Z09 & 560   & -0.10 & 0.11 & 0.02 & 0.0009 & 0.0015 & 451\\
+BW06-Z09 & 665   & -0.05 & 0.07 & 0.01 & 0.0004 & 0.0007 & 451\\\hline
+
+
+\end{tabular}
+\end{table}
+
+\end{document}
+
+
+
+
+

@@ -1,0 +1,61 @@
+
+\documentclass[preview]{standalone}
+
+\standaloneenv{my}
+
+%%% MY PACKAGES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{graphicx}
+% \usepackage[outdir=./]{epstopdf}
+\usepackage{epstopdf}
+\epstopdfsetup{update} % only regenerate pdf files when eps file is newer
+\usepackage{amsmath,epsfig}
+
+\usepackage{tikz} % for flow charts
+  \usetikzlibrary{shapes,arrows,positioning,shadows,calc}
+  % \usetikzlibrary{external}
+  % \tikzexternalize[prefix=Figures/]
+
+% \usepackage[nostamp]{draftwatermark}
+% \SetWatermarkLightness{0.8}
+% \SetWatermarkScale{4}
+
+\usepackage[percent]{overpic}
+\usepackage{morefloats} % for the error "Too many unprocessed floats"
+
+\usepackage{multirow}
+
+\usepackage{float}
+\usepackage{hyperref}
+
+\usepackage[utf8]{inputenc}
+% \usepackage[x11names]{xcolor}
+\usepackage{fourier}
+\usepackage{booktabs}
+\usepackage{threeparttable, tablefootnote}
+
+\usepackage{cellspace}
+\setlength\cellspacetoplimit{3pt}
+\setlength\cellspacebottomlimit{0pt}
+%%% END MY PACKAGES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+\begin{table}
+\begin{tabular}{lccc}\hline
+Station                 & Days w/ In Situ   & BW06         & Z09          \\\hline
+Venise                  & 641 (25.0\%)      & 127 (19.8\%) & 127 (19.8\%) \\
+Gloria                  & 585 (22.8\%)      & 150 (25.6\%) & 150 (25.6\%) \\
+Galata Platform         & 622 (24.3\%)      & 134 (21.5\%) & 134 (21.5\%) \\
+Helsinki Lighthouse     & 460 (17.9\%)      & 20 (4.3\%)   & 20 (4.3\%)   \\
+Gustav Dalen Tower      & 251 (9.8\%)       & 20 (7.9\%)   & 20 (7.9\%)   \\\hline
+$N_{total}$             & 2,559             & 451 (17.6\%) & 451 (17.6\%) \\
+
+\end{tabular}
+\end{table}
+
+\end{document}
+
+count_Venise: 127
+count_Gloria: 150
+count_Galata_Platform: 134
+count_Helsinki_Lighthouse: 20
+count_Gustav_Dalen_Tower: 20
