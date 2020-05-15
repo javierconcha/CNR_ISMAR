@@ -321,7 +321,7 @@ def plot_scatter(x,y,str1,path_out,prot_name,sensor_name,station_vec,min_val,max
         
     plt.text(0.05, 0.58, str0,horizontalalignment='left', fontsize=12,transform=plt.gca().transAxes)
     
-    ofname = sensor_name+'_scatter_matchups_'+str1.replace(".","p")+'_'+prot_name+'.pdf'
+    ofname = sensor_name+'_scatter_mu_'+str1.replace(".","p")+'_'+prot_name+'.pdf'
     ofname = os.path.join(path_out,'source',ofname)
     
     plt.savefig(ofname, dpi=300)
@@ -383,20 +383,20 @@ def plot_both_methods(wl_str,notation_flag,path_out,min_val,max_val):
         str0 = '0665p00'
         str3 = '665'
     
-    ins_zi_station = globals()['matchups_Lwn_'+str0+'_fq_ins_zi_station']
-    ins_ba_station = globals()['matchups_Lwn_'+str0+'_fq_ins_ba_station']
+    ins_zi_station = globals()['mu_Lwn_'+str0+'_fq_ins_zi_station']
+    ins_ba_station = globals()['mu_Lwn_'+str0+'_fq_ins_ba_station']
 
-    sat_zi_stop_time = globals()['matchups_Lwn_'+str0+'_fq_sat_zi_stop_time']
-    sat_ba_stop_time = globals()['matchups_Lwn_'+str0+'_fq_sat_ba_stop_time']
+    sat_zi_stop_time = globals()['mu_Lwn_'+str0+'_fq_sat_zi_stop_time']
+    sat_ba_stop_time = globals()['mu_Lwn_'+str0+'_fq_sat_ba_stop_time']
 
-    ins_zi_time = globals()['matchups_Lwn_'+str0+'_fq_ins_zi_time']
-    ins_ba_time = globals()['matchups_Lwn_'+str0+'_fq_ins_ba_time']
+    ins_zi_time = globals()['mu_Lwn_'+str0+'_fq_ins_zi_time']
+    ins_ba_time = globals()['mu_Lwn_'+str0+'_fq_ins_ba_time']
 
-    sat_zi = globals()['matchups_Lwn_'+str0+'_fq_sat_zi']
-    sat_ba = globals()['matchups_Lwn_'+str0+'_fq_sat_ba']
+    sat_zi = globals()['mu_Lwn_'+str0+'_fq_sat_zi']
+    sat_ba = globals()['mu_Lwn_'+str0+'_fq_sat_ba']
 
-    ins_zi = globals()['matchups_Lwn_'+str0+'_fq_ins_zi']
-    ins_ba = globals()['matchups_Lwn_'+str0+'_fq_ins_ba']
+    ins_zi = globals()['mu_Lwn_'+str0+'_fq_ins_zi']
+    ins_ba = globals()['mu_Lwn_'+str0+'_fq_ins_ba']
 
     count_both = 0
     count_zi = len(ins_zi_station)
@@ -891,70 +891,160 @@ F0_0665p00 = get_F0(665.0,path_main)
 # from AERONET-OC: Lwn in [mW/(cm^2 sr um)]
 
 # Zibordi: initialization
-matchups_Lwn_0412p50_fq_ins_zi = []
-matchups_Lwn_0442p50_fq_ins_zi = []
-matchups_Lwn_0490p00_fq_ins_zi = []
-matchups_Lwn_0560p00_fq_ins_zi = []
-matchups_Lwn_0665p00_fq_ins_zi = []
+mu_Lwn_0412p50_fq_ins_zi = []
+mu_Lwn_0442p50_fq_ins_zi = []
+mu_Lwn_0490p00_fq_ins_zi = []
+mu_Lwn_0560p00_fq_ins_zi = []
+mu_Lwn_0665p00_fq_ins_zi = []
 
-matchups_Lwn_0412p50_fq_sat_zi = []
-matchups_Lwn_0442p50_fq_sat_zi = []
-matchups_Lwn_0490p00_fq_sat_zi = []
-matchups_Lwn_0560p00_fq_sat_zi = []
-matchups_Lwn_0665p00_fq_sat_zi = []
+mu_Lwn_0412p50_fq_sat_zi = []
+mu_Lwn_0442p50_fq_sat_zi = []
+mu_Lwn_0490p00_fq_sat_zi = []
+mu_Lwn_0560p00_fq_sat_zi = []
+mu_Lwn_0665p00_fq_sat_zi = []
 
-matchups_Lwn_0412p50_fq_ins_zi_station = []
-matchups_Lwn_0442p50_fq_ins_zi_station = []
-matchups_Lwn_0490p00_fq_ins_zi_station = []
-matchups_Lwn_0560p00_fq_ins_zi_station = []
-matchups_Lwn_0665p00_fq_ins_zi_station = []
+mu_Lwn_0412p50_fq_ins_zi_station = []
+mu_Lwn_0442p50_fq_ins_zi_station = []
+mu_Lwn_0490p00_fq_ins_zi_station = []
+mu_Lwn_0560p00_fq_ins_zi_station = []
+mu_Lwn_0665p00_fq_ins_zi_station = []
 
-matchups_Lwn_0412p50_fq_sat_zi_stop_time = []
-matchups_Lwn_0442p50_fq_sat_zi_stop_time = []
-matchups_Lwn_0490p00_fq_sat_zi_stop_time = []
-matchups_Lwn_0560p00_fq_sat_zi_stop_time = []
-matchups_Lwn_0665p00_fq_sat_zi_stop_time = []    
+mu_Lwn_0412p50_fq_sat_zi_stop_time = []
+mu_Lwn_0442p50_fq_sat_zi_stop_time = []
+mu_Lwn_0490p00_fq_sat_zi_stop_time = []
+mu_Lwn_0560p00_fq_sat_zi_stop_time = []
+mu_Lwn_0665p00_fq_sat_zi_stop_time = []    
 
-matchups_Lwn_0412p50_fq_ins_zi_time = []
-matchups_Lwn_0442p50_fq_ins_zi_time = []
-matchups_Lwn_0490p00_fq_ins_zi_time = []
-matchups_Lwn_0560p00_fq_ins_zi_time = []
-matchups_Lwn_0665p00_fq_ins_zi_time = [] 
+mu_Lwn_0412p50_fq_ins_zi_time = []
+mu_Lwn_0442p50_fq_ins_zi_time = []
+mu_Lwn_0490p00_fq_ins_zi_time = []
+mu_Lwn_0560p00_fq_ins_zi_time = []
+mu_Lwn_0665p00_fq_ins_zi_time = [] 
 
 # Bailey and Werdell: initialization
-matchups_Lwn_0412p50_fq_ins_ba = []
-matchups_Lwn_0442p50_fq_ins_ba = []
-matchups_Lwn_0490p00_fq_ins_ba = []
-matchups_Lwn_0560p00_fq_ins_ba = []
-matchups_Lwn_0665p00_fq_ins_ba = []
+mu_Lwn_0412p50_fq_ins_ba = []
+mu_Lwn_0442p50_fq_ins_ba = []
+mu_Lwn_0490p00_fq_ins_ba = []
+mu_Lwn_0560p00_fq_ins_ba = []
+mu_Lwn_0665p00_fq_ins_ba = []
 
-matchups_Lwn_0412p50_fq_sat_ba = []
-matchups_Lwn_0442p50_fq_sat_ba = []
-matchups_Lwn_0490p00_fq_sat_ba = []
-matchups_Lwn_0560p00_fq_sat_ba = []
-matchups_Lwn_0665p00_fq_sat_ba = []
+mu_Lwn_0412p50_fq_sat_ba = []
+mu_Lwn_0442p50_fq_sat_ba = []
+mu_Lwn_0490p00_fq_sat_ba = []
+mu_Lwn_0560p00_fq_sat_ba = []
+mu_Lwn_0665p00_fq_sat_ba = []
 
-matchups_Lwn_0412p50_fq_ins_ba_station = []
-matchups_Lwn_0442p50_fq_ins_ba_station = []
-matchups_Lwn_0490p00_fq_ins_ba_station = []
-matchups_Lwn_0560p00_fq_ins_ba_station = []
-matchups_Lwn_0665p00_fq_ins_ba_station = [] 
+mu_Lwn_0412p50_fq_ins_ba_station = []
+mu_Lwn_0442p50_fq_ins_ba_station = []
+mu_Lwn_0490p00_fq_ins_ba_station = []
+mu_Lwn_0560p00_fq_ins_ba_station = []
+mu_Lwn_0665p00_fq_ins_ba_station = [] 
 
-matchups_Lwn_0412p50_fq_sat_ba_stop_time = []
-matchups_Lwn_0442p50_fq_sat_ba_stop_time = []
-matchups_Lwn_0490p00_fq_sat_ba_stop_time = []
-matchups_Lwn_0560p00_fq_sat_ba_stop_time = []
-matchups_Lwn_0665p00_fq_sat_ba_stop_time = []  
+mu_Lwn_0412p50_fq_sat_ba_stop_time = []
+mu_Lwn_0442p50_fq_sat_ba_stop_time = []
+mu_Lwn_0490p00_fq_sat_ba_stop_time = []
+mu_Lwn_0560p00_fq_sat_ba_stop_time = []
+mu_Lwn_0665p00_fq_sat_ba_stop_time = []  
 
-matchups_Lwn_0412p50_fq_ins_ba_time = []
-matchups_Lwn_0442p50_fq_ins_ba_time = []
-matchups_Lwn_0490p00_fq_ins_ba_time = []
-matchups_Lwn_0560p00_fq_ins_ba_time = []
-matchups_Lwn_0665p00_fq_ins_ba_time = []        
+mu_Lwn_0412p50_fq_ins_ba_time = []
+mu_Lwn_0442p50_fq_ins_ba_time = []
+mu_Lwn_0490p00_fq_ins_ba_time = []
+mu_Lwn_0560p00_fq_ins_ba_time = []
+mu_Lwn_0665p00_fq_ins_ba_time = []        
 
 # station_list = ['Venise','Galata_Platform','Gloria']
 station_list = ['Venise','Galata_Platform','Gloria','Helsinki_Lighthouse','Gustav_Dalen_Tower']
 # station_list = ['Venise']
+
+# for counting potential matchups
+pot_mu_cnt_zi = 0
+pot_mu_cnt_ba = 0
+
+pot_mu_cnt_ba_Venise = 0
+pot_mu_cnt_ba_Gloria = 0
+pot_mu_cnt_ba_Galata_Platform = 0
+pot_mu_cnt_ba_Helsinki_Lighthouse = 0
+pot_mu_cnt_ba_Gustav_Dalen_Tower = 0
+
+pot_mu_cnt_zi_Venise = 0
+pot_mu_cnt_zi_Gloria = 0
+pot_mu_cnt_zi_Galata_Platform = 0
+pot_mu_cnt_zi_Helsinki_Lighthouse = 0
+pot_mu_cnt_zi_Gustav_Dalen_Tower = 0
+
+# for counting rejection reasons
+rej_cvs_mu_cnt_zi = 0
+rej_cvs_mu_cnt_zi_Venise = 0
+rej_cvs_mu_cnt_zi_Gloria = 0
+rej_cvs_mu_cnt_zi_Galata_Platform = 0
+rej_cvs_mu_cnt_zi_Helsinki_Lighthouse = 0
+rej_cvs_mu_cnt_zi_Gustav_Dalen_Tower = 0
+rej_cvL_mu_cnt_zi = 0
+rej_cvL_mu_cnt_zi_Venise = 0
+rej_cvL_mu_cnt_zi_Gloria = 0
+rej_cvL_mu_cnt_zi_Galata_Platform = 0
+rej_cvL_mu_cnt_zi_Helsinki_Lighthouse = 0
+rej_cvL_mu_cnt_zi_Gustav_Dalen_Tower = 0
+rej_cvA_mu_cnt_zi = 0
+rej_cvA_mu_cnt_zi_Venise = 0
+rej_cvA_mu_cnt_zi_Gloria = 0
+rej_cvA_mu_cnt_zi_Galata_Platform = 0
+rej_cvA_mu_cnt_zi_Helsinki_Lighthouse = 0
+rej_cvA_mu_cnt_zi_Gustav_Dalen_Tower = 0
+rej_ang_mu_cnt_zi = 0
+rej_ang_mu_cnt_zi_Venise = 0
+rej_ang_mu_cnt_zi_Gloria = 0
+rej_ang_mu_cnt_zi_Galata_Platform = 0
+rej_ang_mu_cnt_zi_Helsinki_Lighthouse = 0
+rej_ang_mu_cnt_zi_Gustav_Dalen_Tower = 0
+rej_sza_mu_cnt_zi = 0
+rej_sza_mu_cnt_zi_Venise = 0
+rej_sza_mu_cnt_zi_Gloria = 0
+rej_sza_mu_cnt_zi_Galata_Platform = 0
+rej_sza_mu_cnt_zi_Helsinki_Lighthouse = 0
+rej_sza_mu_cnt_zi_Gustav_Dalen_Tower = 0
+rej_vza_mu_cnt_zi = 0
+rej_vza_mu_cnt_zi_Venise = 0
+rej_vza_mu_cnt_zi_Gloria = 0
+rej_vza_mu_cnt_zi_Galata_Platform = 0
+rej_vza_mu_cnt_zi_Helsinki_Lighthouse = 0
+rej_vza_mu_cnt_zi_Gustav_Dalen_Tower = 0
+rej_inv_mu_cnt_zi = 0
+rej_inv_mu_cnt_zi_Venise = 0
+rej_inv_mu_cnt_zi_Gloria = 0
+rej_inv_mu_cnt_zi_Galata_Platform = 0
+rej_inv_mu_cnt_zi_Helsinki_Lighthouse = 0
+rej_inv_mu_cnt_zi_Gustav_Dalen_Tower = 0
+rej_cvs_mu_cnt_ba = 0
+rej_cvs_mu_cnt_ba_Venise = 0
+rej_cvs_mu_cnt_ba_Gloria = 0
+rej_cvs_mu_cnt_ba_Galata_Platform = 0
+rej_cvs_mu_cnt_ba_Helsinki_Lighthouse = 0
+rej_cvs_mu_cnt_ba_Gustav_Dalen_Tower = 0
+rej_ang_mu_cnt_ba = 0
+rej_ang_mu_cnt_ba_Venise = 0
+rej_ang_mu_cnt_ba_Gloria = 0
+rej_ang_mu_cnt_ba_Galata_Platform = 0
+rej_ang_mu_cnt_ba_Helsinki_Lighthouse = 0
+rej_ang_mu_cnt_ba_Gustav_Dalen_Tower = 0
+rej_sza_mu_cnt_ba = 0
+rej_sza_mu_cnt_ba_Venise = 0
+rej_sza_mu_cnt_ba_Gloria = 0
+rej_sza_mu_cnt_ba_Galata_Platform = 0
+rej_sza_mu_cnt_ba_Helsinki_Lighthouse = 0
+rej_sza_mu_cnt_ba_Gustav_Dalen_Tower = 0
+rej_vza_mu_cnt_ba = 0
+rej_vza_mu_cnt_ba_Venise = 0
+rej_vza_mu_cnt_ba_Gloria = 0
+rej_vza_mu_cnt_ba_Galata_Platform = 0
+rej_vza_mu_cnt_ba_Helsinki_Lighthouse = 0
+rej_vza_mu_cnt_ba_Gustav_Dalen_Tower = 0
+rej_inv_mu_cnt_ba = 0
+rej_inv_mu_cnt_ba_Venise = 0
+rej_inv_mu_cnt_ba_Gloria = 0
+rej_inv_mu_cnt_ba_Galata_Platform = 0
+rej_inv_mu_cnt_ba_Helsinki_Lighthouse = 0
+rej_inv_mu_cnt_ba_Gustav_Dalen_Tower = 0
 
 for station_name in station_list:  
     
@@ -1034,6 +1124,19 @@ for station_name in station_list:
                 print(str(nday)+' matchups per '+year_str+' '+doy_str)
     #            print(Lwn_fonQ[idx_min,:])
     #            print(Exact_wavelengths[idx_min,:])
+
+                # to count potential matchups total and per stations
+                pot_mu_cnt_zi += 1
+                if station_name == 'Venise':
+                    pot_mu_cnt_zi_Venise += 1
+                elif station_name == 'Gloria':
+                    pot_mu_cnt_zi_Gloria += 1
+                elif station_name == 'Galata_Platform':
+                    pot_mu_cnt_zi_Galata_Platform += 1
+                elif station_name == 'Helsinki_Lighthouse':
+                    pot_mu_cnt_zi_Helsinki_Lighthouse += 1
+                elif station_name == 'Gustav_Dalen_Tower':
+                    pot_mu_cnt_zi_Gustav_Dalen_Tower += 1    
                 
                 center_px = int(len(rhow_0412p50_fq)/2 + 0.5)
                 size_box = 3
@@ -1057,89 +1160,181 @@ for station_name in station_list:
                 # 0         1         2         3         4         5         6         7         8         9         10        11        12        13        14        15        16        17        18        19        20        21        22 
                 # Lw[340nm],Lw[380nm],Lw[400nm],Lw[412nm],Lw[440nm],Lw[443nm],Lw[490nm],Lw[500nm],Lw[510nm],Lw[531nm],Lw[532nm],Lw[551nm],Lw[555nm],Lw[560nm],Lw[620nm],Lw[667nm],Lw[675nm],Lw[681nm],Lw[709nm],Lw[779nm],Lw[865nm],Lw[870nm],Lw[1020nm]    
                 # -999,     -999,     -999,     412,      -999,     441.8,    488.5,    -999,     -999,     -999,     530.3,    551,      -999,     -999,     -999,     667.9,    -999,     -999,     -999,     -999,     -999,     870.8,    1020.5,
+ 
+                # cv
+                Lwn_560 = rhow_0560p00_fq_box*F0_0560p00/np.pi
+                Lwn_560_CV = np.abs(Lwn_560.std()/Lwn_560.mean())                    
+                AOT_0865p50_CV = np.abs(AOT_0865p50_box.std()/AOT_0865p50_box.mean())
+
+                # count rejections
+                if Lwn_560_CV > 0.2 or AOT_0865p50_CV > 0.2:
+                    rej_cvs_mu_cnt_zi += 1
+                    if station_name == 'Venise':
+                        rej_cvs_mu_cnt_zi_Venise += 1
+                    elif station_name == 'Gloria':
+                        rej_cvs_mu_cnt_zi_Gloria += 1
+                    elif station_name == 'Galata_Platform':
+                        rej_cvs_mu_cnt_zi_Galata_Platform += 1
+                    elif station_name == 'Helsinki_Lighthouse':
+                        rej_cvs_mu_cnt_zi_Helsinki_Lighthouse += 1
+                    elif station_name == 'Gustav_Dalen_Tower':
+                        rej_cvs_mu_cnt_zi_Gustav_Dalen_Tower += 1 
+
+                if Lwn_560_CV > 0.2:
+                    rej_cvL_mu_cnt_zi += 1
+                    if station_name == 'Venise':
+                        rej_cvL_mu_cnt_zi_Venise += 1
+                    elif station_name == 'Gloria':
+                        rej_cvL_mu_cnt_zi_Gloria += 1
+                    elif station_name == 'Galata_Platform':
+                        rej_cvL_mu_cnt_zi_Galata_Platform += 1
+                    elif station_name == 'Helsinki_Lighthouse':
+                        rej_cvL_mu_cnt_zi_Helsinki_Lighthouse += 1
+                    elif station_name == 'Gustav_Dalen_Tower':
+                        rej_cvL_mu_cnt_zi_Gustav_Dalen_Tower += 1 
+
+                if AOT_0865p50_CV > 0.2:
+                    rej_cvA_mu_cnt_zi += 1
+                    if station_name == 'Venise':
+                        rej_cvA_mu_cnt_zi_Venise += 1
+                    elif station_name == 'Gloria':
+                        rej_cvA_mu_cnt_zi_Gloria += 1
+                    elif station_name == 'Galata_Platform':
+                        rej_cvA_mu_cnt_zi_Galata_Platform += 1
+                    elif station_name == 'Helsinki_Lighthouse':
+                        rej_cvA_mu_cnt_zi_Helsinki_Lighthouse += 1
+                    elif station_name == 'Gustav_Dalen_Tower':
+                        rej_cvA_mu_cnt_zi_Gustav_Dalen_Tower += 1 
+
+                if sza>70 or vza>56:
+                    rej_ang_mu_cnt_zi += 1
+                    if station_name == 'Venise':
+                        rej_ang_mu_cnt_zi_Venise += 1
+                    elif station_name == 'Gloria':
+                        rej_ang_mu_cnt_zi_Gloria += 1
+                    elif station_name == 'Galata_Platform':
+                        rej_ang_mu_cnt_zi_Galata_Platform += 1
+                    elif station_name == 'Helsinki_Lighthouse':
+                        rej_ang_mu_cnt_zi_Helsinki_Lighthouse += 1
+                    elif station_name == 'Gustav_Dalen_Tower':
+                        rej_ang_mu_cnt_zi_Gustav_Dalen_Tower += 1 
+
+                if sza>70:
+                    rej_sza_mu_cnt_zi += 1
+                    if station_name == 'Venise':
+                        rej_sza_mu_cnt_zi_Venise += 1
+                    elif station_name == 'Gloria':
+                        rej_sza_mu_cnt_zi_Gloria += 1
+                    elif station_name == 'Galata_Platform':
+                        rej_sza_mu_cnt_zi_Galata_Platform += 1
+                    elif station_name == 'Helsinki_Lighthouse':
+                        rej_sza_mu_cnt_zi_Helsinki_Lighthouse += 1
+                    elif station_name == 'Gustav_Dalen_Tower':
+                        rej_sza_mu_cnt_zi_Gustav_Dalen_Tower += 1   
+
+                if vza>56:
+                    rej_vza_mu_cnt_zi += 1
+                    if station_name == 'Venise':
+                        rej_vza_mu_cnt_zi_Venise += 1
+                    elif station_name == 'Gloria':
+                        rej_vza_mu_cnt_zi_Gloria += 1
+                    elif station_name == 'Galata_Platform':
+                        rej_vza_mu_cnt_zi_Galata_Platform += 1
+                    elif station_name == 'Helsinki_Lighthouse':
+                        rej_vza_mu_cnt_zi_Helsinki_Lighthouse += 1
+                    elif station_name == 'Gustav_Dalen_Tower':
+                        rej_vza_mu_cnt_zi_Gustav_Dalen_Tower += 1                               
+
+                if flags_mask.any():
+                    rej_inv_mu_cnt_zi += 1
+                    if station_name == 'Venise':
+                        rej_inv_mu_cnt_zi_Venise += 1
+                    elif station_name == 'Gloria':
+                        rej_inv_mu_cnt_zi_Gloria += 1
+                    elif station_name == 'Galata_Platform':
+                        rej_inv_mu_cnt_zi_Galata_Platform += 1
+                    elif station_name == 'Helsinki_Lighthouse':
+                        rej_inv_mu_cnt_zi_Helsinki_Lighthouse += 1
+                    elif station_name == 'Gustav_Dalen_Tower':
+                        rej_inv_mu_cnt_zi_Gustav_Dalen_Tower += 1 
+
+                # create matchup
+                if (sza<=70 and vza<=56) and (not flags_mask.any()) and (Lwn_560_CV <= 0.2 and AOT_0865p50_CV <= 0.2): # if any of the pixels if flagged, Fails validation criteria because all have to be valid in Zibordi 2018
+                # if any is invalid, do not calculated matchup
+                    if not ((rhow_0412p50_fq_box.mask.any() or np.isnan(rhow_0412p50_fq_box).any())\
+                        or (rhow_0442p50_fq_box.mask.any() or np.isnan(rhow_0442p50_fq_box).any())\
+                        or (rhow_0490p00_fq_box.mask.any() or np.isnan(rhow_0490p00_fq_box).any())\
+                        or (rhow_0560p00_fq_box.mask.any() or np.isnan(rhow_0560p00_fq_box).any())\
+                        or (rhow_0665p00_fq_box.mask.any() or np.isnan(rhow_0665p00_fq_box).any())):
+
                     
-                if sza<=70 and vza<=56 and not flags_mask.any(): # if any of the pixels if flagged, Fails validation criteria because all have to be valid in Zibordi 2018
-                    Lwn_560 = rhow_0560p00_fq_box*F0_0560p00/np.pi
-                    Lwn_560_CV = np.abs(Lwn_560.std()/Lwn_560.mean())    
-                    
-                    AOT_0865p50_CV = np.abs(AOT_0865p50_box.std()/AOT_0865p50_box.mean())
-                    
-                    if Lwn_560_CV <= 0.2 and AOT_0865p50_CV <= 0.2:
-                    # if any is invalid, do not calculated matchup
-                        if not ((rhow_0412p50_fq_box.mask.any() or np.isnan(rhow_0412p50_fq_box).any())\
-                            or (rhow_0442p50_fq_box.mask.any() or np.isnan(rhow_0442p50_fq_box).any())\
-                            or (rhow_0490p00_fq_box.mask.any() or np.isnan(rhow_0490p00_fq_box).any())\
-                            or (rhow_0560p00_fq_box.mask.any() or np.isnan(rhow_0560p00_fq_box).any())\
-                            or (rhow_0665p00_fq_box.mask.any() or np.isnan(rhow_0665p00_fq_box).any())):
-  
+                    # Rrs 0412p50
+                    # print('412.5')
+                    # if not (rhow_0412p50_fq_box.mask.any() == True or np.isnan(rhow_0412p50_fq_box).any() == True):
+                    #     print('At least one element in sat product is invalid!')
+                    # else:
+                        mu_Lwn_0412p50_fq_sat_zi.append(rhow_0412p50_fq_box.mean()*F0_0412p50/np.pi)
+                        mu_Lwn_0412p50_fq_ins_zi.append(Lwn_fonQ[idx_min,3]) # 412,
+                        mu_Lwn_0412p50_fq_ins_zi_station.append(station_name)
+                        mu_Lwn_0412p50_fq_sat_zi_stop_time.append(sat_stop_time)
+                        mu_Lwn_0412p50_fq_ins_zi_time.append(ins_time[idx_min])
                         
-                        # Rrs 0412p50
-                        # print('412.5')
-                        # if not (rhow_0412p50_fq_box.mask.any() == True or np.isnan(rhow_0412p50_fq_box).any() == True):
-                        #     print('At least one element in sat product is invalid!')
-                        # else:
-                            matchups_Lwn_0412p50_fq_sat_zi.append(rhow_0412p50_fq_box.mean()*F0_0412p50/np.pi)
-                            matchups_Lwn_0412p50_fq_ins_zi.append(Lwn_fonQ[idx_min,3]) # 412,
-                            matchups_Lwn_0412p50_fq_ins_zi_station.append(station_name)
-                            matchups_Lwn_0412p50_fq_sat_zi_stop_time.append(sat_stop_time)
-                            matchups_Lwn_0412p50_fq_ins_zi_time.append(ins_time[idx_min])
-                            
-                        # Rrs 0442p50
-                        # print('442.5')
-                        # if not (rhow_0442p50_fq_box.mask.any() == True or np.isnan(rhow_0442p50_fq_box).any() == True):
-                            # print('At least one element in sat product is invalid!')
-                        # else:
-                            matchups_Lwn_0442p50_fq_sat_zi.append(rhow_0442p50_fq_box.mean()*F0_0442p50/np.pi)
-                            matchups_Lwn_0442p50_fq_ins_zi.append(Lwn_fonQ[idx_min,5]) # 441.8
-                            matchups_Lwn_0442p50_fq_ins_zi_station.append(station_name)
-                            matchups_Lwn_0442p50_fq_sat_zi_stop_time.append(sat_stop_time)
-                            matchups_Lwn_0442p50_fq_ins_zi_time.append(ins_time[idx_min])
-                            
-                        # Rrs 0490p00
-                        # print('490.0')
-                        # if not (rhow_0490p00_fq_box.mask.any() == True or np.isnan(rhow_0490p00_fq_box).any() == True):
-                            # print('At least one element in sat product is invalid!')
-                        # else:
-                            matchups_Lwn_0490p00_fq_sat_zi.append(rhow_0490p00_fq_box.mean()*F0_0490p00/np.pi)
-                            matchups_Lwn_0490p00_fq_ins_zi.append(Lwn_fonQ[idx_min,6]) # 488.5
-                            matchups_Lwn_0490p00_fq_ins_zi_station.append(station_name)
-                            matchups_Lwn_0490p00_fq_sat_zi_stop_time.append(sat_stop_time)
-                            matchups_Lwn_0490p00_fq_ins_zi_time.append(ins_time[idx_min])
-                            
-                        # Rrs 0560p00
-                        # print('560.0')
-                        # if not (rhow_0560p00_fq_box.mask.any() == True or np.isnan(rhow_0560p00_fq_box).any() == True):
-                            # print('At least one element in sat product is invalid!')
-                        # else:
-                            if Exact_wavelengths[idx_min,13] != -999:
-                                idx_560 = 13
-                            elif Exact_wavelengths[idx_min,12] != -999:
-                                idx_560 = 12
-                            else: 
-                                idx_560 = 11
-                            matchups_Lwn_0560p00_fq_sat_zi.append(rhow_0560p00_fq_box.mean()*F0_0560p00/np.pi)
-                            matchups_Lwn_0560p00_fq_ins_zi.append(Lwn_fonQ[idx_min,idx_560]) # 551,
-                            matchups_Lwn_0560p00_fq_ins_zi_station.append(station_name)
-                            matchups_Lwn_0560p00_fq_sat_zi_stop_time.append(sat_stop_time)
-                            matchups_Lwn_0560p00_fq_ins_zi_time.append(ins_time[idx_min])
-                            
-                        # Rrs 0665p00
-                        # print('665.0')
-                        # if not (rhow_0665p00_fq_box.mask.any() == True or np.isnan(rhow_0665p00_fq_box).any() == True):
-                            # print('At least one element in sat product is invalid!')
-                        # else:
-                            matchups_Lwn_0665p00_fq_sat_zi.append(rhow_0665p00_fq_box.mean()*F0_0665p00/np.pi)
-                            matchups_Lwn_0665p00_fq_ins_zi.append(Lwn_fonQ[idx_min,15]) # 667.9    
-                            matchups_Lwn_0665p00_fq_ins_zi_station.append(station_name)
-                            matchups_Lwn_0665p00_fq_sat_zi_stop_time.append(sat_stop_time)
-                            matchups_Lwn_0665p00_fq_ins_zi_time.append(ins_time[idx_min])
-                            
-            #         else:
-            #             print('CV exceeds criteria: CV[Lwn(560)]='+str(Lwn_560_CV)+'; CV[AOT(865.5)]='+str(AOT_0865p50_CV))
-            #     else:
-            #         print('Angles exceeds criteria: sza='+str(sza)+'; vza='+str(vza)+'; OR some pixels are flagged!')
-            # else:
-            #     print('Not matchups per '+year_str+' '+doy_str)
+                    # Rrs 0442p50
+                    # print('442.5')
+                    # if not (rhow_0442p50_fq_box.mask.any() == True or np.isnan(rhow_0442p50_fq_box).any() == True):
+                        # print('At least one element in sat product is invalid!')
+                    # else:
+                        mu_Lwn_0442p50_fq_sat_zi.append(rhow_0442p50_fq_box.mean()*F0_0442p50/np.pi)
+                        mu_Lwn_0442p50_fq_ins_zi.append(Lwn_fonQ[idx_min,5]) # 441.8
+                        mu_Lwn_0442p50_fq_ins_zi_station.append(station_name)
+                        mu_Lwn_0442p50_fq_sat_zi_stop_time.append(sat_stop_time)
+                        mu_Lwn_0442p50_fq_ins_zi_time.append(ins_time[idx_min])
+                        
+                    # Rrs 0490p00
+                    # print('490.0')
+                    # if not (rhow_0490p00_fq_box.mask.any() == True or np.isnan(rhow_0490p00_fq_box).any() == True):
+                        # print('At least one element in sat product is invalid!')
+                    # else:
+                        mu_Lwn_0490p00_fq_sat_zi.append(rhow_0490p00_fq_box.mean()*F0_0490p00/np.pi)
+                        mu_Lwn_0490p00_fq_ins_zi.append(Lwn_fonQ[idx_min,6]) # 488.5
+                        mu_Lwn_0490p00_fq_ins_zi_station.append(station_name)
+                        mu_Lwn_0490p00_fq_sat_zi_stop_time.append(sat_stop_time)
+                        mu_Lwn_0490p00_fq_ins_zi_time.append(ins_time[idx_min])
+                        
+                    # Rrs 0560p00
+                    # print('560.0')
+                    # if not (rhow_0560p00_fq_box.mask.any() == True or np.isnan(rhow_0560p00_fq_box).any() == True):
+                        # print('At least one element in sat product is invalid!')
+                    # else:
+                        if Exact_wavelengths[idx_min,13] != -999:
+                            idx_560 = 13
+                        elif Exact_wavelengths[idx_min,12] != -999:
+                            idx_560 = 12
+                        else: 
+                            idx_560 = 11
+                        mu_Lwn_0560p00_fq_sat_zi.append(rhow_0560p00_fq_box.mean()*F0_0560p00/np.pi)
+                        mu_Lwn_0560p00_fq_ins_zi.append(Lwn_fonQ[idx_min,idx_560]) # 551,
+                        mu_Lwn_0560p00_fq_ins_zi_station.append(station_name)
+                        mu_Lwn_0560p00_fq_sat_zi_stop_time.append(sat_stop_time)
+                        mu_Lwn_0560p00_fq_ins_zi_time.append(ins_time[idx_min])
+                        
+                    # Rrs 0665p00
+                    # print('665.0')
+                    # if not (rhow_0665p00_fq_box.mask.any() == True or np.isnan(rhow_0665p00_fq_box).any() == True):
+                        # print('At least one element in sat product is invalid!')
+                    # else:
+                        mu_Lwn_0665p00_fq_sat_zi.append(rhow_0665p00_fq_box.mean()*F0_0665p00/np.pi)
+                        mu_Lwn_0665p00_fq_ins_zi.append(Lwn_fonQ[idx_min,15]) # 667.9    
+                        mu_Lwn_0665p00_fq_ins_zi_station.append(station_name)
+                        mu_Lwn_0665p00_fq_sat_zi_stop_time.append(sat_stop_time)
+                        mu_Lwn_0665p00_fq_ins_zi_time.append(ins_time[idx_min])
+                        
+        #         else:
+        #             print('CV exceeds criteria: CV[Lwn(560)]='+str(Lwn_560_CV)+'; CV[AOT(865.5)]='+str(AOT_0865p50_CV))
+        #     else:
+        #         print('Angles exceeds criteria: sza='+str(sza)+'; vza='+str(vza)+'; OR some pixels are flagged!')              
+        # else:
+        #     print('Not matchups per '+year_str+' '+doy_str)
     
              # Bailey and Werdell 2006 
             delta_time = 3# float in hours       
@@ -1149,12 +1344,24 @@ for station_name in station_list:
             matchup_idx_vec = np.abs(dt_hour) <= delta_time 
     
             nday = sum(matchup_idx_vec)
-            if nday >=1:
+            if nday >=1:                
                 print('--Bailey and Werdell 2006')
                 print(str(nday)+' matchups per '+year_str+' '+doy_str)
      #           print(Lwn_fonQ[idx_min,:])
      #           print(Exact_wavelengths[idx_min,:])
                 
+                # to count potential matchups total and per stations
+                pot_mu_cnt_ba += 1
+                if station_name == 'Venise':
+                    pot_mu_cnt_ba_Venise += 1
+                elif station_name == 'Gloria':
+                    pot_mu_cnt_ba_Gloria += 1
+                elif station_name == 'Galata_Platform':
+                    pot_mu_cnt_ba_Galata_Platform += 1
+                elif station_name == 'Helsinki_Lighthouse':
+                    pot_mu_cnt_ba_Helsinki_Lighthouse += 1
+                elif station_name == 'Gustav_Dalen_Tower':
+                    pot_mu_cnt_ba_Gustav_Dalen_Tower += 1
                 
                 center_px = int(len(rhow_0412p50_fq)/2 + 0.5)
                 size_box = 5
@@ -1182,164 +1389,254 @@ for station_name in station_list:
                 
                 NGP = np.count_nonzero(flags_mask == 0) # Number Good Pixels, Bailey and Werdell 2006
                 
-                if sza<=75 and vza<=60 and NGP>NTP/2+1:
-    
-                    # if nan, change mask
-                    rhow_0412p50_fq_box = ma.masked_invalid(rhow_0412p50_fq_box)
-                    rhow_0442p50_fq_box = ma.masked_invalid(rhow_0442p50_fq_box)
-                    rhow_0490p00_fq_box = ma.masked_invalid(rhow_0490p00_fq_box)
-                    rhow_0560p00_fq_box = ma.masked_invalid(rhow_0560p00_fq_box)
-                    rhow_0665p00_fq_box = ma.masked_invalid(rhow_0665p00_fq_box)
-                    AOT_0865p50_box = ma.masked_invalid(AOT_0865p50_box)
-    
-                    NGP_rhow_0412p50 = np.count_nonzero(rhow_0412p50_fq_box.mask == 0)
-                    NGP_rhow_0442p50 = np.count_nonzero(rhow_0442p50_fq_box.mask == 0)
-                    NGP_rhow_0490p00 = np.count_nonzero(rhow_0490p00_fq_box.mask == 0)
-                    NGP_rhow_0560p00 = np.count_nonzero(rhow_0560p00_fq_box.mask == 0)
-                    NGP_rhow_0665p00 = np.count_nonzero(rhow_0665p00_fq_box.mask == 0)
-                    NGP_AOT_0865p50 = np.count_nonzero(AOT_0865p50_box.mask == 0)
-    
-                    mean_unfiltered_rhow_0412p50 = rhow_0412p50_fq_box.mean()
-                    mean_unfiltered_rhow_0442p50 = rhow_0442p50_fq_box.mean()
-                    mean_unfiltered_rhow_0490p00 = rhow_0490p00_fq_box.mean()
-                    mean_unfiltered_rhow_0560p00 = rhow_0560p00_fq_box.mean()
-                    mean_unfiltered_rhow_0665p00 = rhow_0665p00_fq_box.mean()
-                    mean_unfiltered_AOT_0865p50 = AOT_0865p50_box.mean()
-    
-                    std_unfiltered_rhow_0412p50 = rhow_0412p50_fq_box.std()
-                    std_unfiltered_rhow_0442p50 = rhow_0442p50_fq_box.std()
-                    std_unfiltered_rhow_0490p00 = rhow_0490p00_fq_box.std()
-                    std_unfiltered_rhow_0560p00 = rhow_0560p00_fq_box.std()
-                    std_unfiltered_rhow_0665p00 = rhow_0665p00_fq_box.std()
-                    std_unfiltered_AOT_0865p50 = AOT_0865p50_box.std()
-    
-                    # mask values that are not within +/- 1.5*std of mean\
-                    
-                    rhow_0412p50_fq_box = ma.masked_outside(rhow_0412p50_fq_box,mean_unfiltered_rhow_0412p50\
-                        -1.5*std_unfiltered_rhow_0412p50\
-                        , mean_unfiltered_rhow_0412p50\
-                        +1.5*std_unfiltered_rhow_0412p50)
-                    rhow_0442p50_fq_box = ma.masked_outside(rhow_0442p50_fq_box,mean_unfiltered_rhow_0442p50\
-                        -1.5*std_unfiltered_rhow_0442p50\
-                        , mean_unfiltered_rhow_0442p50\
-                        +1.5*std_unfiltered_rhow_0442p50)
-                    rhow_0490p00_fq_box = ma.masked_outside(rhow_0490p00_fq_box,mean_unfiltered_rhow_0490p00\
-                        -1.5*std_unfiltered_rhow_0490p00\
-                        , mean_unfiltered_rhow_0490p00\
-                        +1.5*std_unfiltered_rhow_0490p00)
-                    rhow_0560p00_fq_box = ma.masked_outside(rhow_0560p00_fq_box,mean_unfiltered_rhow_0560p00\
-                        -1.5*std_unfiltered_rhow_0560p00\
-                        , mean_unfiltered_rhow_0560p00\
-                        +1.5*std_unfiltered_rhow_0560p00)
-                    rhow_0665p00_fq_box = ma.masked_outside(rhow_0665p00_fq_box,mean_unfiltered_rhow_0665p00\
-                        -1.5*std_unfiltered_rhow_0665p00\
-                        , mean_unfiltered_rhow_0665p00\
-                        +1.5*std_unfiltered_rhow_0665p00)
-                    AOT_0865p50_box = ma.masked_outside(AOT_0865p50_box,mean_unfiltered_AOT_0865p50\
-                        -1.5*std_unfiltered_AOT_0865p50\
-                        , mean_unfiltered_AOT_0865p50\
-                        +1.5*std_unfiltered_AOT_0865p50)
-    
-                    mean_filtered_rhow_0412p50 = rhow_0412p50_fq_box.mean()
-                    mean_filtered_rhow_0442p50 = rhow_0442p50_fq_box.mean()
-                    mean_filtered_rhow_0490p00 = rhow_0490p00_fq_box.mean()
-                    mean_filtered_rhow_0560p00 = rhow_0560p00_fq_box.mean()
-                    mean_filtered_rhow_0665p00 = rhow_0665p00_fq_box.mean()
-                    mean_filtered_AOT_0865p50  = AOT_0865p50_box.mean()
-    
-                    std_filtered_rhow_0412p50 = rhow_0412p50_fq_box.std()
-                    std_filtered_rhow_0442p50 = rhow_0442p50_fq_box.std()
-                    std_filtered_rhow_0490p00 = rhow_0490p00_fq_box.std()
-                    std_filtered_rhow_0560p00 = rhow_0560p00_fq_box.std()
-                    std_filtered_rhow_0665p00 = rhow_0665p00_fq_box.std()
-                    std_filtered_AOT_0865p50  = AOT_0865p50_box.std()
-    
-                    CV_filtered_rhow_0412p50 = std_filtered_rhow_0412p50/mean_filtered_rhow_0412p50
-                    CV_filtered_rhow_0442p50 = std_filtered_rhow_0442p50/mean_filtered_rhow_0442p50
-                    CV_filtered_rhow_0490p00 = std_filtered_rhow_0490p00/mean_filtered_rhow_0490p00
-                    CV_filtered_rhow_0560p00 = std_filtered_rhow_0560p00/mean_filtered_rhow_0560p00
-                    CV_filtered_rhow_0665p00 = std_filtered_rhow_0665p00/mean_filtered_rhow_0665p00
-                    CV_filtered_AOT_0865p50  = std_filtered_AOT_0865p50/mean_filtered_AOT_0865p50  
-                    
-                    CVs = [CV_filtered_rhow_0412p50, CV_filtered_rhow_0442p50,\
-                                         CV_filtered_rhow_0490p00, CV_filtered_rhow_0560p00,\
-                                         CV_filtered_AOT_0865p50]
-                    print(CVs)
-                    MedianCV = np.nanmedian(np.abs(CVs))
-    
-                    print('Median CV='+str(MedianCV))
-                   
-                    if MedianCV <= 0.15:
-                        # Rrs 0412p50
-                        # print('412.5')
-                        if not NGP_rhow_0412p50<NTP/2+1:
-                            # print('Exceeded: NGP_rhow_0412p50='+str(NGP_rhow_0412p50))
-                        # else:
-                            matchups_Lwn_0412p50_fq_sat_ba.append(mean_filtered_rhow_0412p50*F0_0412p50/np.pi)
-                            matchups_Lwn_0412p50_fq_ins_ba.append(Lwn_fonQ[idx_min,3]) # 412,
-                            matchups_Lwn_0412p50_fq_ins_ba_station.append(station_name)
-                            matchups_Lwn_0412p50_fq_sat_ba_stop_time.append(sat_stop_time)
-                            matchups_Lwn_0412p50_fq_ins_ba_time.append(ins_time[idx_min])
+                # if nan, change mask
+                rhow_0412p50_fq_box = ma.masked_invalid(rhow_0412p50_fq_box)
+                rhow_0442p50_fq_box = ma.masked_invalid(rhow_0442p50_fq_box)
+                rhow_0490p00_fq_box = ma.masked_invalid(rhow_0490p00_fq_box)
+                rhow_0560p00_fq_box = ma.masked_invalid(rhow_0560p00_fq_box)
+                rhow_0665p00_fq_box = ma.masked_invalid(rhow_0665p00_fq_box)
+                AOT_0865p50_box = ma.masked_invalid(AOT_0865p50_box)
 
-                            
-                        # Rrs 0442p50
-                        # print('442.5')
-                        if not NGP_rhow_0442p50<NTP/2+1:
-                            # print('Exceeded: NGP_rhow_0442p50='+str(NGP_rhow_0442p50))
-                        # else:
-                            matchups_Lwn_0442p50_fq_sat_ba.append(mean_filtered_rhow_0442p50*F0_0442p50/np.pi)
-                            matchups_Lwn_0442p50_fq_ins_ba.append(Lwn_fonQ[idx_min,5]) # 441.8
-                            matchups_Lwn_0442p50_fq_ins_ba_station.append(station_name)
-                            matchups_Lwn_0442p50_fq_sat_ba_stop_time.append(sat_stop_time)
-                            matchups_Lwn_0442p50_fq_ins_ba_time.append(ins_time[idx_min])
-                            
-                        # Rrs 0490p00
-                        # print('490.0')
-                        if not NGP_rhow_0490p00<NTP/2+1:
-                            # print('Exceeded: NGP_rhow_0490p00='+str(NGP_rhow_0490p00))
-                        # else:
-                            matchups_Lwn_0490p00_fq_sat_ba.append(mean_filtered_rhow_0490p00*F0_0490p00/np.pi)
-                            matchups_Lwn_0490p00_fq_ins_ba.append(Lwn_fonQ[idx_min,6]) # 488.5
-                            matchups_Lwn_0490p00_fq_ins_ba_station.append(station_name)
-                            matchups_Lwn_0490p00_fq_sat_ba_stop_time.append(sat_stop_time)
-                            matchups_Lwn_0490p00_fq_ins_ba_time.append(ins_time[idx_min])
-                            
-                        # Rrs 0560p00
-                        # print('560.0')
-                        if not NGP_rhow_0560p00<NTP/2+1:
-                            # print('Exceeded: NGP_rhow_0560p00='+str(NGP_rhow_0560p00))
-                        # else:
-                            if Exact_wavelengths[idx_min,13] != -999:
-                                idx_560 = 13
-                            elif Exact_wavelengths[idx_min,12] != -999:
-                                idx_560 = 12
-                            else: 
-                                idx_560 = 11
-                            matchups_Lwn_0560p00_fq_sat_ba.append(mean_filtered_rhow_0560p00*F0_0560p00/np.pi)
-                            matchups_Lwn_0560p00_fq_ins_ba.append(Lwn_fonQ[idx_min,idx_560]) # 551,
-                            matchups_Lwn_0560p00_fq_ins_ba_station.append(station_name)
-                            matchups_Lwn_0560p00_fq_sat_ba_stop_time.append(sat_stop_time)
-                            matchups_Lwn_0560p00_fq_ins_ba_time.append(ins_time[idx_min])
+                NGP_rhow_0412p50 = np.count_nonzero(rhow_0412p50_fq_box.mask == 0)
+                NGP_rhow_0442p50 = np.count_nonzero(rhow_0442p50_fq_box.mask == 0)
+                NGP_rhow_0490p00 = np.count_nonzero(rhow_0490p00_fq_box.mask == 0)
+                NGP_rhow_0560p00 = np.count_nonzero(rhow_0560p00_fq_box.mask == 0)
+                NGP_rhow_0665p00 = np.count_nonzero(rhow_0665p00_fq_box.mask == 0)
+                NGP_AOT_0865p50 = np.count_nonzero(AOT_0865p50_box.mask == 0)
 
-                            
-                        # Rrs 0665p00
-                        # print('665.0')
-                        if not NGP_rhow_0665p00<NTP/2+1:
-                            # print('Exceeded: NGP_rhow_0665p00='+str(NGP_rhow_0665p00))
-                        # else:
-                            matchups_Lwn_0665p00_fq_sat_ba.append(mean_filtered_rhow_0665p00*F0_0665p00/np.pi)
-                            matchups_Lwn_0665p00_fq_ins_ba.append(Lwn_fonQ[idx_min,15]) # 667.9    
-                            matchups_Lwn_0665p00_fq_ins_ba_station.append(station_name)
-                            matchups_Lwn_0665p00_fq_sat_ba_stop_time.append(sat_stop_time)
-                            matchups_Lwn_0665p00_fq_ins_ba_time.append(ins_time[idx_min])
-                            
-            #         else:
-            #             print('Median CV exceeds criteria: Median[CV]='+str(MedianCV))
-            #     else:
-            #         print('Angles exceeds criteria: sza='+str(sza)+'; vza='+str(vza)+'; OR NGP='+str(NGP)+'< NTP/2+1='+str(NTP/2+1)+'!')
-            # else:
-            #     print('Not matchups per '+year_str+' '+doy_str)            
-    
+                mean_unfiltered_rhow_0412p50 = rhow_0412p50_fq_box.mean()
+                mean_unfiltered_rhow_0442p50 = rhow_0442p50_fq_box.mean()
+                mean_unfiltered_rhow_0490p00 = rhow_0490p00_fq_box.mean()
+                mean_unfiltered_rhow_0560p00 = rhow_0560p00_fq_box.mean()
+                mean_unfiltered_rhow_0665p00 = rhow_0665p00_fq_box.mean()
+                mean_unfiltered_AOT_0865p50 = AOT_0865p50_box.mean()
+
+                std_unfiltered_rhow_0412p50 = rhow_0412p50_fq_box.std()
+                std_unfiltered_rhow_0442p50 = rhow_0442p50_fq_box.std()
+                std_unfiltered_rhow_0490p00 = rhow_0490p00_fq_box.std()
+                std_unfiltered_rhow_0560p00 = rhow_0560p00_fq_box.std()
+                std_unfiltered_rhow_0665p00 = rhow_0665p00_fq_box.std()
+                std_unfiltered_AOT_0865p50 = AOT_0865p50_box.std()
+
+                # mask values that are not within +/- 1.5*std of mean\
+                
+                rhow_0412p50_fq_box = ma.masked_outside(rhow_0412p50_fq_box,mean_unfiltered_rhow_0412p50\
+                    -1.5*std_unfiltered_rhow_0412p50\
+                    , mean_unfiltered_rhow_0412p50\
+                    +1.5*std_unfiltered_rhow_0412p50)
+                rhow_0442p50_fq_box = ma.masked_outside(rhow_0442p50_fq_box,mean_unfiltered_rhow_0442p50\
+                    -1.5*std_unfiltered_rhow_0442p50\
+                    , mean_unfiltered_rhow_0442p50\
+                    +1.5*std_unfiltered_rhow_0442p50)
+                rhow_0490p00_fq_box = ma.masked_outside(rhow_0490p00_fq_box,mean_unfiltered_rhow_0490p00\
+                    -1.5*std_unfiltered_rhow_0490p00\
+                    , mean_unfiltered_rhow_0490p00\
+                    +1.5*std_unfiltered_rhow_0490p00)
+                rhow_0560p00_fq_box = ma.masked_outside(rhow_0560p00_fq_box,mean_unfiltered_rhow_0560p00\
+                    -1.5*std_unfiltered_rhow_0560p00\
+                    , mean_unfiltered_rhow_0560p00\
+                    +1.5*std_unfiltered_rhow_0560p00)
+                rhow_0665p00_fq_box = ma.masked_outside(rhow_0665p00_fq_box,mean_unfiltered_rhow_0665p00\
+                    -1.5*std_unfiltered_rhow_0665p00\
+                    , mean_unfiltered_rhow_0665p00\
+                    +1.5*std_unfiltered_rhow_0665p00)
+                AOT_0865p50_box = ma.masked_outside(AOT_0865p50_box,mean_unfiltered_AOT_0865p50\
+                    -1.5*std_unfiltered_AOT_0865p50\
+                    , mean_unfiltered_AOT_0865p50\
+                    +1.5*std_unfiltered_AOT_0865p50)
+
+                mean_filtered_rhow_0412p50 = rhow_0412p50_fq_box.mean()
+                mean_filtered_rhow_0442p50 = rhow_0442p50_fq_box.mean()
+                mean_filtered_rhow_0490p00 = rhow_0490p00_fq_box.mean()
+                mean_filtered_rhow_0560p00 = rhow_0560p00_fq_box.mean()
+                mean_filtered_rhow_0665p00 = rhow_0665p00_fq_box.mean()
+                mean_filtered_AOT_0865p50  = AOT_0865p50_box.mean()
+
+                std_filtered_rhow_0412p50 = rhow_0412p50_fq_box.std()
+                std_filtered_rhow_0442p50 = rhow_0442p50_fq_box.std()
+                std_filtered_rhow_0490p00 = rhow_0490p00_fq_box.std()
+                std_filtered_rhow_0560p00 = rhow_0560p00_fq_box.std()
+                std_filtered_rhow_0665p00 = rhow_0665p00_fq_box.std()
+                std_filtered_AOT_0865p50  = AOT_0865p50_box.std()
+
+                CV_filtered_rhow_0412p50 = std_filtered_rhow_0412p50/mean_filtered_rhow_0412p50
+                CV_filtered_rhow_0442p50 = std_filtered_rhow_0442p50/mean_filtered_rhow_0442p50
+                CV_filtered_rhow_0490p00 = std_filtered_rhow_0490p00/mean_filtered_rhow_0490p00
+                CV_filtered_rhow_0560p00 = std_filtered_rhow_0560p00/mean_filtered_rhow_0560p00
+                CV_filtered_rhow_0665p00 = std_filtered_rhow_0665p00/mean_filtered_rhow_0665p00
+                CV_filtered_AOT_0865p50  = std_filtered_AOT_0865p50/mean_filtered_AOT_0865p50  
+                
+                CVs = [CV_filtered_rhow_0412p50, CV_filtered_rhow_0442p50,\
+                                     CV_filtered_rhow_0490p00, CV_filtered_rhow_0560p00,\
+                                     CV_filtered_AOT_0865p50]
+                print(CVs)
+                MedianCV = np.nanmedian(np.abs(CVs))
+
+                print('Median CV='+str(MedianCV))
+
+                # count rejections
+                if MedianCV > 0.15:
+                    rej_cvs_mu_cnt_ba += 1
+                    if station_name == 'Venise':
+                        rej_cvs_mu_cnt_ba_Venise += 1
+                    elif station_name == 'Gloria':
+                        rej_cvs_mu_cnt_ba_Gloria += 1
+                    elif station_name == 'Galata_Platform':
+                        rej_cvs_mu_cnt_ba_Galata_Platform += 1
+                    elif station_name == 'Helsinki_Lighthouse':
+                        rej_cvs_mu_cnt_ba_Helsinki_Lighthouse += 1
+                    elif station_name == 'Gustav_Dalen_Tower':
+                        rej_cvs_mu_cnt_ba_Gustav_Dalen_Tower += 1 
+
+                if sza>75 or vza>60:
+                    rej_ang_mu_cnt_ba += 1
+                    if station_name == 'Venise':
+                        rej_ang_mu_cnt_ba_Venise += 1
+                    elif station_name == 'Gloria':
+                        rej_ang_mu_cnt_ba_Gloria += 1
+                    elif station_name == 'Galata_Platform':
+                        rej_ang_mu_cnt_ba_Galata_Platform += 1
+                    elif station_name == 'Helsinki_Lighthouse':
+                        rej_ang_mu_cnt_ba_Helsinki_Lighthouse += 1
+                    elif station_name == 'Gustav_Dalen_Tower':
+                        rej_ang_mu_cnt_ba_Gustav_Dalen_Tower += 1    
+
+                if sza>75:
+                    rej_sza_mu_cnt_ba += 1
+                    if station_name == 'Venise':
+                        rej_sza_mu_cnt_ba_Venise += 1
+                    elif station_name == 'Gloria':
+                        rej_sza_mu_cnt_ba_Gloria += 1
+                    elif station_name == 'Galata_Platform':
+                        rej_sza_mu_cnt_ba_Galata_Platform += 1
+                    elif station_name == 'Helsinki_Lighthouse':
+                        rej_sza_mu_cnt_ba_Helsinki_Lighthouse += 1
+                    elif station_name == 'Gustav_Dalen_Tower':
+                        rej_sza_mu_cnt_ba_Gustav_Dalen_Tower += 1   
+
+                if vza>60:
+                    rej_vza_mu_cnt_ba += 1
+                    if station_name == 'Venise':
+                        rej_vza_mu_cnt_ba_Venise += 1
+                    elif station_name == 'Gloria':
+                        rej_vza_mu_cnt_ba_Gloria += 1
+                    elif station_name == 'Galata_Platform':
+                        rej_vza_mu_cnt_ba_Galata_Platform += 1
+                    elif station_name == 'Helsinki_Lighthouse':
+                        rej_vza_mu_cnt_ba_Helsinki_Lighthouse += 1
+                    elif station_name == 'Gustav_Dalen_Tower':
+                        rej_vza_mu_cnt_ba_Gustav_Dalen_Tower += 1                                                                    
+
+                if NGP<=NTP/2+1:
+                    rej_inv_mu_cnt_ba += 1
+                    if station_name == 'Venise':
+                        rej_inv_mu_cnt_ba_Venise += 1
+                    elif station_name == 'Gloria':
+                        rej_inv_mu_cnt_ba_Gloria += 1
+                    elif station_name == 'Galata_Platform':
+                        rej_inv_mu_cnt_ba_Galata_Platform += 1
+                    elif station_name == 'Helsinki_Lighthouse':
+                        rej_inv_mu_cnt_ba_Helsinki_Lighthouse += 1
+                    elif station_name == 'Gustav_Dalen_Tower':
+                        rej_inv_mu_cnt_ba_Gustav_Dalen_Tower += 1
+
+                    # create matchup
+                if sza<=75 and vza<=60 and NGP>NTP/2+1 and MedianCV <= 0.15:                
+                    # Rrs 0412p50
+                    # print('412.5')
+                    if NGP_rhow_0412p50>NTP/2+1:
+                        # print('Exceeded: NGP_rhow_0412p50='+str(NGP_rhow_0412p50))
+                    # else:
+                        mu_Lwn_0412p50_fq_sat_ba.append(mean_filtered_rhow_0412p50*F0_0412p50/np.pi)
+                        mu_Lwn_0412p50_fq_ins_ba.append(Lwn_fonQ[idx_min,3]) # 412,
+                        mu_Lwn_0412p50_fq_ins_ba_station.append(station_name)
+                        mu_Lwn_0412p50_fq_sat_ba_stop_time.append(sat_stop_time)
+                        mu_Lwn_0412p50_fq_ins_ba_time.append(ins_time[idx_min])
+
+                    # Rrs 0442p50
+                    # print('442.5')
+                    if NGP_rhow_0442p50>NTP/2+1:
+                        # print('Exceeded: NGP_rhow_0442p50='+str(NGP_rhow_0442p50))
+                    # else:
+                        mu_Lwn_0442p50_fq_sat_ba.append(mean_filtered_rhow_0442p50*F0_0442p50/np.pi)
+                        mu_Lwn_0442p50_fq_ins_ba.append(Lwn_fonQ[idx_min,5]) # 441.8
+                        mu_Lwn_0442p50_fq_ins_ba_station.append(station_name)
+                        mu_Lwn_0442p50_fq_sat_ba_stop_time.append(sat_stop_time)
+                        mu_Lwn_0442p50_fq_ins_ba_time.append(ins_time[idx_min])
+                        
+                    # Rrs 0490p00
+                    # print('490.0')
+                    if NGP_rhow_0490p00>NTP/2+1:
+                        # print('Exceeded: NGP_rhow_0490p00='+str(NGP_rhow_0490p00))
+                    # else:
+                        mu_Lwn_0490p00_fq_sat_ba.append(mean_filtered_rhow_0490p00*F0_0490p00/np.pi)
+                        mu_Lwn_0490p00_fq_ins_ba.append(Lwn_fonQ[idx_min,6]) # 488.5
+                        mu_Lwn_0490p00_fq_ins_ba_station.append(station_name)
+                        mu_Lwn_0490p00_fq_sat_ba_stop_time.append(sat_stop_time)
+                        mu_Lwn_0490p00_fq_ins_ba_time.append(ins_time[idx_min])
+                        
+                    # Rrs 0560p00
+                    # print('560.0')
+                    if NGP_rhow_0560p00>NTP/2+1:
+                        # print('Exceeded: NGP_rhow_0560p00='+str(NGP_rhow_0560p00))
+                    # else:
+                        if Exact_wavelengths[idx_min,13] != -999:
+                            idx_560 = 13
+                        elif Exact_wavelengths[idx_min,12] != -999:
+                            idx_560 = 12
+                        else: 
+                            idx_560 = 11
+                        mu_Lwn_0560p00_fq_sat_ba.append(mean_filtered_rhow_0560p00*F0_0560p00/np.pi)
+                        mu_Lwn_0560p00_fq_ins_ba.append(Lwn_fonQ[idx_min,idx_560]) # 551,
+                        mu_Lwn_0560p00_fq_ins_ba_station.append(station_name)
+                        mu_Lwn_0560p00_fq_sat_ba_stop_time.append(sat_stop_time)
+                        mu_Lwn_0560p00_fq_ins_ba_time.append(ins_time[idx_min])
+
+                        
+                    # Rrs 0665p00
+                    # print('665.0')
+                    if NGP_rhow_0665p00>NTP/2+1:
+                        # print('Exceeded: NGP_rhow_0665p00='+str(NGP_rhow_0665p00))
+                    # else:
+                        mu_Lwn_0665p00_fq_sat_ba.append(mean_filtered_rhow_0665p00*F0_0665p00/np.pi)
+                        mu_Lwn_0665p00_fq_ins_ba.append(Lwn_fonQ[idx_min,15]) # 667.9    
+                        mu_Lwn_0665p00_fq_ins_ba_station.append(station_name)
+                        mu_Lwn_0665p00_fq_sat_ba_stop_time.append(sat_stop_time)
+                        mu_Lwn_0665p00_fq_ins_ba_time.append(ins_time[idx_min])
+                        
+    #         else:
+    #             print('Median CV exceeds criteria: Median[CV]='+str(MedianCV))
+    #     else:
+    #         print('Angles exceeds criteria: sza='+str(sza)+'; vza='+str(vza)+'; OR NGP='+str(NGP)+'< NTP/2+1='+str(NTP/2+1)+'!')
+    # else:
+    #     print('Not matchups per '+year_str+' '+doy_str)            
+
+#%% print potential matchups numbers
+print('Station & BW06 & Z09')
+print(f'Venise & {pot_mu_cnt_ba_Venise} & {pot_mu_cnt_zi_Venise}')
+print(f'Gloria & {pot_mu_cnt_ba_Gloria} & {pot_mu_cnt_zi_Gloria}')
+print(f'Galata_Platform & {pot_mu_cnt_ba_Galata_Platform} & {pot_mu_cnt_zi_Galata_Platform}')
+print(f'Helsinki_Lighthouse & {pot_mu_cnt_ba_Helsinki_Lighthouse} & {pot_mu_cnt_zi_Helsinki_Lighthouse}')
+print(f'Gustav_Dalen_Tower & {pot_mu_cnt_ba_Gustav_Dalen_Tower} & {pot_mu_cnt_zi_Gustav_Dalen_Tower}')
+print(f'Total & {pot_mu_cnt_ba} & {pot_mu_cnt_zi}')
+
+
+data = {'stations':['Venise','Gloria','Galata_Platform','Helsinki_Lighthouse','Gustav_Dalen_Tower','Total']}
+df1 = pd.DataFrame(data)
+df1['rej_cvs_mu_zi'] = [rej_cvs_mu_cnt_zi_Venise,rej_cvs_mu_cnt_zi_Gloria,rej_cvs_mu_cnt_zi_Galata_Platform,rej_cvs_mu_cnt_zi_Helsinki_Lighthouse,rej_cvs_mu_cnt_zi_Gustav_Dalen_Tower,rej_cvs_mu_cnt_zi]
+df1['rej_cvL_mu_zi'] = [rej_cvL_mu_cnt_zi_Venise,rej_cvL_mu_cnt_zi_Gloria,rej_cvL_mu_cnt_zi_Galata_Platform,rej_cvL_mu_cnt_zi_Helsinki_Lighthouse,rej_cvL_mu_cnt_zi_Gustav_Dalen_Tower,rej_cvL_mu_cnt_zi]
+df1['rej_cvA_mu_zi'] = [rej_cvA_mu_cnt_zi_Venise,rej_cvA_mu_cnt_zi_Gloria,rej_cvA_mu_cnt_zi_Galata_Platform,rej_cvA_mu_cnt_zi_Helsinki_Lighthouse,rej_cvA_mu_cnt_zi_Gustav_Dalen_Tower,rej_cvA_mu_cnt_zi]
+df1['rej_ang_mu_zi'] = [rej_ang_mu_cnt_zi_Venise,rej_ang_mu_cnt_zi_Gloria,rej_ang_mu_cnt_zi_Galata_Platform,rej_ang_mu_cnt_zi_Helsinki_Lighthouse,rej_ang_mu_cnt_zi_Gustav_Dalen_Tower,rej_ang_mu_cnt_zi]
+df1['rej_sza_mu_zi'] = [rej_sza_mu_cnt_zi_Venise,rej_sza_mu_cnt_zi_Gloria,rej_sza_mu_cnt_zi_Galata_Platform,rej_sza_mu_cnt_zi_Helsinki_Lighthouse,rej_sza_mu_cnt_zi_Gustav_Dalen_Tower,rej_sza_mu_cnt_zi]
+df1['rej_vza_mu_zi'] = [rej_vza_mu_cnt_zi_Venise,rej_vza_mu_cnt_zi_Gloria,rej_vza_mu_cnt_zi_Galata_Platform,rej_vza_mu_cnt_zi_Helsinki_Lighthouse,rej_vza_mu_cnt_zi_Gustav_Dalen_Tower,rej_vza_mu_cnt_zi]
+df1['rej_inv_mu_zi'] = [rej_inv_mu_cnt_zi_Venise,rej_inv_mu_cnt_zi_Gloria,rej_inv_mu_cnt_zi_Galata_Platform,rej_inv_mu_cnt_zi_Helsinki_Lighthouse,rej_inv_mu_cnt_zi_Gustav_Dalen_Tower,rej_inv_mu_cnt_zi]
+df1['rej_cvs_mu_ba'] = [rej_cvs_mu_cnt_ba_Venise,rej_cvs_mu_cnt_ba_Gloria,rej_cvs_mu_cnt_ba_Galata_Platform,rej_cvs_mu_cnt_ba_Helsinki_Lighthouse,rej_cvs_mu_cnt_ba_Gustav_Dalen_Tower,rej_cvs_mu_cnt_ba]
+df1['rej_ang_mu_ba'] = [rej_ang_mu_cnt_ba_Venise,rej_ang_mu_cnt_ba_Gloria,rej_ang_mu_cnt_ba_Galata_Platform,rej_ang_mu_cnt_ba_Helsinki_Lighthouse,rej_ang_mu_cnt_ba_Gustav_Dalen_Tower,rej_ang_mu_cnt_ba]
+df1['rej_sza_mu_ba'] = [rej_sza_mu_cnt_ba_Venise,rej_sza_mu_cnt_ba_Gloria,rej_sza_mu_cnt_ba_Galata_Platform,rej_sza_mu_cnt_ba_Helsinki_Lighthouse,rej_sza_mu_cnt_ba_Gustav_Dalen_Tower,rej_sza_mu_cnt_ba]
+df1['rej_vza_mu_ba'] = [rej_vza_mu_cnt_ba_Venise,rej_vza_mu_cnt_ba_Gloria,rej_vza_mu_cnt_ba_Galata_Platform,rej_vza_mu_cnt_ba_Helsinki_Lighthouse,rej_vza_mu_cnt_ba_Gustav_Dalen_Tower,rej_vza_mu_cnt_ba]
+df1['rej_inv_mu_ba'] = [rej_inv_mu_cnt_ba_Venise,rej_inv_mu_cnt_ba_Gloria,rej_inv_mu_cnt_ba_Galata_Platform,rej_inv_mu_cnt_ba_Helsinki_Lighthouse,rej_inv_mu_cnt_ba_Gustav_Dalen_Tower,rej_inv_mu_cnt_ba]
+
+
 #%% plots   
 prot_name = 'zi'
 sensor_name = 'OLCI'
@@ -1350,8 +1647,8 @@ rmse_val_0412p50_zi_Galata_Platform,mean_abs_rel_diff_0412p50_zi_Galata_Platform
 rmse_val_0412p50_zi_Helsinki_Lighthouse,mean_abs_rel_diff_0412p50_zi_Helsinki_Lighthouse, mean_rel_diff_0412p50_zi_Helsinki_Lighthouse, mean_bias_0412p50_zi_Helsinki_Lighthouse, mean_abs_error_0412p50_zi_Helsinki_Lighthouse, r_sqr_0412p50_zi_Helsinki_Lighthouse,\
 rmse_val_0412p50_zi_Gustav_Dalen_Tower,mean_abs_rel_diff_0412p50_zi_Gustav_Dalen_Tower, mean_rel_diff_0412p50_zi_Gustav_Dalen_Tower, mean_bias_0412p50_zi_Gustav_Dalen_Tower, mean_abs_error_0412p50_zi_Gustav_Dalen_Tower, r_sqr_0412p50_zi_Gustav_Dalen_Tower\
 = plot_scatter(\
-    matchups_Lwn_0412p50_fq_ins_zi,matchups_Lwn_0412p50_fq_sat_zi,'412.5',path_out,prot_name,sensor_name,\
-    matchups_Lwn_0412p50_fq_ins_zi_station,min_val=-3.00,max_val=5.0)
+    mu_Lwn_0412p50_fq_ins_zi,mu_Lwn_0412p50_fq_sat_zi,'412.5',path_out,prot_name,sensor_name,\
+    mu_Lwn_0412p50_fq_ins_zi_station,min_val=-3.00,max_val=5.0)
 
 rmse_val_0442p50_zi, mean_abs_rel_diff_0442p50_zi, mean_rel_diff_0442p50_zi, mean_bias_0442p50_zi, mean_abs_error_0442p50_zi, r_sqr_0442p50_zi,\
 rmse_val_0442p50_zi_Venise,mean_abs_rel_diff_0442p50_zi_Venise, mean_rel_diff_0442p50_zi_Venise, mean_bias_0442p50_zi_Venise, mean_abs_error_0442p50_zi_Venise, r_sqr_0442p50_zi_Venise,\
@@ -1360,8 +1657,8 @@ rmse_val_0442p50_zi_Galata_Platform,mean_abs_rel_diff_0442p50_zi_Galata_Platform
 rmse_val_0442p50_zi_Helsinki_Lighthouse,mean_abs_rel_diff_0442p50_zi_Helsinki_Lighthouse, mean_rel_diff_0442p50_zi_Helsinki_Lighthouse, mean_bias_0442p50_zi_Helsinki_Lighthouse, mean_abs_error_0442p50_zi_Helsinki_Lighthouse, r_sqr_0442p50_zi_Helsinki_Lighthouse,\
 rmse_val_0442p50_zi_Gustav_Dalen_Tower,mean_abs_rel_diff_0442p50_zi_Gustav_Dalen_Tower, mean_rel_diff_0442p50_zi_Gustav_Dalen_Tower, mean_bias_0442p50_zi_Gustav_Dalen_Tower, mean_abs_error_0442p50_zi_Gustav_Dalen_Tower, r_sqr_0442p50_zi_Gustav_Dalen_Tower\
 = plot_scatter(\
-    matchups_Lwn_0442p50_fq_ins_zi,matchups_Lwn_0442p50_fq_sat_zi,'442.5',path_out,prot_name,sensor_name,\
-    matchups_Lwn_0442p50_fq_ins_zi_station,min_val=-3.00,max_val=6.2)
+    mu_Lwn_0442p50_fq_ins_zi,mu_Lwn_0442p50_fq_sat_zi,'442.5',path_out,prot_name,sensor_name,\
+    mu_Lwn_0442p50_fq_ins_zi_station,min_val=-3.00,max_val=6.2)
 
 rmse_val_0490p00_zi, mean_abs_rel_diff_0490p00_zi, mean_rel_diff_0490p00_zi, mean_bias_0490p00_zi, mean_abs_error_0490p00_zi, r_sqr_0490p00_zi,\
 rmse_val_0490p00_zi_Venise,mean_abs_rel_diff_0490p00_zi_Venise, mean_rel_diff_0490p00_zi_Venise, mean_bias_0490p00_zi_Venise, mean_abs_error_0490p00_zi_Venise, r_sqr_0490p00_zi_Venise,\
@@ -1370,8 +1667,8 @@ rmse_val_0490p00_zi_Galata_Platform,mean_abs_rel_diff_0490p00_zi_Galata_Platform
 rmse_val_0490p00_zi_Helsinki_Lighthouse,mean_abs_rel_diff_0490p00_zi_Helsinki_Lighthouse, mean_rel_diff_0490p00_zi_Helsinki_Lighthouse, mean_bias_0490p00_zi_Helsinki_Lighthouse, mean_abs_error_0490p00_zi_Helsinki_Lighthouse, r_sqr_0490p00_zi_Helsinki_Lighthouse,\
 rmse_val_0490p00_zi_Gustav_Dalen_Tower,mean_abs_rel_diff_0490p00_zi_Gustav_Dalen_Tower, mean_rel_diff_0490p00_zi_Gustav_Dalen_Tower, mean_bias_0490p00_zi_Gustav_Dalen_Tower, mean_abs_error_0490p00_zi_Gustav_Dalen_Tower, r_sqr_0490p00_zi_Gustav_Dalen_Tower\
 = plot_scatter(\
-    matchups_Lwn_0490p00_fq_ins_zi,matchups_Lwn_0490p00_fq_sat_zi,'490.0',path_out,prot_name,sensor_name,\
-    matchups_Lwn_0490p00_fq_ins_zi_station,min_val=-2.00,max_val=8.0)
+    mu_Lwn_0490p00_fq_ins_zi,mu_Lwn_0490p00_fq_sat_zi,'490.0',path_out,prot_name,sensor_name,\
+    mu_Lwn_0490p00_fq_ins_zi_station,min_val=-2.00,max_val=8.0)
 
 rmse_val_0560p00_zi, mean_abs_rel_diff_0560p00_zi, mean_rel_diff_0560p00_zi, mean_bias_0560p00_zi, mean_abs_error_0560p00_zi, r_sqr_0560p00_zi,\
 rmse_val_0560p00_zi_Venise,mean_abs_rel_diff_0560p00_zi_Venise, mean_rel_diff_0560p00_zi_Venise, mean_bias_0560p00_zi_Venise, mean_abs_error_0560p00_zi_Venise, r_sqr_0560p00_zi_Venise,\
@@ -1380,8 +1677,8 @@ rmse_val_0560p00_zi_Galata_Platform,mean_abs_rel_diff_0560p00_zi_Galata_Platform
 rmse_val_0560p00_zi_Helsinki_Lighthouse,mean_abs_rel_diff_0560p00_zi_Helsinki_Lighthouse, mean_rel_diff_0560p00_zi_Helsinki_Lighthouse, mean_bias_0560p00_zi_Helsinki_Lighthouse, mean_abs_error_0560p00_zi_Helsinki_Lighthouse, r_sqr_0560p00_zi_Helsinki_Lighthouse,\
 rmse_val_0560p00_zi_Gustav_Dalen_Tower,mean_abs_rel_diff_0560p00_zi_Gustav_Dalen_Tower, mean_rel_diff_0560p00_zi_Gustav_Dalen_Tower, mean_bias_0560p00_zi_Gustav_Dalen_Tower, mean_abs_error_0560p00_zi_Gustav_Dalen_Tower, r_sqr_0560p00_zi_Gustav_Dalen_Tower\
 = plot_scatter(\
-    matchups_Lwn_0560p00_fq_ins_zi,matchups_Lwn_0560p00_fq_sat_zi,'560.0',path_out,prot_name,sensor_name,\
-    matchups_Lwn_0560p00_fq_ins_zi_station,min_val=-0.50,max_val=6.0)
+    mu_Lwn_0560p00_fq_ins_zi,mu_Lwn_0560p00_fq_sat_zi,'560.0',path_out,prot_name,sensor_name,\
+    mu_Lwn_0560p00_fq_ins_zi_station,min_val=-0.50,max_val=6.0)
 
 rmse_val_0665p00_zi, mean_abs_rel_diff_0665p00_zi, mean_rel_diff_0665p00_zi, mean_bias_0665p00_zi, mean_abs_error_0665p00_zi, r_sqr_0665p00_zi,\
 rmse_val_0665p00_zi_Venise,mean_abs_rel_diff_0665p00_zi_Venise, mean_rel_diff_0665p00_zi_Venise, mean_bias_0665p00_zi_Venise, mean_abs_error_0665p00_zi_Venise, r_sqr_0665p00_zi_Venise,\
@@ -1390,8 +1687,8 @@ rmse_val_0665p00_zi_Galata_Platform,mean_abs_rel_diff_0665p00_zi_Galata_Platform
 rmse_val_0665p00_zi_Helsinki_Lighthouse,mean_abs_rel_diff_0665p00_zi_Helsinki_Lighthouse, mean_rel_diff_0665p00_zi_Helsinki_Lighthouse, mean_bias_0665p00_zi_Helsinki_Lighthouse, mean_abs_error_0665p00_zi_Helsinki_Lighthouse, r_sqr_0665p00_zi_Helsinki_Lighthouse,\
 rmse_val_0665p00_zi_Gustav_Dalen_Tower,mean_abs_rel_diff_0665p00_zi_Gustav_Dalen_Tower, mean_rel_diff_0665p00_zi_Gustav_Dalen_Tower, mean_bias_0665p00_zi_Gustav_Dalen_Tower, mean_abs_error_0665p00_zi_Gustav_Dalen_Tower, r_sqr_0665p00_zi_Gustav_Dalen_Tower\
 = plot_scatter(\
-    matchups_Lwn_0665p00_fq_ins_zi,matchups_Lwn_0665p00_fq_sat_zi,'665.0',path_out,prot_name,sensor_name,\
-    matchups_Lwn_0665p00_fq_ins_zi_station,min_val=-0.60,max_val=4.0)
+    mu_Lwn_0665p00_fq_ins_zi,mu_Lwn_0665p00_fq_sat_zi,'665.0',path_out,prot_name,sensor_name,\
+    mu_Lwn_0665p00_fq_ins_zi_station,min_val=-0.60,max_val=4.0)
 
 #% plots  
 prot_name = 'ba' 
@@ -1403,8 +1700,8 @@ rmse_val_0412p50_ba_Galata_Platform,mean_abs_rel_diff_0412p50_ba_Galata_Platform
 rmse_val_0412p50_ba_Helsinki_Lighthouse,mean_abs_rel_diff_0412p50_ba_Helsinki_Lighthouse, mean_rel_diff_0412p50_ba_Helsinki_Lighthouse, mean_bias_0412p50_ba_Helsinki_Lighthouse, mean_abs_error_0412p50_ba_Helsinki_Lighthouse, r_sqr_0412p50_ba_Helsinki_Lighthouse,\
 rmse_val_0412p50_ba_Gustav_Dalen_Tower,mean_abs_rel_diff_0412p50_ba_Gustav_Dalen_Tower, mean_rel_diff_0412p50_ba_Gustav_Dalen_Tower, mean_bias_0412p50_ba_Gustav_Dalen_Tower, mean_abs_error_0412p50_ba_Gustav_Dalen_Tower, r_sqr_0412p50_ba_Gustav_Dalen_Tower\
 = plot_scatter(\
-    matchups_Lwn_0412p50_fq_ins_ba,matchups_Lwn_0412p50_fq_sat_ba,'412.5',path_out,prot_name,sensor_name,\
-    matchups_Lwn_0412p50_fq_ins_ba_station,min_val=-3.00,max_val=5.0)
+    mu_Lwn_0412p50_fq_ins_ba,mu_Lwn_0412p50_fq_sat_ba,'412.5',path_out,prot_name,sensor_name,\
+    mu_Lwn_0412p50_fq_ins_ba_station,min_val=-3.00,max_val=5.0)
 rmse_val_0442p50_ba, mean_abs_rel_diff_0442p50_ba, mean_rel_diff_0442p50_ba, mean_bias_0442p50_ba, mean_abs_error_0442p50_ba, r_sqr_0442p50_ba,\
 rmse_val_0442p50_ba_Venise,mean_abs_rel_diff_0442p50_ba_Venise, mean_rel_diff_0442p50_ba_Venise, mean_bias_0442p50_ba_Venise, mean_abs_error_0442p50_ba_Venise, r_sqr_0442p50_ba_Venise,\
 rmse_val_0442p50_ba_Gloria,mean_abs_rel_diff_0442p50_ba_Gloria, mean_rel_diff_0442p50_ba_Gloria, mean_bias_0442p50_ba_Gloria, mean_abs_error_0442p50_ba_Gloria, r_sqr_0442p50_ba_Gloria,\
@@ -1412,8 +1709,8 @@ rmse_val_0442p50_ba_Galata_Platform,mean_abs_rel_diff_0442p50_ba_Galata_Platform
 rmse_val_0442p50_ba_Helsinki_Lighthouse,mean_abs_rel_diff_0442p50_ba_Helsinki_Lighthouse, mean_rel_diff_0442p50_ba_Helsinki_Lighthouse, mean_bias_0442p50_ba_Helsinki_Lighthouse, mean_abs_error_0442p50_ba_Helsinki_Lighthouse, r_sqr_0442p50_ba_Helsinki_Lighthouse,\
 rmse_val_0442p50_ba_Gustav_Dalen_Tower,mean_abs_rel_diff_0442p50_ba_Gustav_Dalen_Tower, mean_rel_diff_0442p50_ba_Gustav_Dalen_Tower, mean_bias_0442p50_ba_Gustav_Dalen_Tower, mean_abs_error_0442p50_ba_Gustav_Dalen_Tower, r_sqr_0442p50_ba_Gustav_Dalen_Tower\
 = plot_scatter(\
-    matchups_Lwn_0442p50_fq_ins_ba,matchups_Lwn_0442p50_fq_sat_ba,'442.5',path_out,prot_name,sensor_name,\
-    matchups_Lwn_0442p50_fq_ins_ba_station,min_val=-3.00,max_val=6.2)
+    mu_Lwn_0442p50_fq_ins_ba,mu_Lwn_0442p50_fq_sat_ba,'442.5',path_out,prot_name,sensor_name,\
+    mu_Lwn_0442p50_fq_ins_ba_station,min_val=-3.00,max_val=6.2)
 rmse_val_0490p00_ba, mean_abs_rel_diff_0490p00_ba, mean_rel_diff_0490p00_ba, mean_bias_0490p00_ba, mean_abs_error_0490p00_ba, r_sqr_0490p00_ba,\
 rmse_val_0490p00_ba_Venise,mean_abs_rel_diff_0490p00_ba_Venise, mean_rel_diff_0490p00_ba_Venise, mean_bias_0490p00_ba_Venise, mean_abs_error_0490p00_ba_Venise, r_sqr_0490p00_ba_Venise,\
 rmse_val_0490p00_ba_Gloria,mean_abs_rel_diff_0490p00_ba_Gloria, mean_rel_diff_0490p00_ba_Gloria, mean_bias_0490p00_ba_Gloria, mean_abs_error_0490p00_ba_Gloria, r_sqr_0490p00_ba_Gloria,\
@@ -1421,8 +1718,8 @@ rmse_val_0490p00_ba_Galata_Platform,mean_abs_rel_diff_0490p00_ba_Galata_Platform
 rmse_val_0490p00_ba_Helsinki_Lighthouse,mean_abs_rel_diff_0490p00_ba_Helsinki_Lighthouse, mean_rel_diff_0490p00_ba_Helsinki_Lighthouse, mean_bias_0490p00_ba_Helsinki_Lighthouse, mean_abs_error_0490p00_ba_Helsinki_Lighthouse, r_sqr_0490p00_ba_Helsinki_Lighthouse,\
 rmse_val_0490p00_ba_Gustav_Dalen_Tower,mean_abs_rel_diff_0490p00_ba_Gustav_Dalen_Tower, mean_rel_diff_0490p00_ba_Gustav_Dalen_Tower, mean_bias_0490p00_ba_Gustav_Dalen_Tower, mean_abs_error_0490p00_ba_Gustav_Dalen_Tower, r_sqr_0490p00_ba_Gustav_Dalen_Tower\
 = plot_scatter(\
-    matchups_Lwn_0490p00_fq_ins_ba,matchups_Lwn_0490p00_fq_sat_ba,'490.0',path_out,prot_name,sensor_name,\
-    matchups_Lwn_0490p00_fq_ins_ba_station,min_val=-2.00,max_val=8.0)
+    mu_Lwn_0490p00_fq_ins_ba,mu_Lwn_0490p00_fq_sat_ba,'490.0',path_out,prot_name,sensor_name,\
+    mu_Lwn_0490p00_fq_ins_ba_station,min_val=-2.00,max_val=8.0)
 rmse_val_0560p00_ba, mean_abs_rel_diff_0560p00_ba, mean_rel_diff_0560p00_ba, mean_bias_0560p00_ba, mean_abs_error_0560p00_ba, r_sqr_0560p00_ba,\
 rmse_val_0560p00_ba_Venise,mean_abs_rel_diff_0560p00_ba_Venise, mean_rel_diff_0560p00_ba_Venise, mean_bias_0560p00_ba_Venise, mean_abs_error_0560p00_ba_Venise, r_sqr_0560p00_ba_Venise,\
 rmse_val_0560p00_ba_Gloria,mean_abs_rel_diff_0560p00_ba_Gloria, mean_rel_diff_0560p00_ba_Gloria, mean_bias_0560p00_ba_Gloria, mean_abs_error_0560p00_ba_Gloria, r_sqr_0560p00_ba_Gloria,\
@@ -1430,8 +1727,8 @@ rmse_val_0560p00_ba_Galata_Platform,mean_abs_rel_diff_0560p00_ba_Galata_Platform
 rmse_val_0560p00_ba_Helsinki_Lighthouse,mean_abs_rel_diff_0560p00_ba_Helsinki_Lighthouse, mean_rel_diff_0560p00_ba_Helsinki_Lighthouse, mean_bias_0560p00_ba_Helsinki_Lighthouse, mean_abs_error_0560p00_ba_Helsinki_Lighthouse, r_sqr_0560p00_ba_Helsinki_Lighthouse,\
 rmse_val_0560p00_ba_Gustav_Dalen_Tower,mean_abs_rel_diff_0560p00_ba_Gustav_Dalen_Tower, mean_rel_diff_0560p00_ba_Gustav_Dalen_Tower, mean_bias_0560p00_ba_Gustav_Dalen_Tower, mean_abs_error_0560p00_ba_Gustav_Dalen_Tower, r_sqr_0560p00_ba_Gustav_Dalen_Tower\
 = plot_scatter(\
-    matchups_Lwn_0560p00_fq_ins_ba,matchups_Lwn_0560p00_fq_sat_ba,'560.0',path_out,prot_name,sensor_name,\
-    matchups_Lwn_0560p00_fq_ins_ba_station,min_val=-0.50,max_val=6.0)
+    mu_Lwn_0560p00_fq_ins_ba,mu_Lwn_0560p00_fq_sat_ba,'560.0',path_out,prot_name,sensor_name,\
+    mu_Lwn_0560p00_fq_ins_ba_station,min_val=-0.50,max_val=6.0)
 rmse_val_0665p00_ba, mean_abs_rel_diff_0665p00_ba, mean_rel_diff_0665p00_ba, mean_bias_0665p00_ba, mean_abs_error_0665p00_ba, r_sqr_0665p00_ba,\
 rmse_val_0665p00_ba_Venise,mean_abs_rel_diff_0665p00_ba_Venise, mean_rel_diff_0665p00_ba_Venise, mean_bias_0665p00_ba_Venise, mean_abs_error_0665p00_ba_Venise, r_sqr_0665p00_ba_Venise,\
 rmse_val_0665p00_ba_Gloria,mean_abs_rel_diff_0665p00_ba_Gloria, mean_rel_diff_0665p00_ba_Gloria, mean_bias_0665p00_ba_Gloria, mean_abs_error_0665p00_ba_Gloria, r_sqr_0665p00_ba_Gloria,\
@@ -1439,8 +1736,8 @@ rmse_val_0665p00_ba_Galata_Platform,mean_abs_rel_diff_0665p00_ba_Galata_Platform
 rmse_val_0665p00_ba_Helsinki_Lighthouse,mean_abs_rel_diff_0665p00_ba_Helsinki_Lighthouse, mean_rel_diff_0665p00_ba_Helsinki_Lighthouse, mean_bias_0665p00_ba_Helsinki_Lighthouse, mean_abs_error_0665p00_ba_Helsinki_Lighthouse, r_sqr_0665p00_ba_Helsinki_Lighthouse,\
 rmse_val_0665p00_ba_Gustav_Dalen_Tower,mean_abs_rel_diff_0665p00_ba_Gustav_Dalen_Tower, mean_rel_diff_0665p00_ba_Gustav_Dalen_Tower, mean_bias_0665p00_ba_Gustav_Dalen_Tower, mean_abs_error_0665p00_ba_Gustav_Dalen_Tower, r_sqr_0665p00_ba_Gustav_Dalen_Tower\
 = plot_scatter(\
-    matchups_Lwn_0665p00_fq_ins_ba,matchups_Lwn_0665p00_fq_sat_ba,'665.0',path_out,prot_name,sensor_name,\
-    matchups_Lwn_0665p00_fq_ins_ba_station,min_val=-0.60,max_val=4.0)
+    mu_Lwn_0665p00_fq_ins_ba,mu_Lwn_0665p00_fq_sat_ba,'665.0',path_out,prot_name,sensor_name,\
+    mu_Lwn_0665p00_fq_ins_ba_station,min_val=-0.60,max_val=4.0)
 
 #%%
 # rmse
@@ -2025,11 +2322,11 @@ ofname = os.path.join(path_out,'source',ofname)
 plt.savefig(ofname, dpi=300) 
 
 # #%% time series base on conditions
-# cond1 = np.array(matchups_Lwn_0412p50_fq_ins_zi_station) == 'Venise' 
+# cond1 = np.array(mu_Lwn_0412p50_fq_ins_zi_station) == 'Venise' 
 # idx=np.where(cond1)
-# time_vec = np.array(matchups_Lwn_0412p50_fq_sat_zi_stop_time)
-# sat_vec = np.array(matchups_Lwn_0412p50_fq_ins_zi)
-# station_vec = np.array(matchups_Lwn_0412p50_fq_ins_zi_station)
+# time_vec = np.array(mu_Lwn_0412p50_fq_sat_zi_stop_time)
+# sat_vec = np.array(mu_Lwn_0412p50_fq_ins_zi)
+# station_vec = np.array(mu_Lwn_0412p50_fq_ins_zi_station)
 # plt.figure()
 # plt.plot(time_vec,sat_vec,'o',mfc='none')
 # plt.plot(time_vec[idx],sat_vec[idx],'ro',mfc='none')
@@ -2045,11 +2342,11 @@ def plot_hist_delta(station,n_matchups,df0):
     
     for protocol_name in protocol_list:    
     
-        time_vec = np.array(globals()['matchups_Lwn_0412p50_fq_sat_'+protocol_name+'_stop_time'])
+        time_vec = np.array(globals()['mu_Lwn_0412p50_fq_sat_'+protocol_name+'_stop_time'])
         date_vec = [dt.date() for dt in time_vec]
         date_vec = np.array(date_vec)
         
-        station_vec = np.array(globals()['matchups_Lwn_0412p50_fq_ins_'+protocol_name+'_station'])
+        station_vec = np.array(globals()['mu_Lwn_0412p50_fq_ins_'+protocol_name+'_station'])
     
         cond1 = station_vec == station
         
@@ -2186,15 +2483,15 @@ import plotly.express as px
 
  
 
-time_vec = np.array(matchups_Lwn_0412p50_fq_sat_zi_stop_time)
-sat_vec = np.array(matchups_Lwn_0412p50_fq_sat_zi)
-station_vec = np.array(matchups_Lwn_0412p50_fq_ins_zi_station)
+time_vec = np.array(mu_Lwn_0412p50_fq_sat_zi_stop_time)
+sat_vec = np.array(mu_Lwn_0412p50_fq_sat_zi)
+station_vec = np.array(mu_Lwn_0412p50_fq_ins_zi_station)
 df1 = pd.DataFrame(dict(time=time_vec, sat=sat_vec, station=station_vec,protocol='Z09'))    
     
     
-time_vec = np.array(matchups_Lwn_0412p50_fq_sat_ba_stop_time)
-sat_vec = np.array(matchups_Lwn_0412p50_fq_sat_ba)
-station_vec = np.array(matchups_Lwn_0412p50_fq_ins_ba_station)
+time_vec = np.array(mu_Lwn_0412p50_fq_sat_ba_stop_time)
+sat_vec = np.array(mu_Lwn_0412p50_fq_sat_ba)
+station_vec = np.array(mu_Lwn_0412p50_fq_ins_ba_station)
 df2 = pd.DataFrame(dict(time=time_vec, sat=sat_vec, station=station_vec,protocol='BW06'))
 df = pd.concat([df1,df2])
 
