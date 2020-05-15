@@ -1,0 +1,59 @@
+\documentclass[preview]{standalone}
+
+\standaloneenv{my}
+
+%%% MY PACKAGES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{graphicx}
+% \usepackage[outdir=./]{epstopdf}
+\usepackage{epstopdf}
+\epstopdfsetup{update} % only regenerate pdf files when eps file is newer
+\usepackage{amsmath,epsfig}
+
+\usepackage{tikz} % for flow charts
+  \usetikzlibrary{shapes,arrows,positioning,shadows,calc}
+  % \usetikzlibrary{external}
+  % \tikzexternalize[prefix=Figures/]
+
+% \usepackage[nostamp]{draftwatermark}
+% \SetWatermarkLightness{0.8}
+% \SetWatermarkScale{4}
+
+\usepackage[percent]{overpic}
+\usepackage{morefloats} % for the error "Too many unprocessed floats"
+
+\usepackage{multirow}
+
+\usepackage{float}
+\usepackage{hyperref}
+
+\usepackage[utf8]{inputenc}
+% \usepackage[x11names]{xcolor}
+\usepackage{fourier}
+\usepackage{booktabs}
+\usepackage{threeparttable, tablefootnote}
+
+\usepackage{cellspace}
+\setlength\cellspacetoplimit{3pt}
+\setlength\cellspacebottomlimit{0pt}
+%%% END MY PACKAGES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+\footnotesize
+\centering
+\setlength\tabcolsep{3pt} % default value: 6pt
+\begin{table}
+
+\begin{tabular}{@{\extracolsep{4pt}}SlSrSrSr SrSrSr@{}}
+                        & \multicolumn{3}{c}{BW06}       & \multicolumn{3}{c}{Z09}         \\ \cline{2-4} \cline{5-7} 
+Stations                &Median[CV]&   Angles &  Invalid &      CV  &   Angles &  Invalid \\\hline
+Venise                  &       43 &        0 &      141 &       34 &       56 &      127 \\
+Gloria                  &       82 &        0 &       95 &       78 &       23 &      107 \\
+Galata Platform         &       66 &        0 &      174 &       55 &       21 &      201 \\
+Helsinki Lighthouse     &       48 &        0 &       36 &       15 &        0 &       32 \\
+Gustav Dalen Tower      &       30 &        0 &       17 &        5 &        3 &       15 \\\hline
+Total                   &      269 &        0 &      463 &      187 &      103 &      482 \\
+\hline
+\end{tabular}
+
+\end{table}
+
+\end{document}

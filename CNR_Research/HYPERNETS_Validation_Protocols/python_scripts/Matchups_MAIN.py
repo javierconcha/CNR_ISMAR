@@ -1046,6 +1046,11 @@ rej_inv_mu_cnt_ba_Galata_Platform = 0
 rej_inv_mu_cnt_ba_Helsinki_Lighthouse = 0
 rej_inv_mu_cnt_ba_Gustav_Dalen_Tower = 0
 
+mu_cnt_zi = 0
+mu_cnt2_zi = 0
+mu_cnt_ba = 0
+mu_cnt2_ba = 0
+
 for station_name in station_list:  
     
 #    filename = station_name+'_20V3_20190927_20200110.nc'
@@ -1124,19 +1129,6 @@ for station_name in station_list:
                 print(str(nday)+' matchups per '+year_str+' '+doy_str)
     #            print(Lwn_fonQ[idx_min,:])
     #            print(Exact_wavelengths[idx_min,:])
-
-                # to count potential matchups total and per stations
-                pot_mu_cnt_zi += 1
-                if station_name == 'Venise':
-                    pot_mu_cnt_zi_Venise += 1
-                elif station_name == 'Gloria':
-                    pot_mu_cnt_zi_Gloria += 1
-                elif station_name == 'Galata_Platform':
-                    pot_mu_cnt_zi_Galata_Platform += 1
-                elif station_name == 'Helsinki_Lighthouse':
-                    pot_mu_cnt_zi_Helsinki_Lighthouse += 1
-                elif station_name == 'Gustav_Dalen_Tower':
-                    pot_mu_cnt_zi_Gustav_Dalen_Tower += 1    
                 
                 center_px = int(len(rhow_0412p50_fq)/2 + 0.5)
                 size_box = 3
@@ -1165,6 +1157,19 @@ for station_name in station_list:
                 Lwn_560 = rhow_0560p00_fq_box*F0_0560p00/np.pi
                 Lwn_560_CV = np.abs(Lwn_560.std()/Lwn_560.mean())                    
                 AOT_0865p50_CV = np.abs(AOT_0865p50_box.std()/AOT_0865p50_box.mean())
+
+                # to count potential matchups total and per stations
+                pot_mu_cnt_zi += 1
+                if station_name == 'Venise':
+                    pot_mu_cnt_zi_Venise += 1
+                elif station_name == 'Gloria':
+                    pot_mu_cnt_zi_Gloria += 1
+                elif station_name == 'Galata_Platform':
+                    pot_mu_cnt_zi_Galata_Platform += 1
+                elif station_name == 'Helsinki_Lighthouse':
+                    pot_mu_cnt_zi_Helsinki_Lighthouse += 1
+                elif station_name == 'Gustav_Dalen_Tower':
+                    pot_mu_cnt_zi_Gustav_Dalen_Tower += 1    
 
                 # count rejections
                 if Lwn_560_CV > 0.2 or AOT_0865p50_CV > 0.2:
@@ -1245,7 +1250,11 @@ for station_name in station_list:
                     elif station_name == 'Gustav_Dalen_Tower':
                         rej_vza_mu_cnt_zi_Gustav_Dalen_Tower += 1                               
 
-                if flags_mask.any():
+                if flags_mask.any() or ((rhow_0412p50_fq_box.mask.any() or np.isnan(rhow_0412p50_fq_box).any())\
+                        or (rhow_0442p50_fq_box.mask.any() or np.isnan(rhow_0442p50_fq_box).any())\
+                        or (rhow_0490p00_fq_box.mask.any() or np.isnan(rhow_0490p00_fq_box).any())\
+                        or (rhow_0560p00_fq_box.mask.any() or np.isnan(rhow_0560p00_fq_box).any())\
+                        or (rhow_0665p00_fq_box.mask.any() or np.isnan(rhow_0665p00_fq_box).any())):
                     rej_inv_mu_cnt_zi += 1
                     if station_name == 'Venise':
                         rej_inv_mu_cnt_zi_Venise += 1
@@ -1260,12 +1269,16 @@ for station_name in station_list:
 
                 # create matchup
                 if (sza<=70 and vza<=56) and (not flags_mask.any()) and (Lwn_560_CV <= 0.2 and AOT_0865p50_CV <= 0.2): # if any of the pixels if flagged, Fails validation criteria because all have to be valid in Zibordi 2018
-                # if any is invalid, do not calculated matchup
+                    
+                    mu_cnt_zi += 1    
+                    # if any is invalid, do not calculated matchup
                     if not ((rhow_0412p50_fq_box.mask.any() or np.isnan(rhow_0412p50_fq_box).any())\
                         or (rhow_0442p50_fq_box.mask.any() or np.isnan(rhow_0442p50_fq_box).any())\
                         or (rhow_0490p00_fq_box.mask.any() or np.isnan(rhow_0490p00_fq_box).any())\
                         or (rhow_0560p00_fq_box.mask.any() or np.isnan(rhow_0560p00_fq_box).any())\
                         or (rhow_0665p00_fq_box.mask.any() or np.isnan(rhow_0665p00_fq_box).any())):
+
+                        mu_cnt2_zi += 1
 
                     
                     # Rrs 0412p50
@@ -1349,19 +1362,6 @@ for station_name in station_list:
                 print(str(nday)+' matchups per '+year_str+' '+doy_str)
      #           print(Lwn_fonQ[idx_min,:])
      #           print(Exact_wavelengths[idx_min,:])
-                
-                # to count potential matchups total and per stations
-                pot_mu_cnt_ba += 1
-                if station_name == 'Venise':
-                    pot_mu_cnt_ba_Venise += 1
-                elif station_name == 'Gloria':
-                    pot_mu_cnt_ba_Gloria += 1
-                elif station_name == 'Galata_Platform':
-                    pot_mu_cnt_ba_Galata_Platform += 1
-                elif station_name == 'Helsinki_Lighthouse':
-                    pot_mu_cnt_ba_Helsinki_Lighthouse += 1
-                elif station_name == 'Gustav_Dalen_Tower':
-                    pot_mu_cnt_ba_Gustav_Dalen_Tower += 1
                 
                 center_px = int(len(rhow_0412p50_fq)/2 + 0.5)
                 size_box = 5
@@ -1474,20 +1474,20 @@ for station_name in station_list:
 
                 print('Median CV='+str(MedianCV))
 
-                # count rejections
-                if MedianCV > 0.15:
-                    rej_cvs_mu_cnt_ba += 1
-                    if station_name == 'Venise':
-                        rej_cvs_mu_cnt_ba_Venise += 1
-                    elif station_name == 'Gloria':
-                        rej_cvs_mu_cnt_ba_Gloria += 1
-                    elif station_name == 'Galata_Platform':
-                        rej_cvs_mu_cnt_ba_Galata_Platform += 1
-                    elif station_name == 'Helsinki_Lighthouse':
-                        rej_cvs_mu_cnt_ba_Helsinki_Lighthouse += 1
-                    elif station_name == 'Gustav_Dalen_Tower':
-                        rej_cvs_mu_cnt_ba_Gustav_Dalen_Tower += 1 
+                # to count potential matchups total and per stations
+                pot_mu_cnt_ba += 1
+                if station_name == 'Venise':
+                    pot_mu_cnt_ba_Venise += 1
+                elif station_name == 'Gloria':
+                    pot_mu_cnt_ba_Gloria += 1
+                elif station_name == 'Galata_Platform':
+                    pot_mu_cnt_ba_Galata_Platform += 1
+                elif station_name == 'Helsinki_Lighthouse':
+                    pot_mu_cnt_ba_Helsinki_Lighthouse += 1
+                elif station_name == 'Gustav_Dalen_Tower':
+                    pot_mu_cnt_ba_Gustav_Dalen_Tower += 1
 
+                # count rejections
                 if sza>75 or vza>60:
                     rej_ang_mu_cnt_ba += 1
                     if station_name == 'Venise':
@@ -1527,7 +1527,9 @@ for station_name in station_list:
                     elif station_name == 'Gustav_Dalen_Tower':
                         rej_vza_mu_cnt_ba_Gustav_Dalen_Tower += 1                                                                    
 
-                if NGP<=NTP/2+1:
+                if NGP<=NTP/2+1 or NGP_rhow_0412p50<=NTP/2+1 \
+                        or NGP_rhow_0442p50<=NTP/2+1 or NGP_rhow_0490p00<=NTP/2+1 \
+                        or NGP_rhow_0560p00<=NTP/2+1 or NGP_rhow_0665p00<=NTP/2+1:
                     rej_inv_mu_cnt_ba += 1
                     if station_name == 'Venise':
                         rej_inv_mu_cnt_ba_Venise += 1
@@ -1540,11 +1542,27 @@ for station_name in station_list:
                     elif station_name == 'Gustav_Dalen_Tower':
                         rej_inv_mu_cnt_ba_Gustav_Dalen_Tower += 1
 
+                if MedianCV > 0.15:
+                    rej_cvs_mu_cnt_ba += 1
+                    if station_name == 'Venise':
+                        rej_cvs_mu_cnt_ba_Venise += 1
+                    elif station_name == 'Gloria':
+                        rej_cvs_mu_cnt_ba_Gloria += 1
+                    elif station_name == 'Galata_Platform':
+                        rej_cvs_mu_cnt_ba_Galata_Platform += 1
+                    elif station_name == 'Helsinki_Lighthouse':
+                        rej_cvs_mu_cnt_ba_Helsinki_Lighthouse += 1
+                    elif station_name == 'Gustav_Dalen_Tower':
+                        rej_cvs_mu_cnt_ba_Gustav_Dalen_Tower += 1 
+
                     # create matchup
-                if sza<=75 and vza<=60 and NGP>NTP/2+1 and MedianCV <= 0.15:                
+                if sza<=75 and vza<=60 and NGP>NTP/2+1 and MedianCV <= 0.15:  
+
+                    mu_cnt_ba += 1              
                     # Rrs 0412p50
                     # print('412.5')
                     if NGP_rhow_0412p50>NTP/2+1:
+                        mu_cnt2_ba += 1
                         # print('Exceeded: NGP_rhow_0412p50='+str(NGP_rhow_0412p50))
                     # else:
                         mu_Lwn_0412p50_fq_sat_ba.append(mean_filtered_rhow_0412p50*F0_0412p50/np.pi)
@@ -1611,30 +1629,6 @@ for station_name in station_list:
     # else:
     #     print('Not matchups per '+year_str+' '+doy_str)            
 
-#%% print potential matchups numbers
-print('Station & BW06 & Z09')
-print(f'Venise & {pot_mu_cnt_ba_Venise} & {pot_mu_cnt_zi_Venise}')
-print(f'Gloria & {pot_mu_cnt_ba_Gloria} & {pot_mu_cnt_zi_Gloria}')
-print(f'Galata_Platform & {pot_mu_cnt_ba_Galata_Platform} & {pot_mu_cnt_zi_Galata_Platform}')
-print(f'Helsinki_Lighthouse & {pot_mu_cnt_ba_Helsinki_Lighthouse} & {pot_mu_cnt_zi_Helsinki_Lighthouse}')
-print(f'Gustav_Dalen_Tower & {pot_mu_cnt_ba_Gustav_Dalen_Tower} & {pot_mu_cnt_zi_Gustav_Dalen_Tower}')
-print(f'Total & {pot_mu_cnt_ba} & {pot_mu_cnt_zi}')
-
-
-data = {'stations':['Venise','Gloria','Galata_Platform','Helsinki_Lighthouse','Gustav_Dalen_Tower','Total']}
-df1 = pd.DataFrame(data)
-df1['rej_cvs_mu_zi'] = [rej_cvs_mu_cnt_zi_Venise,rej_cvs_mu_cnt_zi_Gloria,rej_cvs_mu_cnt_zi_Galata_Platform,rej_cvs_mu_cnt_zi_Helsinki_Lighthouse,rej_cvs_mu_cnt_zi_Gustav_Dalen_Tower,rej_cvs_mu_cnt_zi]
-df1['rej_cvL_mu_zi'] = [rej_cvL_mu_cnt_zi_Venise,rej_cvL_mu_cnt_zi_Gloria,rej_cvL_mu_cnt_zi_Galata_Platform,rej_cvL_mu_cnt_zi_Helsinki_Lighthouse,rej_cvL_mu_cnt_zi_Gustav_Dalen_Tower,rej_cvL_mu_cnt_zi]
-df1['rej_cvA_mu_zi'] = [rej_cvA_mu_cnt_zi_Venise,rej_cvA_mu_cnt_zi_Gloria,rej_cvA_mu_cnt_zi_Galata_Platform,rej_cvA_mu_cnt_zi_Helsinki_Lighthouse,rej_cvA_mu_cnt_zi_Gustav_Dalen_Tower,rej_cvA_mu_cnt_zi]
-df1['rej_ang_mu_zi'] = [rej_ang_mu_cnt_zi_Venise,rej_ang_mu_cnt_zi_Gloria,rej_ang_mu_cnt_zi_Galata_Platform,rej_ang_mu_cnt_zi_Helsinki_Lighthouse,rej_ang_mu_cnt_zi_Gustav_Dalen_Tower,rej_ang_mu_cnt_zi]
-df1['rej_sza_mu_zi'] = [rej_sza_mu_cnt_zi_Venise,rej_sza_mu_cnt_zi_Gloria,rej_sza_mu_cnt_zi_Galata_Platform,rej_sza_mu_cnt_zi_Helsinki_Lighthouse,rej_sza_mu_cnt_zi_Gustav_Dalen_Tower,rej_sza_mu_cnt_zi]
-df1['rej_vza_mu_zi'] = [rej_vza_mu_cnt_zi_Venise,rej_vza_mu_cnt_zi_Gloria,rej_vza_mu_cnt_zi_Galata_Platform,rej_vza_mu_cnt_zi_Helsinki_Lighthouse,rej_vza_mu_cnt_zi_Gustav_Dalen_Tower,rej_vza_mu_cnt_zi]
-df1['rej_inv_mu_zi'] = [rej_inv_mu_cnt_zi_Venise,rej_inv_mu_cnt_zi_Gloria,rej_inv_mu_cnt_zi_Galata_Platform,rej_inv_mu_cnt_zi_Helsinki_Lighthouse,rej_inv_mu_cnt_zi_Gustav_Dalen_Tower,rej_inv_mu_cnt_zi]
-df1['rej_cvs_mu_ba'] = [rej_cvs_mu_cnt_ba_Venise,rej_cvs_mu_cnt_ba_Gloria,rej_cvs_mu_cnt_ba_Galata_Platform,rej_cvs_mu_cnt_ba_Helsinki_Lighthouse,rej_cvs_mu_cnt_ba_Gustav_Dalen_Tower,rej_cvs_mu_cnt_ba]
-df1['rej_ang_mu_ba'] = [rej_ang_mu_cnt_ba_Venise,rej_ang_mu_cnt_ba_Gloria,rej_ang_mu_cnt_ba_Galata_Platform,rej_ang_mu_cnt_ba_Helsinki_Lighthouse,rej_ang_mu_cnt_ba_Gustav_Dalen_Tower,rej_ang_mu_cnt_ba]
-df1['rej_sza_mu_ba'] = [rej_sza_mu_cnt_ba_Venise,rej_sza_mu_cnt_ba_Gloria,rej_sza_mu_cnt_ba_Galata_Platform,rej_sza_mu_cnt_ba_Helsinki_Lighthouse,rej_sza_mu_cnt_ba_Gustav_Dalen_Tower,rej_sza_mu_cnt_ba]
-df1['rej_vza_mu_ba'] = [rej_vza_mu_cnt_ba_Venise,rej_vza_mu_cnt_ba_Gloria,rej_vza_mu_cnt_ba_Galata_Platform,rej_vza_mu_cnt_ba_Helsinki_Lighthouse,rej_vza_mu_cnt_ba_Gustav_Dalen_Tower,rej_vza_mu_cnt_ba]
-df1['rej_inv_mu_ba'] = [rej_inv_mu_cnt_ba_Venise,rej_inv_mu_cnt_ba_Gloria,rej_inv_mu_cnt_ba_Galata_Platform,rej_inv_mu_cnt_ba_Helsinki_Lighthouse,rej_inv_mu_cnt_ba_Gustav_Dalen_Tower,rej_inv_mu_cnt_ba]
 
 
 #%% plots   
@@ -2459,8 +2453,32 @@ def plot_histogram_and_qq(points, mu, sigma, distribution_type="norm"):
 
   plt.show()
 
-#%%
+#%% print potential matchups numbers
+print('Station & BW06 & Z09')
+print(f'Venise & {pot_mu_cnt_ba_Venise} & {pot_mu_cnt_zi_Venise}')
+print(f'Gloria & {pot_mu_cnt_ba_Gloria} & {pot_mu_cnt_zi_Gloria}')
+print(f'Galata_Platform & {pot_mu_cnt_ba_Galata_Platform} & {pot_mu_cnt_zi_Galata_Platform}')
+print(f'Helsinki_Lighthouse & {pot_mu_cnt_ba_Helsinki_Lighthouse} & {pot_mu_cnt_zi_Helsinki_Lighthouse}')
+print(f'Gustav_Dalen_Tower & {pot_mu_cnt_ba_Gustav_Dalen_Tower} & {pot_mu_cnt_zi_Gustav_Dalen_Tower}')
+print(f'Total & {pot_mu_cnt_ba} & {pot_mu_cnt_zi}')
 
+
+data = {'stations':['Venise','Gloria','Galata_Platform','Helsinki_Lighthouse','Gustav_Dalen_Tower','Total']}
+df3 = pd.DataFrame(data)
+df3['cvs_ba'] = [rej_cvs_mu_cnt_ba_Venise,rej_cvs_mu_cnt_ba_Gloria,rej_cvs_mu_cnt_ba_Galata_Platform,rej_cvs_mu_cnt_ba_Helsinki_Lighthouse,rej_cvs_mu_cnt_ba_Gustav_Dalen_Tower,rej_cvs_mu_cnt_ba]
+df3['ang_ba'] = [rej_ang_mu_cnt_ba_Venise,rej_ang_mu_cnt_ba_Gloria,rej_ang_mu_cnt_ba_Galata_Platform,rej_ang_mu_cnt_ba_Helsinki_Lighthouse,rej_ang_mu_cnt_ba_Gustav_Dalen_Tower,rej_ang_mu_cnt_ba]
+df3['sza_ba'] = [rej_sza_mu_cnt_ba_Venise,rej_sza_mu_cnt_ba_Gloria,rej_sza_mu_cnt_ba_Galata_Platform,rej_sza_mu_cnt_ba_Helsinki_Lighthouse,rej_sza_mu_cnt_ba_Gustav_Dalen_Tower,rej_sza_mu_cnt_ba]
+df3['vza_ba'] = [rej_vza_mu_cnt_ba_Venise,rej_vza_mu_cnt_ba_Gloria,rej_vza_mu_cnt_ba_Galata_Platform,rej_vza_mu_cnt_ba_Helsinki_Lighthouse,rej_vza_mu_cnt_ba_Gustav_Dalen_Tower,rej_vza_mu_cnt_ba]
+df3['inv_ba'] = [rej_inv_mu_cnt_ba_Venise,rej_inv_mu_cnt_ba_Gloria,rej_inv_mu_cnt_ba_Galata_Platform,rej_inv_mu_cnt_ba_Helsinki_Lighthouse,rej_inv_mu_cnt_ba_Gustav_Dalen_Tower,rej_inv_mu_cnt_ba]
+df3['cvs_zi'] = [rej_cvs_mu_cnt_zi_Venise,rej_cvs_mu_cnt_zi_Gloria,rej_cvs_mu_cnt_zi_Galata_Platform,rej_cvs_mu_cnt_zi_Helsinki_Lighthouse,rej_cvs_mu_cnt_zi_Gustav_Dalen_Tower,rej_cvs_mu_cnt_zi]
+df3['cvL_zi'] = [rej_cvL_mu_cnt_zi_Venise,rej_cvL_mu_cnt_zi_Gloria,rej_cvL_mu_cnt_zi_Galata_Platform,rej_cvL_mu_cnt_zi_Helsinki_Lighthouse,rej_cvL_mu_cnt_zi_Gustav_Dalen_Tower,rej_cvL_mu_cnt_zi]
+df3['cvA_zi'] = [rej_cvA_mu_cnt_zi_Venise,rej_cvA_mu_cnt_zi_Gloria,rej_cvA_mu_cnt_zi_Galata_Platform,rej_cvA_mu_cnt_zi_Helsinki_Lighthouse,rej_cvA_mu_cnt_zi_Gustav_Dalen_Tower,rej_cvA_mu_cnt_zi]
+df3['ang_zi'] = [rej_ang_mu_cnt_zi_Venise,rej_ang_mu_cnt_zi_Gloria,rej_ang_mu_cnt_zi_Galata_Platform,rej_ang_mu_cnt_zi_Helsinki_Lighthouse,rej_ang_mu_cnt_zi_Gustav_Dalen_Tower,rej_ang_mu_cnt_zi]
+df3['sza_zi'] = [rej_sza_mu_cnt_zi_Venise,rej_sza_mu_cnt_zi_Gloria,rej_sza_mu_cnt_zi_Galata_Platform,rej_sza_mu_cnt_zi_Helsinki_Lighthouse,rej_sza_mu_cnt_zi_Gustav_Dalen_Tower,rej_sza_mu_cnt_zi]
+df3['vza_zi'] = [rej_vza_mu_cnt_zi_Venise,rej_vza_mu_cnt_zi_Gloria,rej_vza_mu_cnt_zi_Galata_Platform,rej_vza_mu_cnt_zi_Helsinki_Lighthouse,rej_vza_mu_cnt_zi_Gustav_Dalen_Tower,rej_vza_mu_cnt_zi]
+df3['inv_zi'] = [rej_inv_mu_cnt_zi_Venise,rej_inv_mu_cnt_zi_Gloria,rej_inv_mu_cnt_zi_Galata_Platform,rej_inv_mu_cnt_zi_Helsinki_Lighthouse,rej_inv_mu_cnt_zi_Gustav_Dalen_Tower,rej_inv_mu_cnt_zi]
+
+print(tabulate(df3, tablefmt='latex', headers='keys',showindex=False))
     
 #%%    
 # data = stats.norm.rvs(loc=5, scale=3, size=(450,))

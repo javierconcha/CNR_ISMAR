@@ -177,7 +177,7 @@ count_Gustav_Dalen_Tower: 20
 BW06 & 560 & 451 & 0.27 & 13.9 & 4.1 & 0.02 & 0.15 & 0.88\\
 count_Venise: 127
 count_Gloria: 150
-count_Galata_Platform: 134
+count_Galata_Platform: 134 
 count_Helsinki_Lighthouse: 20
 count_Gustav_Dalen_Tower: 20
 BW06 & 665 & 451 & 0.20 & 262.0 & 105.7 & 0.01 & 0.06 & 0.43\\
