@@ -38,30 +38,77 @@
 \setlength\cellspacebottomlimit{0pt}
 %%% END MY PACKAGES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
-
+\footnotesize
+\centering
+\setlength\tabcolsep{3pt} % default value: 6pt
 \begin{table}
-\begin{tabular}{lccc}\hline
-Station 				& Days w/ In Situ 	& BW06	        & Z09          \\\hline
-Venise 					& 641 (25.0\%) 	    & 209 (32.6\%)	& 137 (21.3\%) \\
-Gloria 					& 585 (22.8\%)	    & 211 (36.0\%)	& 184 (31.4\%) \\
-Galata Platform 		& 622 (24.3\%)	    & 180 (28.9\%)	& 150 (24.1\%) \\
-Helsinki Lighthouse 	& 460 (17.9\%)	    & 23 (5.0\%)	& 36 (7.8\%)   \\
-Gustav Dalen Tower 		& 251 (9.8\%)	    & 26 (10.3\%)	& 30 (11.9\%)  \\\hline
-$N_{total}$ 			& 2,559             & 649 (25.3\%) 	& 537 (20.9\%) \\
+\begin{tabular}{@{\extracolsep{4pt}}Sl SrSrSr SrSr@{}}
+&  \multicolumn{3}{c}{BW06} &  \multicolumn{2}{c}{Z09}\\ \cline{2-4} \cline{5-6}
+ 				& \multicolumn{2}{c}{Potential MU} & 	 & Potential MU  &          \\
+Station                 & $\Delta_t=2$ & $\Delta_t=3$ h   & MU  & $\Delta_t=2$ h        & MU          \\\hline
+Venise 					& 187 & 378    & 209 (55\%)	& 313  & 137 (43\%) \\
+Gloria 					& 199 & 374    & 211 (56\%)	& 340  & 184 (54\%) \\
+Galata Platform 		& 173 & 403    & 180 (44\%)	& 384  & 150 (39\%) \\
+Helsinki Lighthouse 	& 22  & 93     & 23 (24\%)	& 76   & 36 (47\%)   \\
+Gustav Dalen Tower 		& 21  & 66     & 26 (39\%)	& 47   & 30 (63\%)  \\\hline
+$N_{total}$ 			& 602 & 1314   & 649 (49\%) & 1160 & 537 (46\%) \\
 
 \end{tabular}
 \end{table}
 
 \end{document}
 
-count_Venise: 100
-count_Gloria: 134
-count_Galata_Platform: 85
+delta_t = 2 (hours), instead of 3 
+BW06 & 412.5 & 602 & 0.56 & 104.3 & -4.2 & -0.05 & 0.40 & 0.44\\
+BW06 & 442.5 & 602 & 0.53 & 61.2 & 5.6 & 0.04 & 0.34 & 0.66\\
+BW06 & 490 & 602 & 0.50 & 30.1 & 12.2 & 0.13 & 0.28 & 0.81\\
+BW06 & 560 & 602 & 0.39 & 19.1 & 5.6 & 0.05 & 0.20 & 0.82\\
+BW06 & 665 & 602 & 0.30 & 71.2 & 18.4 & 0.02 & 0.09 & 0.34\\
+
+count_Venise: 187
+count_Gloria: 199
+count_Galata_Platform: 173
+count_Helsinki_Lighthouse: 22
+count_Gustav_Dalen_Tower: 21
+
+Z09 & 412.5 & 537 & 0.42 & 105.7 & -45.5 & -0.18 & 0.33 & 0.57\\
+Z09 & 442.5 & 537 & 0.36 & 59.4 & -18.6 & -0.09 & 0.26 & 0.77\\
+Z09 & 490 & 537 & 0.31 & 25.2 & 1.0 & 0.01 & 0.19 & 0.89\\
+Z09 & 560 & 537 & 0.25 & 14.6 & -1.0 & -0.02 & 0.14 & 0.89\\
+Z09 & 665 & 537 & 0.19 & 46.2 & -14.1 & -0.02 & 0.06 & 0.44\\
+
+count_Venise: 137
+count_Gloria: 184
+count_Galata_Platform: 150
 count_Helsinki_Lighthouse: 36
 count_Gustav_Dalen_Tower: 30
 
-count_Venise: 130
-count_Gloria: 154
-count_Galata_Platform: 101
-count_Helsinki_Lighthouse: 23
-count_Gustav_Dalen_Tower: 26
+Potential mu
+Station             & BW06  & Z09   
+Venise              & 378   & 313   
+Gloria              & 374   & 340   
+Galata_Platform     & 403   & 384   
+Helsinki_Lighthouse & 93    & 76    
+Gustav_Dalen_Tower  & 66    & 47    
+Total               & 1314  & 1160  
+
+# rejections
+Station & BW06 & Z09
+rej_cvs_mu_cnt & 214 & 96
+rej_cvs_mu_cnt_Venise & 30 & 14
+rej_cvs_mu_cnt_Gloria & 69 & 43
+rej_cvs_mu_cnt_Galata_Platform & 57 & 29
+rej_cvs_mu_cnt_Helsinki_Lighthouse & 35 & 8
+rej_cvs_mu_cnt_Gustav_Dalen_Tower  & 23 & 2
+rej_ang_mu_cnt & 0 & 103
+rej_ang_mu_cnt_Venise & 0 & 56
+rej_ang_mu_cnt_Gloria & 0 & 23
+rej_ang_mu_cnt_Galata_Platform & 0 & 21
+rej_ang_mu_cnt_Helsinki_Lighthouse & 0 & 0
+rej_ang_mu_cnt_Gustav_Dalen_Tower  & 0 & 3
+rej_inv_mu_cnt & 283 & 296
+rej_inv_mu_cnt_Venise & 88 & 72
+rej_inv_mu_cnt_Gloria & 67 & 83
+rej_inv_mu_cnt_Galata_Platform & 84 & 101
+rej_inv_mu_cnt_Helsinki_Lighthouse & 31 & 29
+rej_inv_mu_cnt_Gustav_Dalen_Tower   & 13 & 11
