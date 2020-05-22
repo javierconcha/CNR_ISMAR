@@ -38,11 +38,14 @@
 \setlength\cellspacebottomlimit{0pt}
 %%% END MY PACKAGES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
-
+\footnotesize
+\centering
+\setlength\tabcolsep{3pt} % default value: 6pt
 \begin{table}
-\begin{tabular}{lcccc}\hline
-
-Station 			& Avail.& BW06 	& IPK19 & V19	\\\hline
+\begin{tabular}{@{\extracolsep{4pt}}Sl ScScScSc@{}}\hline
+                & &  \multicolumn{3}{c}{MUs}\\  \cline{3-5}
+& Potential MUs &  BW06     & IPK19 & V19 \\
+Station 			& $\Delta_t=2$h& $\Delta_t=2$h & $\Delta_t=0.5$h & $\Delta_t=2$h	\\\hline
 Venise 				& 13 	& 9 	& 6 	& 9 	\\
 Galata Platform 	& 7 	& 1 	& 2 	& 5 	\\
 Helsinki Lighthouse & 7 	& 1 	& 4 	& 6 	\\

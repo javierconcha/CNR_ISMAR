@@ -42,21 +42,29 @@
 \centering
 \setlength\tabcolsep{3pt} % default value: 6pt
 \begin{table}
-\begin{tabular}{@{\extracolsep{4pt}}Sl SrSrSr SrSr@{}}
-&  \multicolumn{3}{c}{BW06} &  \multicolumn{2}{c}{Z09}\\ \cline{2-4} \cline{5-6}
- 				& \multicolumn{2}{c}{Potential MU} & 	 & Potential MU  &          \\
-Station                 & $\Delta_t=2$ & $\Delta_t=3$ h   & MU  & $\Delta_t=2$ h        & MU          \\\hline
-Venise 					& 187 & 378    & 209 (55\%)	& 313  & 137 (43\%) \\
-Gloria 					& 199 & 374    & 211 (56\%)	& 340  & 184 (54\%) \\
-Galata Platform 		& 173 & 403    & 180 (44\%)	& 384  & 150 (39\%) \\
-Helsinki Lighthouse 	& 22  & 93     & 23 (24\%)	& 76   & 36 (47\%)   \\
-Gustav Dalen Tower 		& 21  & 66     & 26 (39\%)	& 47   & 30 (63\%)  \\\hline
-$N_{total}$ 			& 602 & 1314   & 649 (49\%) & 1160 & 537 (46\%) \\
+\begin{tabular}{@{\extracolsep{4pt}}Sl SrSr SrSr SrSr@{}}
+                & &  &  \multicolumn{4}{c}{MUs}\\  \cline{4-7}
+ 				& \multicolumn{2}{c}{Potential MUs} &  \multicolumn{2}{c}{BW06}	 &   \multicolumn{2}{c}{Z09} \\ \cline{2-3} \cline{4-5} \cline{6-7}
+Station                 & $\Delta_t=2$h & $\Delta_t=3$h   &   $\Delta_t=2$h & $\Delta_t=3$h  & $\Delta_t=2$h        & $\Delta_t=3$h         \\\hline
+Venise 					& 313  & 378    & 187 & \textbf{209 (55\%)} & \textbf{137 (43\%)} & 154 \\
+Gloria 					& 340  & 374    & 199 & \textbf{211 (56\%)} & \textbf{184 (54\%)} & 194 \\
+Galata Platform 		& 384  & 403    & 173 & \textbf{180 (44\%)} & \textbf{150 (39\%)} & 158 \\
+Helsinki Lighthouse 	& 76   & 93     & 22  & \textbf{23 (24\%) } & \textbf{36 (47\%) } & 40  \\
+Gustav Dalen Tower 		& 47   & 66     & 21  & \textbf{26 (39\%) } & \textbf{30 (63\%) } & 41  \\\hline
+$N_{total}$ 			& 1160 & 1314   & 602 & \textbf{649 (49\%)} & \textbf{537 (46\%)} & 587   \\
 
 \end{tabular}
 \end{table}
 
 \end{document}
+delta_t = 3 (hours), instead of 2 
+Z09 & 412.5 & 587 & 0.42 & 115.5 & -53.0 & -0.18 & 0.33 & 0.56\\
+count_Venise: 154
+count_Gloria: 194
+count_Galata_Platform: 158
+count_Helsinki_Lighthouse: 40
+count_Gustav_Dalen_Tower: 41
+
 
 delta_t = 2 (hours), instead of 3 
 BW06 & 412.5 & 602 & 0.56 & 104.3 & -4.2 & -0.05 & 0.40 & 0.44\\

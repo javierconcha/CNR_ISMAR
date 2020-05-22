@@ -948,6 +948,8 @@ matchups_Lwn_0497p00_fq_sat_va_time = []
 matchups_Lwn_0560p00_fq_sat_va_time = []
 matchups_Lwn_0664p00_fq_sat_va_time = []
 
+dt_ba = [] #delta time for BW06
+
 donut_mask = np.array([[False,False,False,False,False,False,False],\
               [False,False,False,False,False,False,False],\
               [False,False,True,True,True,False,False],\
@@ -1025,6 +1027,8 @@ with open(path_to_list,'r') as file_list:
         dt_hour = [i.total_seconds()/(60*60) for i in time_diff] # time diffence between in situ measurements and sat in hours
         idx_min = np.argmin(np.abs(dt_hour))
         matchup_idx_vec = np.abs(dt_hour) <= delta_time 
+        
+        dt_ba.append(dt_hour[idx_min])
         
 #           104	Lwn(442)=0.285881,0.295781,0.288577,0.269275,0.233640,0.196600
 #   105	Lwn(491)=0.532647,0.578646,0.523528,0.501363,0.397166,0.397819
