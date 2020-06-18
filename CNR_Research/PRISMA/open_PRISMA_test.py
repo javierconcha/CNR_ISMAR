@@ -2,7 +2,7 @@
 # coding: utf-8
 """
 Created on Thu Feb 27 17:43:33 2020
-
+Script to open data from the PRISMA sensor
 @author: javier.concha
 """
 """
@@ -25,8 +25,10 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.basemap import Basemap
 import numpy as np
 import h5py
+
+# user defined functions
 sys.path.insert(0,'/Users/javier.concha/Desktop/Javier/2019_ROMA/CNR_Research/HYPERNETS_Validation_Protocols/python_scripts')
-import common_functions
+import common_functions # 
 
 def open_PRISMA(path_to_file):
     f = h5py.File(path_to_file, 'r')
