@@ -155,3 +155,59 @@ print(df)
 
 #%%
 
+
+#create figure
+fig1 = plt.figure(figsize=(10,10))  
+PLT = plt.axes(projection=ccrs.PlateCarree())
+PLT.set_extent([-30,60,-10,60])
+PLT.gridlines()
+
+#import and display shapefile
+fname = '/Users/javier.concha/Desktop/Javier/2019_Roma/CNR_Research/Call_ESA_MED/src/World_Seas_IHO_v1/World_Seas.shp'
+adm1_shapes = list(shapereader.Reader(fname).geometries())
+PLT.add_geometries(adm1_shapes, ccrs.PlateCarree(),
+              edgecolor='black', facecolor='gray', alpha=0.5)
+
+#create arbitrary polygon
+x3 = -5
+x4 = 15
+y3 = 30
+y4 = 40
+
+poly = shapely.geometry.Polygon([(x3,y3),(x3,y4),(x4,y4),(x4,y3)])
+poly2 = shapely.geometry.Polygon([(x3+5,y3+5),(x3+5,y4+5),(x4+5,y4+5),(x4+5,y3+5)])
+PLT.add_patch(PolygonPatch(poly,  fc='#cc00cc', ec='#555555', alpha=0.1, zorder=5))
+PLT.add_patch(PolygonPatch(poly2,  fc='yellow', ec='#555555', alpha=0.1, zorder=5))
+
+
+
+#find the MED polygon. 
+for sea in shapereader.Reader(fname).records(): 
+    if sea.attributes['NAME']=='Mediterranean Sea - Western Basin': 
+        MedW = sea.geometry 
+    if sea.attributes['NAME']=='Mediterranean Sea - Eastern Basin': 
+        MedE = sea.geometry   
+    if sea.attributes['NAME']=='Adriatic Sea': 
+        Adri = sea.geometry
+    if sea.attributes['NAME']=='Aegean Sea': 
+        Aege = sea.geometry
+    if sea.attributes['NAME']=='Ligurian Sea': 
+        Ligu = sea.geometry   
+    if sea.attributes['NAME']=='Ionian Sea': 
+        Ioni = sea.geometry
+    if sea.attributes['NAME']=='Tyrrhenian Sea': 
+        Tyrr = sea.geometry 
+    if sea.attributes['NAME']=='Balearic Sea': 
+        Bale = sea.geometry 
+    if sea.attributes['NAME']=='Alboran Sea': 
+        Albo = sea.geometry  
+sea_shapes = [MedW,MedE,Adri,Aege,Ligu,Ioni,Tyrr,Bale,Albo]
+  
+Med = MedE.union(MedW).union(Adri).union(Aege).union(Ligu).union(Ioni).union(Tyrr).union(Bale).union(Albo)      
+# PLT.add_geometries(sea_shapes , ccrs.PlateCarree(), edgecolor='black', facecolor='brown', alpha=0.5)
+PLT.add_patch(PolygonPatch(poly.union(poly2).intersection(Med), fc='black', alpha=1)) 
+
+#calculate coverage 
+x = poly.union(poly2).intersection(Med) 
+print ('Coverage: ', x.area/Med.area*100,'%')
+           
