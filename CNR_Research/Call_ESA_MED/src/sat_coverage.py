@@ -55,13 +55,15 @@ def create_map():
 def draw_polygon(lats,lons,m,sensor):
     x, y = m( lons, lats )
     xy = [(x[0],y[0]),(x[1],y[1]),(x[2],y[2]),(x[3],y[3])]
+    
     if sensor == 'S3A':
         fc = 'red'
     elif sensor == 'S3B':
         fc = 'blue'
     poly = matplotlib.patches.Polygon( xy, facecolor=fc, alpha=0.4 ,closed=True, ec='k', lw=1,)
     plt.gca().add_patch(poly)
-    return m
+    poly_all = shapely.geometry.Polygon(xy)
+    return m, poly_all
 
 
 def create_list_products(path_source):
@@ -69,9 +71,36 @@ def create_list_products(path_source):
     prog = subprocess.Popen(cmd, shell=True,stderr=subprocess.PIPE)
     out, err = prog.communicate()
     if err:
-        print(err)   
+        print(err)  
+
+def create_MED_shp(path_to_shp):
+    #find the MED polygon. 
+    for sea in shapereader.Reader(path_to_shp).records(): 
+        if sea.attributes['NAME']=='Mediterranean Sea - Western Basin': 
+            MedW = sea.geometry 
+        if sea.attributes['NAME']=='Mediterranean Sea - Eastern Basin': 
+            MedE = sea.geometry   
+        if sea.attributes['NAME']=='Adriatic Sea': 
+            Adri = sea.geometry
+        if sea.attributes['NAME']=='Aegean Sea': 
+            Aege = sea.geometry
+        if sea.attributes['NAME']=='Ligurian Sea': 
+            Ligu = sea.geometry   
+        if sea.attributes['NAME']=='Ionian Sea': 
+            Ioni = sea.geometry
+        if sea.attributes['NAME']=='Tyrrhenian Sea': 
+            Tyrr = sea.geometry 
+        if sea.attributes['NAME']=='Balearic Sea': 
+            Bale = sea.geometry 
+        if sea.attributes['NAME']=='Alboran Sea': 
+            Albo = sea.geometry  
+      
+    Med = MedE.union(MedW).union(Adri).union(Aege).union(Ligu).union(Ioni).union(Tyrr).union(Bale).union(Albo) 
+    return Med           
         
 def create_csv(path_to_list,df,m):
+    S3Apoly = shapely.geometry.Polygon()
+    S3Bpoly = shapely.geometry.Polygon()
     with open(path_to_list,'r') as file:
         for cnt, line in enumerate(file):   
             path_im = line[:-1]
@@ -125,8 +154,13 @@ def create_csv(path_to_list,df,m):
             
             
             df = df.append(granule,ignore_index=True) 
+
             # draw map
-            m = draw_polygon(lats_poly,lons_poly,m,sensor)
+            m, poly = draw_polygon(lats_poly,lons_poly,m,sensor)
+            if sensor == 'S3A':
+                S3Apoly = S3Apoly.union(poly)
+            elif sensor == 'S3B':
+                S3Bpoly = S3Bpoly.union(poly)
             plt.gcf()
             plt.title(date)
             custom_lines = [Line2D([0], [0], color='red', lw=4),
@@ -134,7 +168,38 @@ def create_csv(path_to_list,df,m):
 
             plt.legend(custom_lines, ['S3A', 'S3B'],loc='upper left')
             
-    return df, date       
+    return df, date, S3Apoly, S3Bpoly
+
+def coverage_calc(date,S3Apoly, S3Bpoly):
+    #create figure
+    plt.figure(figsize=(10,10))  
+    PLT = plt.axes(projection=ccrs.PlateCarree())
+    PLT.set_extent([-30,60,20,50])
+    PLT.gridlines()
+    
+    #import and display shapefile
+    path_to_shp = '/Users/javier.concha/Desktop/Javier/2019_Roma/CNR_Research/Call_ESA_MED/src/World_Seas_IHO_v1/World_Seas.shp'
+    
+    PLT.add_patch(PolygonPatch(S3Apoly,  fc='pink', ec='#555555', alpha=0.1, zorder=5))
+    PLT.add_patch(PolygonPatch(S3Bpoly,  fc='cyan', ec='#555555', alpha=0.1, zorder=5))
+    
+    Med = create_MED_shp(path_to_shp)
+    
+    #calculate coverage 
+    AB_union = S3Apoly.union(S3Bpoly).intersection(Med)
+    AB_inter = S3Apoly.intersection(S3Bpoly).intersection(Med)
+    PLT.add_patch(PolygonPatch(AB_union, fc='black', alpha=1)) 
+    PLT.add_patch(PolygonPatch(AB_inter, fc='red', alpha=1)) 
+    
+    
+    AB_union_perc = AB_union.area/Med.area*100
+    AB_inter_perc = AB_inter.area/Med.area*100
+    
+    plt.title(f'{date}; A$\cup$B={AB_union_perc:.2f}%; A$\cap$B={AB_inter_perc:.2f}%')
+    
+    print(f'Coverage A+B: {AB_union_perc:.2f}%')
+    print(f'Coverage A intersection B: {AB_inter_perc:.2f}%')
+    return AB_union_perc, AB_inter_perc       
 #%%
 # def main():
 # plot_footprint(var,lat,lon)
@@ -145,7 +210,7 @@ path_to_list = os.path.join(path_source,'file_list.txt')
 path_out = '/Users/javier.concha/Desktop/Javier/2019_Roma/CNR_Research/Call_ESA_MED/Figures'
 
 m =create_map()
-df,date = create_csv(path_to_list,df,m)  
+df,date, S3Apoly, S3Bpoly = create_csv(path_to_list,df,m)  
 
 # save figure
 plt.gcf()
@@ -154,60 +219,9 @@ plt.savefig(ofname, dpi=200)
 print(df)
 
 #%%
-
-
-#create figure
-fig1 = plt.figure(figsize=(10,10))  
-PLT = plt.axes(projection=ccrs.PlateCarree())
-PLT.set_extent([-30,60,-10,60])
-PLT.gridlines()
-
-#import and display shapefile
-fname = '/Users/javier.concha/Desktop/Javier/2019_Roma/CNR_Research/Call_ESA_MED/src/World_Seas_IHO_v1/World_Seas.shp'
-adm1_shapes = list(shapereader.Reader(fname).geometries())
-PLT.add_geometries(adm1_shapes, ccrs.PlateCarree(),
-              edgecolor='black', facecolor='gray', alpha=0.5)
-
-#create arbitrary polygon
-x3 = -5
-x4 = 15
-y3 = 30
-y4 = 40
-
-poly = shapely.geometry.Polygon([(x3,y3),(x3,y4),(x4,y4),(x4,y3)])
-poly2 = shapely.geometry.Polygon([(x3+5,y3+5),(x3+5,y4+5),(x4+5,y4+5),(x4+5,y3+5)])
-PLT.add_patch(PolygonPatch(poly,  fc='#cc00cc', ec='#555555', alpha=0.1, zorder=5))
-PLT.add_patch(PolygonPatch(poly2,  fc='yellow', ec='#555555', alpha=0.1, zorder=5))
-
-
-
-#find the MED polygon. 
-for sea in shapereader.Reader(fname).records(): 
-    if sea.attributes['NAME']=='Mediterranean Sea - Western Basin': 
-        MedW = sea.geometry 
-    if sea.attributes['NAME']=='Mediterranean Sea - Eastern Basin': 
-        MedE = sea.geometry   
-    if sea.attributes['NAME']=='Adriatic Sea': 
-        Adri = sea.geometry
-    if sea.attributes['NAME']=='Aegean Sea': 
-        Aege = sea.geometry
-    if sea.attributes['NAME']=='Ligurian Sea': 
-        Ligu = sea.geometry   
-    if sea.attributes['NAME']=='Ionian Sea': 
-        Ioni = sea.geometry
-    if sea.attributes['NAME']=='Tyrrhenian Sea': 
-        Tyrr = sea.geometry 
-    if sea.attributes['NAME']=='Balearic Sea': 
-        Bale = sea.geometry 
-    if sea.attributes['NAME']=='Alboran Sea': 
-        Albo = sea.geometry  
-sea_shapes = [MedW,MedE,Adri,Aege,Ligu,Ioni,Tyrr,Bale,Albo]
-  
-Med = MedE.union(MedW).union(Adri).union(Aege).union(Ligu).union(Ioni).union(Tyrr).union(Bale).union(Albo)      
-# PLT.add_geometries(sea_shapes , ccrs.PlateCarree(), edgecolor='black', facecolor='brown', alpha=0.5)
-PLT.add_patch(PolygonPatch(poly.union(poly2).intersection(Med), fc='black', alpha=1)) 
-
-#calculate coverage 
-x = poly.union(poly2).intersection(Med) 
-print ('Coverage: ', x.area/Med.area*100,'%')
+AB_union_perc, AB_inter_perc = coverage_calc(date, S3Apoly, S3Bpoly)
+# save figure
+plt.gcf()
+ofname = os.path.join(path_out,date+'_perc.pdf')
+plt.savefig(ofname, dpi=200)
            
