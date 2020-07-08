@@ -49,7 +49,7 @@ def create_map():
     m.drawparallels(range(lat_min, lat_max, step_lat),labels=[1,0,0,1],color='grey',linewidth=0.1)
     m.drawmeridians(range(lon_min, lon_max, step_lon),labels=[1,0,0,1],color='grey',linewidth=0.1)
     m.drawcoastlines(linewidth=0.1)
-    m.fillcontinents(color='grey',lake_color='aqua')
+    m.fillcontinents(color='grey')
     return m
 
 def draw_polygon(lats,lons,m,sensor):
@@ -60,19 +60,20 @@ def draw_polygon(lats,lons,m,sensor):
         fc = 'red'
     elif sensor == 'S3B':
         fc = 'blue'
-    poly = matplotlib.patches.Polygon( xy, facecolor=fc, alpha=0.4 ,closed=True, ec='k', lw=1,)
+    poly = matplotlib.patches.Polygon( xy, facecolor=fc, alpha=0.2,closed=True, ec='k', lw=1)
     plt.gca().add_patch(poly)
     poly_all = shapely.geometry.Polygon(xy)
     return m, poly_all
 
 
-def create_list_products(path_source):
-    cmd = f'find {path_source} -name "*OL_2_WFR*trim_MED*"> {path_source}/file_list.txt'
+def create_list_products(path_source,path_out):
+    cmd = f'find {path_source} -name "*OL_2_WFR*trim_MED*"> {path_out}/file_list.txt'
     prog = subprocess.Popen(cmd, shell=True,stderr=subprocess.PIPE)
     out, err = prog.communicate()
     if err:
         print(err)  
-
+    path_to_list = f'{path_out}/file_list.txt'
+    return path_to_list
 def create_MED_shp(path_to_shp):
     #find the MED polygon. 
     for sea in shapereader.Reader(path_to_shp).records(): 
@@ -98,9 +99,13 @@ def create_MED_shp(path_to_shp):
     Med = MedE.union(MedW).union(Adri).union(Aege).union(Ligu).union(Ioni).union(Tyrr).union(Bale).union(Albo) 
     return Med           
         
-def create_csv(path_to_list,df,m):
+def coverage(path_to_list,df):
+    # create empty polygons per each sensor
     S3Apoly = shapely.geometry.Polygon()
     S3Bpoly = shapely.geometry.Polygon()
+    m = create_map()
+    
+    # open list to files
     with open(path_to_list,'r') as file:
         for cnt, line in enumerate(file):   
             path_im = line[:-1]
@@ -122,11 +127,7 @@ def create_csv(path_to_list,df,m):
             lats_poly =[UL_lat,UR_lat,LR_lat,LL_lat]
             lons_poly =[UL_lon,UR_lon,LR_lon,LL_lon]
             
-            create_list_products(path_source)
-            
             #%% create csv
-            
-            
             sensor = path_im.split('/')[-1].split('_')[0]
             datetimestr = path_im.split('/')[-1].split('_')[7]
             date =  datetimestr.split('T')[0]
@@ -152,7 +153,6 @@ def create_csv(path_to_list,df,m):
                     'filepah':   path_im
                     }
             
-            
             df = df.append(granule,ignore_index=True) 
 
             # draw map
@@ -162,43 +162,53 @@ def create_csv(path_to_list,df,m):
             elif sensor == 'S3B':
                 S3Bpoly = S3Bpoly.union(poly)
             plt.gcf()
-            plt.title(date)
             custom_lines = [Line2D([0], [0], color='red', lw=4),
                 Line2D([0], [0], color='blue', lw=4)]
 
             plt.legend(custom_lines, ['S3A', 'S3B'],loc='upper left')
             
+    # calculate coverage percentage
+    AB_union_perc, AB_inter_perc = coverage_calc(date,S3Apoly, S3Bpoly)
+    
+    # save figure
+    plt.gcf()
+    ofname = os.path.join(path_out,date+'_coverage.pdf')
+    plt.savefig(ofname, dpi=200)
+    
+    plt.close()
+        
     return df, date, S3Apoly, S3Bpoly
 
 def coverage_calc(date,S3Apoly, S3Bpoly):
-    #create figure
-    plt.figure(figsize=(10,10))  
-    PLT = plt.axes(projection=ccrs.PlateCarree())
-    PLT.set_extent([-30,60,20,50])
-    PLT.gridlines()
+    # #create figure
+    # plt.figure(figsize=(10,10))  
+    # PLT = plt.axes(projection=ccrs.PlateCarree())
+    # PLT.set_extent([-30,60,20,50])
+    # PLT.gridlines()
     
     #import and display shapefile
     path_to_shp = '/Users/javier.concha/Desktop/Javier/2019_Roma/CNR_Research/Call_ESA_MED/src/World_Seas_IHO_v1/World_Seas.shp'
     
-    PLT.add_patch(PolygonPatch(S3Apoly,  fc='pink', ec='#555555', alpha=0.1, zorder=5))
-    PLT.add_patch(PolygonPatch(S3Bpoly,  fc='cyan', ec='#555555', alpha=0.1, zorder=5))
+    # PLT.add_patch(PolygonPatch(S3Apoly,  fc='pink', ec='#555555', alpha=0.1, zorder=5))
+    # PLT.add_patch(PolygonPatch(S3Bpoly,  fc='cyan', ec='#555555', alpha=0.1, zorder=5))
     
     Med = create_MED_shp(path_to_shp)
     
     #calculate coverage 
     AB_union = S3Apoly.union(S3Bpoly).intersection(Med)
     AB_inter = S3Apoly.intersection(S3Bpoly).intersection(Med)
-    PLT.add_patch(PolygonPatch(AB_union, fc='black', alpha=1)) 
-    PLT.add_patch(PolygonPatch(AB_inter, fc='red', alpha=1)) 
-    
+    # PLT.add_patch(PolygonPatch(AB_union, fc='black', alpha=1)) 
+    # PLT.add_patch(PolygonPatch(AB_inter, fc='red', alpha=1)) 
     
     AB_union_perc = AB_union.area/Med.area*100
     AB_inter_perc = AB_inter.area/Med.area*100
     
+    plt.gcf()
     plt.title(f'{date}; A$\cup$B={AB_union_perc:.2f}%; A$\cap$B={AB_inter_perc:.2f}%')
     
     print(f'Coverage A+B: {AB_union_perc:.2f}%')
     print(f'Coverage A intersection B: {AB_inter_perc:.2f}%')
+    
     return AB_union_perc, AB_inter_perc       
 #%%
 # def main():
@@ -206,22 +216,15 @@ def coverage_calc(date,S3Apoly, S3Bpoly):
 cols = ['sensor','datetimestr','date','time','doy','UL_lat','UL_lon','UR_lat','UR_lon','LL_lat','LL_lon','LR_lat','LR_lon','filename','filepah']
 df = pd.DataFrame(columns = cols)        
 path_source = '/Users/javier.concha/Desktop/Javier/2019_Roma/CNR_Research/Images/OLCI/trimmed_sources'
-path_to_list = os.path.join(path_source,'file_list.txt')  
 path_out = '/Users/javier.concha/Desktop/Javier/2019_Roma/CNR_Research/Call_ESA_MED/Figures'
 
-m =create_map()
-df,date, S3Apoly, S3Bpoly = create_csv(path_to_list,df,m)  
+year_str = '2020'
+doy_list = ['153','154']
+for doy_str in doy_list:
+    path_to_doy_folder = os.path.join(path_source,year_str,doy_str)
+    path_to_list = create_list_products(path_to_doy_folder,path_out)
+    df,date, S3Apoly, S3Bpoly = coverage(path_to_list,df)  
 
-# save figure
-plt.gcf()
-ofname = os.path.join(path_out,date+'.pdf')
-plt.savefig(ofname, dpi=200)
-print(df)
 
 #%%
-AB_union_perc, AB_inter_perc = coverage_calc(date, S3Apoly, S3Bpoly)
-# save figure
-plt.gcf()
-ofname = os.path.join(path_out,date+'_perc.pdf')
-plt.savefig(ofname, dpi=200)
-           
+
