@@ -906,6 +906,11 @@ matchups_Lwn_0497p00_fq_sat_ba_time = []
 matchups_Lwn_0560p00_fq_sat_ba_time = []
 matchups_Lwn_0664p00_fq_sat_ba_time = []
 
+mask_map_ba_0444p00 = np.zeros([5,5],dtype=int)
+mask_map_ba_0497p00 = np.zeros([5,5],dtype=int)
+mask_map_ba_0560p00 = np.zeros([5,5],dtype=int)
+mask_map_ba_0664p00 = np.zeros([5,5],dtype=int)
+
 # Pahlevan: initialization
 matchups_Lwn_0444p00_fq_ins_pa = []
 matchups_Lwn_0497p00_fq_ins_pa = []
@@ -926,6 +931,11 @@ matchups_Lwn_0444p00_fq_sat_pa_time = []
 matchups_Lwn_0497p00_fq_sat_pa_time = []
 matchups_Lwn_0560p00_fq_sat_pa_time = []
 matchups_Lwn_0664p00_fq_sat_pa_time = []
+
+mask_map_pa_0444p00 = np.zeros([7,7],dtype=int)
+mask_map_pa_0497p00 = np.zeros([7,7],dtype=int)
+mask_map_pa_0560p00 = np.zeros([7,7],dtype=int)
+mask_map_pa_0664p00 = np.zeros([7,7],dtype=int)
 
 # Vanhellemont: initialization
 matchups_Lwn_0444p00_fq_ins_va = []
@@ -1149,6 +1159,10 @@ with open(path_to_list,'r') as file_list:
                         matchups_Lwn_0444p00_fq_ins_ba.append(Lwn_fq_0442p00)
                         matchups_Lwn_0444p00_fq_ins_ba_station.append(station_name)
                         matchups_Lwn_0444p00_fq_sat_ba_time.append(sat_time)
+
+                        map_mask = np.ones(rhos_0444p00_box.shape,dtype=int)
+                        map_mask[rhos_0444p00_box.mask==True]=0
+                        mask_map_ba_0444p00 = mask_map_ba_0444p00 + map_mask
                     # Rrs 0497p00
                     # print('497.0')
                     if NGP_rhos_0497p00<NTP/2+1:
@@ -1158,6 +1172,10 @@ with open(path_to_list,'r') as file_list:
                         matchups_Lwn_0497p00_fq_ins_ba.append(Lwn_fq_0491p00)
                         matchups_Lwn_0497p00_fq_ins_ba_station.append(station_name)
                         matchups_Lwn_0497p00_fq_sat_ba_time.append(sat_time)
+
+                        map_mask = np.ones(rhos_0497p00_box.shape,dtype=int)
+                        map_mask[rhos_0497p00_box.mask==True]=0
+                        mask_map_ba_0497p00 = mask_map_ba_0497p00 + map_mask
                     # Rrs 0560p00
                     # print('560.0')
                     if NGP_rhos_0560p00<NTP/2+1:
@@ -1167,6 +1185,10 @@ with open(path_to_list,'r') as file_list:
                         matchups_Lwn_0560p00_fq_ins_ba.append(Lwn_fq_00551p0)
                         matchups_Lwn_0560p00_fq_ins_ba_station.append(station_name)
                         matchups_Lwn_0560p00_fq_sat_ba_time.append(sat_time)
+
+                        map_mask = np.ones(rhos_0560p00_box.shape,dtype=int)
+                        map_mask[rhos_0560p00_box.mask==True]=0
+                        mask_map_ba_0560p00 = mask_map_ba_0560p00 + map_mask
                     # Rrs 0664p00
                     # print('664.0')
                     if NGP_rhos_0664p00<NTP/2+1:
@@ -1176,6 +1198,10 @@ with open(path_to_list,'r') as file_list:
                         matchups_Lwn_0664p00_fq_ins_ba.append(Lwn_fq_0668p00)  
                         matchups_Lwn_0664p00_fq_ins_ba_station.append(station_name)
                         matchups_Lwn_0664p00_fq_sat_ba_time.append(sat_time)  
+
+                        map_mask = np.ones(rhos_0664p00_box.shape,dtype=int)
+                        map_mask[rhos_0664p00_box.mask==True]=0
+                        mask_map_ba_0664p00 = mask_map_ba_0664p00 + map_mask
                 else:
                     print('Median CV exceeds criteria: Median[CV]={:.4f}'.format(MedianCV))
             else:
@@ -1309,6 +1335,10 @@ with open(path_to_list,'r') as file_list:
                         matchups_Lwn_0444p00_fq_ins_pa.append(Lwn_fq_0442p00)
                         matchups_Lwn_0444p00_fq_ins_pa_station.append(station_name)
                         matchups_Lwn_0444p00_fq_sat_pa_time.append(sat_time)
+
+                        map_mask = np.ones(rhos_0444p00_box.shape,dtype=int)
+                        map_mask[rhos_0444p00_box.mask==True]=0
+                        mask_map_pa_0444p00 = mask_map_pa_0444p00 + map_mask
                     # Rrs 0497p00
                     # print('497.0')
                     if NGP_rhos_0497p00<NTP/2+1:
@@ -1318,6 +1348,10 @@ with open(path_to_list,'r') as file_list:
                         matchups_Lwn_0497p00_fq_ins_pa.append(Lwn_fq_0491p00)
                         matchups_Lwn_0497p00_fq_ins_pa_station.append(station_name)
                         matchups_Lwn_0497p00_fq_sat_pa_time.append(sat_time)
+
+                        map_mask = np.ones(rhos_0497p00_box.shape,dtype=int)
+                        map_mask[rhos_0497p00_box.mask==True]=0
+                        mask_map_pa_0497p00 = mask_map_pa_0497p00 + map_mask
                     # Rrs 0560p00
                     # print('560.0')
                     if NGP_rhos_0560p00<NTP/2+1:
@@ -1327,6 +1361,10 @@ with open(path_to_list,'r') as file_list:
                         matchups_Lwn_0560p00_fq_ins_pa.append(Lwn_fq_00551p0)
                         matchups_Lwn_0560p00_fq_ins_pa_station.append(station_name)
                         matchups_Lwn_0560p00_fq_sat_pa_time.append(sat_time)
+
+                        map_mask = np.ones(rhos_0560p00_box.shape,dtype=int)
+                        map_mask[rhos_0560p00_box.mask==True]=0
+                        mask_map_pa_0560p00 = mask_map_pa_0560p00 + map_mask
                     # Rrs 0664p00
                     # print('664.0')
                     if NGP_rhos_0664p00<NTP/2+1:
@@ -1336,6 +1374,10 @@ with open(path_to_list,'r') as file_list:
                         matchups_Lwn_0664p00_fq_ins_pa.append(Lwn_fq_0668p00)
                         matchups_Lwn_0664p00_fq_ins_pa_station.append(station_name)
                         matchups_Lwn_0664p00_fq_sat_pa_time.append(sat_time)
+
+                        map_mask = np.ones(rhos_0664p00_box.shape,dtype=int)
+                        map_mask[rhos_0664p00_box.mask==True]=0
+                        mask_map_pa_0664p00 = mask_map_pa_0664p00 + map_mask
                 else:
                     print('Median CV exceeds criteria: Median[CV]={:.4f}'.format(MedianCV))
             else:
@@ -1645,7 +1687,54 @@ plot_all_methods('444.0',notation_flag,path_out,min_val=-2.00,max_val=4.0)
 plot_all_methods('497.0',notation_flag,path_out,min_val=-1.00,max_val=8.0)
 plot_all_methods('560.0',notation_flag,path_out,min_val=-1.00,max_val=6.0)
 plot_all_methods('664.0',notation_flag,path_out,min_val=-0.60,max_val=2.0)                 
-##%%
+#%% mask maps
+fig = plt.figure()
+plt.subplot(2,4,1)
+plt.imshow(mask_map_ba_0444p00,interpolation='none')
+plt.colorbar()
+plt.title('BW06: 444 nm')
+
+plt.subplot(2,4,2)
+plt.imshow(mask_map_ba_0497p00,interpolation='none')
+plt.colorbar()
+plt.title('BW06: 497 nm')
+
+plt.subplot(2,4,3)
+plt.imshow(mask_map_ba_0560p00,interpolation='none')
+plt.colorbar()
+plt.title('BW06: 560 nm')
+
+plt.subplot(2,4,4)
+plt.imshow(mask_map_ba_0664p00,interpolation='none')
+plt.colorbar()
+plt.title('BW06: 664 nm')
+
+plt.subplot(2,4,5)
+minval = np.min(mask_map_pa_0444p00[np.nonzero(mask_map_pa_0444p00)])
+plt.imshow(mask_map_pa_0444p00,interpolation='none',vmin=minval)
+plt.colorbar()
+plt.title('IPK19: 444 nm')
+
+plt.subplot(2,4,6)
+minval = np.min(mask_map_pa_0497p00[np.nonzero(mask_map_pa_0497p00)])
+plt.imshow(mask_map_pa_0497p00,interpolation='none',vmin=minval)
+plt.colorbar()
+plt.title('IPK19: 497 nm')
+
+plt.subplot(2,4,7)
+minval = np.min(mask_map_pa_0560p00[np.nonzero(mask_map_pa_0560p00)])
+plt.imshow(mask_map_pa_0560p00,interpolation='none',vmin=minval)
+plt.colorbar()
+plt.title('IPK19: 560 nm')
+
+plt.subplot(2,4,8)
+minval = np.min(mask_map_pa_0664p00[np.nonzero(mask_map_pa_0664p00)])
+plt.imshow(mask_map_pa_0664p00,interpolation='none',vmin=minval)
+plt.colorbar()
+plt.title('IPK19: 664 nm')
+
+fig.suptitle('MSI Valid Pixels Maps')
+#%%
 #if __name__ == '__main__':
 #    main()  
 #%% aeronet_daily.log example
