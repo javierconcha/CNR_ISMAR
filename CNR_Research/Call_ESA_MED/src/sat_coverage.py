@@ -20,28 +20,24 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import numpy as np
-from netCDF4 import Dataset
 from matplotlib import pyplot as plt
 from mpl_toolkits.basemap import Basemap
 import os.path
 import os
-import subprocess
+import sys
 
 import matplotlib.patches
 import shapely.geometry
+import cartopy.io.shapereader as shapereader
 import pandas as pd
 from matplotlib.lines import Line2D
-import cartopy.crs as ccrs
-import cartopy.io.shapereader as shapereader
-
-from descartes import PolygonPatch
 
 def create_map():
-    lat_min = 10
-    lat_max = 60
+    lat_min = 30
+    lat_max = 50
     step_lat = 10
-    lon_min = -30
-    lon_max = 60
+    lon_min = -10
+    lon_max = 40
     step_lon = 10
     
     m = Basemap(llcrnrlat=lat_min,urcrnrlat=lat_max,\
@@ -52,28 +48,23 @@ def create_map():
     m.fillcontinents(color='grey')
     return m
 
-def draw_polygon(lats,lons,m,sensor):
+def draw_polygon(lats,lons,m,sensor,flag_all=False):
     x, y = m( lons, lats )
     xy = [(x[0],y[0]),(x[1],y[1]),(x[2],y[2]),(x[3],y[3])]
     
-    if sensor == 'S3A':
-        fc = 'red'
-    elif sensor == 'S3B':
+    if not flag_all:
+        if sensor == 'S3A':
+            fc = 'red'
+        elif sensor == 'S3B':
+            fc = 'blue'
+    else:
         fc = 'blue'
+        
     poly = matplotlib.patches.Polygon( xy, facecolor=fc, alpha=0.2,closed=True, ec='k', lw=1)
     plt.gca().add_patch(poly)
     poly_all = shapely.geometry.Polygon(xy)
     return m, poly_all
-
-
-def create_list_products(path_source,path_out):
-    cmd = f'find {path_source} -name "*OL_2_WFR*trim_MED*"> {path_out}/file_list.txt'
-    prog = subprocess.Popen(cmd, shell=True,stderr=subprocess.PIPE)
-    out, err = prog.communicate()
-    if err:
-        print(err)  
-    path_to_list = f'{path_out}/file_list.txt'
-    return path_to_list
+    
 def create_MED_shp(path_to_shp):
     #find the MED polygon. 
     for sea in shapereader.Reader(path_to_shp).records(): 
@@ -99,87 +90,60 @@ def create_MED_shp(path_to_shp):
     Med = MedE.union(MedW).union(Adri).union(Aege).union(Ligu).union(Ioni).union(Tyrr).union(Bale).union(Albo) 
     return Med           
         
-def coverage(path_to_list,df):
+def coverage(path_out,df_doy,df_coverage,Med):
     # create empty polygons per each sensor
     S3Apoly = shapely.geometry.Polygon()
     S3Bpoly = shapely.geometry.Polygon()
     m = create_map()
     
-    # open list to files
-    with open(path_to_list,'r') as file:
-        for cnt, line in enumerate(file):   
-            path_im = line[:-1]
-            coordinates_filename = 'geo_coordinates.nc'
-            filepah = os.path.join(path_im,coordinates_filename)
-            nc_f0 = Dataset(filepah,'r')
-            lat = nc_f0.variables['latitude'][:,:]
-            lon = nc_f0.variables['longitude'][:,:]
-            
-            UL_lat = lat[0,0]
-            UL_lon = lon[0,0]
-            UR_lat = lat[0,-1]
-            UR_lon = lon[0,-1]
-            LL_lat = lat[-1,0]
-            LL_lon = lon[-1,0]
-            LR_lat = lat[-1,-1]
-            LR_lon = lon[-1,-1]
-            
-            lats_poly =[UL_lat,UR_lat,LR_lat,LL_lat]
-            lons_poly =[UL_lon,UR_lon,LR_lon,LL_lon]
-            
-            #%% create csv
-            sensor = path_im.split('/')[-1].split('_')[0]
-            datetimestr = path_im.split('/')[-1].split('_')[7]
-            date =  datetimestr.split('T')[0]
-            time = datetimestr.split('T')[1]
-            doy = path_im.split('/')[-2]
-            filename = path_im.split('/')[-1]
-            
-            granule = {
-                    'sensor': sensor,
-                    'datetimestr': datetimestr,
-                    'date': date,
-                    'time': time,
-                    'doy': doy,
-                    'UL_lat': UL_lat,
-                    'UL_lon': UL_lon,
-                    'UR_lat': UR_lat,
-                    'UR_lon': UR_lon,
-                    'LL_lat': LL_lat,
-                    'LL_lon': LL_lon,
-                    'LR_lat': LR_lat,
-                    'LR_lon': LR_lon,
-                    'filename': filename,
-                    'filepah':   path_im
-                    }
-            
-            df = df.append(granule,ignore_index=True) 
+    for row in df_doy.itertuples(index=True, name='Pandas'):
+        # extract data from dataframe
+        UL_lat = row.UL_lat
+        UL_lon = row.UL_lon
+        UR_lat = row.UR_lat
+        UR_lon = row.UR_lon
+        LL_lat = row.LL_lat
+        LL_lon = row.LL_lon
+        LR_lat = row.LR_lat
+        LR_lon = row.LR_lon    
+        sensor = row.sensor
+        date = row.date   
 
-            # draw map
-            m, poly = draw_polygon(lats_poly,lons_poly,m,sensor)
-            if sensor == 'S3A':
-                S3Apoly = S3Apoly.union(poly)
-            elif sensor == 'S3B':
-                S3Bpoly = S3Bpoly.union(poly)
-            plt.gcf()
-            custom_lines = [Line2D([0], [0], color='red', lw=4),
-                Line2D([0], [0], color='blue', lw=4)]
+        # draw map
+        lats_poly =[UL_lat,UR_lat,LR_lat,LL_lat]
+        lons_poly =[UL_lon,UR_lon,LR_lon,LL_lon]
+        m, poly = draw_polygon(lats_poly,lons_poly,m,sensor)
+        if sensor == 'S3A':
+            S3Apoly = S3Apoly.union(poly)
+        elif sensor == 'S3B':
+            S3Bpoly = S3Bpoly.union(poly)
+        plt.gcf()
+        custom_lines = [Line2D([0], [0], color='red', lw=4),
+            Line2D([0], [0], color='blue', lw=4)]
 
-            plt.legend(custom_lines, ['S3A', 'S3B'],loc='upper left')
+        plt.legend(custom_lines, ['S3A', 'S3B'],loc='upper left')
             
     # calculate coverage percentage
-    AB_union_perc, AB_inter_perc = coverage_calc(date,S3Apoly, S3Bpoly)
+    AB_union_perc, AB_inter_perc = coverage_calc(date,S3Apoly, S3Bpoly,Med)
     
     # save figure
     plt.gcf()
-    ofname = os.path.join(path_out,date+'_coverage.pdf')
+    ofname = os.path.join(path_out,str(date)+'_coverage.pdf')
     plt.savefig(ofname, dpi=200)
     
     plt.close()
+    
+    row_percentage = {
+        'date': str(date),
+        'A union B': AB_union_perc,
+        'A interc B': AB_inter_perc
+        }
+    
+    df_coverage = df_coverage.append(row_percentage,ignore_index=True) 
         
-    return df, date, S3Apoly, S3Bpoly
+    return df_coverage,S3Apoly, S3Bpoly
 
-def coverage_calc(date,S3Apoly, S3Bpoly):
+def coverage_calc(date,S3Apoly, S3Bpoly,Med):
     # #create figure
     # plt.figure(figsize=(10,10))  
     # PLT = plt.axes(projection=ccrs.PlateCarree())
@@ -187,12 +151,8 @@ def coverage_calc(date,S3Apoly, S3Bpoly):
     # PLT.gridlines()
     
     #import and display shapefile
-    path_to_shp = '/Users/javier.concha/Desktop/Javier/2019_Roma/CNR_Research/Call_ESA_MED/src/World_Seas_IHO_v1/World_Seas.shp'
-    
     # PLT.add_patch(PolygonPatch(S3Apoly,  fc='pink', ec='#555555', alpha=0.1, zorder=5))
     # PLT.add_patch(PolygonPatch(S3Bpoly,  fc='cyan', ec='#555555', alpha=0.1, zorder=5))
-    
-    Med = create_MED_shp(path_to_shp)
     
     #calculate coverage 
     AB_union = S3Apoly.union(S3Bpoly).intersection(Med)
@@ -209,22 +169,168 @@ def coverage_calc(date,S3Apoly, S3Bpoly):
     print(f'Coverage A+B: {AB_union_perc:.2f}%')
     print(f'Coverage A intersection B: {AB_inter_perc:.2f}%')
     
-    return AB_union_perc, AB_inter_perc       
+    return AB_union_perc, AB_inter_perc  
+
+def create_all_polygon(df_poly):
+    m = create_map()
+    polygons = []
+    for row in df_poly.itertuples(index=True, name='Pandas'):
+        # extract data from dataframe
+        UL_lat = row.UL_lat
+        UL_lon = row.UL_lon
+        UR_lat = row.UR_lat
+        UR_lon = row.UR_lon
+        LL_lat = row.LL_lat
+        LL_lon = row.LL_lon
+        LR_lat = row.LR_lat
+        LR_lon = row.LR_lon    
+        sensor = row.sensor
+
+        # draw map
+        lats_poly =[UL_lat,UR_lat,LR_lat,LL_lat]
+        lons_poly =[UL_lon,UR_lon,LR_lon,LL_lon]
+        m, poly = draw_polygon(lats_poly,lons_poly,m,sensor,flag_all=True)
+        polygons.append(poly)
+    return polygons     
+
+def intersection_with_polygon(polygons,positions,Med):
+    count_vec = []
+    count = 0
+    
+    pos1 = []
+    pos2 = []
+    
+    for n in range(positions.shape[1]):
+        point = shapely.geometry.Point(positions[1,n],positions[0,n])
+        
+        if point.within(Med):
+            pos1.append(positions[1,n])
+            pos2.append(positions[0,n])
+            
+            for p in polygons:
+                if point.within(p):
+                    count += 1
+            count_vec.append(count)
+            count = 0
+                
+    positions_within = np.row_stack((pos2,pos1))       
+    return count_vec, positions_within
 #%%
 # def main():
-# plot_footprint(var,lat,lon)
-cols = ['sensor','datetimestr','date','time','doy','UL_lat','UL_lon','UR_lat','UR_lon','LL_lat','LL_lon','LR_lat','LR_lon','filename','filepah']
-df = pd.DataFrame(columns = cols)        
-path_source = '/Users/javier.concha/Desktop/Javier/2019_Roma/CNR_Research/Images/OLCI/trimmed_sources'
-path_out = '/Users/javier.concha/Desktop/Javier/2019_Roma/CNR_Research/Call_ESA_MED/Figures'
+if sys.platform == 'linux': 
+    path_source = '/dst04-data1/OC/OLCI/trimmed_sources'
+    path_out = '/home/Javier.Concha/OLCI_coverage/Figures'  
+elif sys.platform == 'darwin':
+    path_source = '/Users/javier.concha/Desktop/Javier/2019_Roma/CNR_Research/Images/OLCI/trimmed_sources'
+    path_out = '/Users/javier.concha/Desktop/Javier/2019_Roma/CNR_Research/Call_ESA_MED/Figures'
+else:
+    print('Error: host flag is not either mac or vm')   
+
+# create Dataframe    
+# per percentage coverage    
+cols = ['date','A union B','A interc B']
+df_coverage = pd.DataFrame(columns = cols) 
+
+# per saving polygons
+cols = ['doy','A','B','A+B','A^B','(A+B)-(A^B)']
+df_possible = pd.DataFrame(columns = cols)
+
+ABpoly = shapely.geometry.Polygon()
+
+# create polygon for the Medieterraneo
+path_to_shp = '/Users/javier.concha/Desktop/Javier/2019_Roma/CNR_Research/Call_ESA_MED/src/World_Seas_IHO_v1/World_Seas.shp'
+Med = create_MED_shp(path_to_shp)
+  
+csv_filename = os.path.join(path_out,'OLCI_geo_info_ALL.csv')
+df = pd.read_csv(csv_filename)
 
 year_str = '2020'
-doy_list = ['153','154']
-for doy_str in doy_list:
-    path_to_doy_folder = os.path.join(path_source,year_str,doy_str)
-    path_to_list = create_list_products(path_to_doy_folder,path_out)
-    df,date, S3Apoly, S3Bpoly = coverage(path_to_list,df)  
+sdoy = 153 # 153, 1
+ncycle = 27 # 27
+edoy = sdoy+ncycle-1 # 179, 27
+
+for doy in range(sdoy,edoy+1):
+    if not df.loc[df['doy'] == doy].empty:
+        df_doy = df.loc[df['doy'] == doy]
+        print('-----------')
+        print(doy)
+        df_coverage, S3Apoly, S3Bpoly = coverage(path_out,df_doy,df_coverage,Med)
+        
+        # add polygons to Dataframe
+        row_possible = {
+            'doy': str(doy),
+            'A': S3Apoly,
+            'B': S3Bpoly,
+            'A+B': S3Apoly.union(S3Bpoly),
+            'A^B': S3Apoly.intersection(S3Bpoly),
+            '(A+B)-(A^B)': S3Apoly.union(S3Bpoly) - S3Apoly.intersection(S3Bpoly)
+            }
+        
+        df_possible = df_possible.append(row_possible,ignore_index=True) 
+
+csv_coverage_filaname = os.path.join(path_out,'OLCI_coverage_info.csv')
+df_coverage.round({'A union B':1,'A interc B':1}).to_csv(csv_coverage_filaname)
+
+#%% calculated overlapping per n-day cicle
 
 
+df_poly = df.loc[(df['doy'] >= sdoy) & (df['doy'] <= edoy)]
+polygons = create_all_polygon(df_poly) 
+
+
+M, N = 1000, 500
+
+lat_min, lat_max = 30, 50
+lon_min, lon_max = -10, 50
+
+x = np.linspace(lon_min, lon_max,M+1)
+y = np.linspace(lat_min,lat_max,N+1)
+X,Y = np.meshgrid(x,y)
+
+positions = np.vstack([Y.ravel(), X.ravel()])
+
+count_vec,positions_within = intersection_with_polygon(polygons,positions,Med)
 #%%
+plt.figure()
+m = create_map()
+plt.scatter(*positions_within[::-1],c=count_vec,marker='.')
+cbar = plt.colorbar(orientation='horizontal')
+plt.title(f'S3A+S3B Coverage for a {str(ncycle)}-day cycle')
+cbar.set_label('Number of Images')
+plt.show()
 
+#%% calculated overlapping per n-day cicle per day
+M, N = 1000, 500
+
+lat_min, lat_max = 30, 50
+lon_min, lon_max = -10, 50
+
+x = np.linspace(lon_min, lon_max,M+1)
+y = np.linspace(lat_min,lat_max,N+1)
+X,Y = np.meshgrid(x,y)
+
+positions = np.vstack([Y.ravel(), X.ravel()])
+
+count_vec,positions_within = intersection_with_polygon(df_possible['A+B'],positions,Med)
+
+plt.figure()
+m = create_map()
+plt.scatter(*positions_within[::-1],c=count_vec,marker='.')
+cbar = plt.colorbar(orientation='horizontal')
+plt.title(f'S3A+S3B Coverage for a {str(ncycle)}-day cycle')
+cbar.set_label('Number of Days')
+plt.show()
+#%%
+# if __name__ == '__main__':
+#     main()
+
+# import numpy as np
+# from imantics import Polygons, Mask
+
+# # This can be any array
+# array = np.ones((100, 100))
+
+# polygons = Mask(array).polygons()
+
+# print(polygons.points)
+# print(polygons.segmentation)    
