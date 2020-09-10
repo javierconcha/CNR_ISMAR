@@ -30,7 +30,7 @@ import h5py
 sys.path.insert(0,'/Users/javier.concha/Desktop/Javier/2019_ROMA/CNR_Research/HYPERNETS_Validation_Protocols/python_scripts')
 import common_functions # 
 
-def open_PRISMA(path_to_file):
+def open_PRISMA(path_to_file,err_matrix=False):
     f = h5py.File(path_to_file, 'r')
     # reading name and value for root attributes (metadata contained in HDF5 root)
     # for attribute in f.attrs:
@@ -46,6 +46,8 @@ def open_PRISMA(path_to_file):
      # reading SWIR & VNIR datacubes
     swir = f['/HDFEOS/SWATHS/PRS_'+prod_lvl+'_HCO/Data Fields/SWIR_Cube']
     vnir = f['/HDFEOS/SWATHS/PRS_'+prod_lvl+'_HCO/Data Fields/VNIR_Cube']
+    swir_err = f['/HDFEOS/SWATHS/PRS_'+prod_lvl+'_HCO/Data Fields/SWIR_PIXEL_L2_ERR_MATRIX']
+    vnir_err = f['/HDFEOS/SWATHS/PRS_'+prod_lvl+'_HCO/Data Fields/VNIR_PIXEL_L2_ERR_MATRIX']
     
     if prod_lvl == 'L1':
     	# get geolocation info ----
@@ -91,7 +93,11 @@ def open_PRISMA(path_to_file):
     lat_swir = lat_swir[:,:]
     lon_swir = lon_swir[:,:]
 
-    return vnir, swir, lat_vnir, lon_vnir, lat_swir, lon_swir, wl_vnir, wl_swir
+    
+    if err_matrix:
+        return vnir_err, swir_err, lat_vnir, lon_vnir, lat_swir, lon_swir, wl_vnir, wl_swir
+    else:
+        return vnir, swir, lat_vnir, lon_vnir, lat_swir, lon_swir, wl_vnir, wl_swir
 
 def stack_rgb(cube,r_wl,g_wl,b_wl,ls_pct=0):
     
@@ -113,7 +119,7 @@ def stack_rgb(cube,r_wl,g_wl,b_wl,ls_pct=0):
 
     return stackedRGB
 
-def plot_geo(img,lats,lons,lat_plot_limits=[-90,90],lon_plot_limits=[-180,180],mosaic_flag=False,one_channel=False):
+def plot_geo(img,lats,lons,lat_plot_limits=[-90,90],lon_plot_limits=[-180,180],mosaic_flag=False,one_channel=False,err_matrix=False):
 	# solution taken from: 
 	# https://stackoverflow.com/questions/41389335/how-to-plot-geolocated-rgb-data-faster-using-python-basemap
 	# https://github.com/matplotlib/matplotlib/issues/4277
@@ -149,7 +155,11 @@ def plot_geo(img,lats,lons,lat_plot_limits=[-90,90],lon_plot_limits=[-180,180],m
     m = Basemap(**map_kwargs)
 
     if one_channel:
-        m.pcolormesh(lons, lats, img, latlon=True,label='_nolegend_')
+        if err_matrix:
+            m.pcolormesh(lons, lats, img, latlon=True,label='_nolegend_',vmin=0, vmax=3)
+            m.colorbar()
+        else:
+            m.pcolormesh(lons, lats, img, latlon=True,label='_nolegend_')
     else:
         mesh_rgb = img[:-1,:-1,:] # pcolormesh cut off the last row and column. This fixs it!
         mesh_rgb.shape
@@ -463,27 +473,28 @@ plt.ylabel('Reflectance (%)')
 plot_geo(stackedRGB,lats,lons,lat_plot_limits=[37,47],lon_plot_limits=[5,20],one_channel=False)
 
 #%% Open file L1
-path_to_image = '/Users/javier.concha/Desktop/Javier/2019_Roma/CNR_Research/Images/PRISMA//dati_PRISMA_ADR/'
+path_to_image = '/Users/javier.concha/Desktop/Javier/2019_Roma/CNR_Research/Images/PRISMA/dati_PRISMA_ADR/'
 
 
-file1_name = 'PRS_L1_STD_OFFL_20200220101707_20200220101711_0001.he5'
-file2_name = 'PRS_L1_STD_OFFL_20200220101711_20200220101716_0001.he5'
-file3_name = 'PRS_L1_STD_OFFL_20200220101716_20200220101720_0001.he5'
-file4_name = 'PRS_L1_STD_OFFL_20200220101724_20200220101729_0001.he5'
-file5_name = 'PRS_L1_STD_OFFL_20200220101729_20200220101733_0001.he5'
+file_list = ['PRS_L1_STD_OFFL_20200220101707_20200220101711_0001.he5',\
+             'PRS_L1_STD_OFFL_20200220101711_20200220101716_0001.he5',\
+             'PRS_L1_STD_OFFL_20200220101716_20200220101720_0001.he5',\
+             'PRS_L1_STD_OFFL_20200220101724_20200220101729_0001.he5',\
+             'PRS_L1_STD_OFFL_20200220101729_20200220101733_0001.he5']
 
 
 fig = plt.figure(figsize=(10, 10))
 ax = fig.add_subplot(111)
 #%%
-path_to_file = os.path.join(path_to_image,file2_name)
-vnir, swir, lat_vnir, lon_vnir, lat_swir, lon_swir, wl_vnir, wl_swir = open_PRISMA(path_to_file)
-
-r_wl = 620
-g_wl = 550
-b_wl = 460
-stackedRGB = stack_rgb(vnir,r_wl,g_wl,b_wl,ls_pct=10)
-plot_geo(stackedRGB,lat_vnir,lon_vnir,lat_plot_limits=[44,46],lon_plot_limits=[12,14],mosaic_flag=False,one_channel=False)
+for file_name in file_list:
+    path_to_file = os.path.join(path_to_image,file_name)
+    vnir, swir, lat_vnir, lon_vnir, lat_swir, lon_swir, wl_vnir, wl_swir = open_PRISMA(path_to_file)
+    
+    r_wl = 620
+    g_wl = 550
+    b_wl = 460
+    stackedRGB = stack_rgb(vnir,r_wl,g_wl,b_wl,ls_pct=10)
+    plot_geo(stackedRGB,lat_vnir,lon_vnir,lat_plot_limits=[44,46],lon_plot_limits=[12,14],mosaic_flag=True,one_channel=False)
 #%%
 plt.plot(12.59883333,45.02,'ro')
 plt.plot(12.75733333,45.1725,'go')
@@ -526,3 +537,49 @@ plt.legend(['St 008','St 009'])
 plt.figure()
 plt.imshow(stackedRGB)
 plt.plot(r2,c2,'go')
+
+#%% plot ERR MATRIX
+path_to_image = '/Users/javier.concha/Desktop/Javier/2019_Roma/CNR_Research/Images/PRISMA/dati_PRISMA_ADR/'
+path_out = '/Users/javier.concha/Desktop/Javier/2019_Roma/CNR_Research/PRISMA/Figures/'
+
+file_list = [   'PRS_L2D_STD_20200220101707_20200220101711_0001.he5',\
+                'PRS_L2D_STD_20200220101711_20200220101716_0001.he5',\
+                'PRS_L2D_STD_20200220101716_20200220101720_0001.he5',\
+                'PRS_L2D_STD_20200220101720_20200220101724_0001.he5',\
+                'PRS_L2D_STD_20200220101724_20200220101729_0001.he5',\
+                'PRS_L2D_STD_20200220101729_20200220101733_0001.he5']
+
+# file_list = [   'PRS_L2D_STD_20200220101729_20200220101733_0001.he5',\
+#                 'PRS_L2D_STD_20200220101724_20200220101729_0001.he5',\
+#                 'PRS_L2D_STD_20200220101720_20200220101724_0001.he5',\
+#                 'PRS_L2D_STD_20200220101716_20200220101720_0001.he5',\
+#                 'PRS_L2D_STD_20200220101711_20200220101716_0001.he5',\
+#                 'PRS_L2D_STD_20200220101707_20200220101711_0001.he5']
+
+    
+fig = plt.figure(figsize=(10, 10))
+ax = fig.add_subplot(111)
+wllist = [460, 550, 620]
+
+for wl in wllist:
+    ind_wl = np.argmin(np.abs(wl_vnir-wl))
+    for file_name in file_list:
+        path_to_file = os.path.join(path_to_image,file_name)
+        vnir_err, swir_err, lat_vnir, lon_vnir, lat_swir, lon_swir, wl_vnir, wl_swir = open_PRISMA(path_to_file,err_matrix=True)
+        
+        band = vnir_err[:,ind_wl,:]
+        band_masked = np.ma.masked_where(band == 0, band)
+    
+        plot_geo(band_masked,lat_vnir,lon_vnir,lat_plot_limits=[44,46],lon_plot_limits=[12,14],mosaic_flag=True,one_channel=True,err_matrix=True)
+
+    title_str = f'VNIR_PIXEL_L2_ERR_MATRIX for {wl:.0f} nm (band index = {ind_wl:.0f})'
+    print(title_str)
+    plt.title(title_str)
+        
+    ofname = f'ERR_MATRIX_mosaic_{wl}nm.png'
+    ofname = os.path.join(path_out,ofname)
+    plt.savefig(ofname, dpi=300)
+    
+    plt.close()
+        
+
