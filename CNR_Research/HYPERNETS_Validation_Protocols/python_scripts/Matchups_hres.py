@@ -51,6 +51,12 @@ import common_functions
 
 sys.path.insert(0,'/Users/javier.concha/Desktop/Javier/2019_ROMA/CNR_Research/HYPERNETS_Validation_Protocols/python_scripts')
 
+station_list_main = ['Galata_Platform','Gustav_Dalen_Tower','Helsinki_Lighthouse','Lake_Erie',\
+                'LISCO','Palgrunden','Thornton_C-power','USC_SEAPRISM','USC_SEAPRISM_2',\
+                'Venise','WaveCIS_Site_CSI_6','Gloria']
+
+msi_wl_list = [444,497,560,664]
+
 def get_lat_lon_ins(station_name):
     if station_name == 'Galata_Platform': # Black Sea
         Latitude=43.044624
@@ -906,10 +912,7 @@ matchups_Lwn_0497p00_fq_sat_ba_time = []
 matchups_Lwn_0560p00_fq_sat_ba_time = []
 matchups_Lwn_0664p00_fq_sat_ba_time = []
 
-mask_map_ba_0444p00 = np.zeros([5,5],dtype=int)
-mask_map_ba_0497p00 = np.zeros([5,5],dtype=int)
-mask_map_ba_0560p00 = np.zeros([5,5],dtype=int)
-mask_map_ba_0664p00 = np.zeros([5,5],dtype=int)
+map_valid_pxs_ba = np.zeros([len(station_list_main),len(msi_wl_list),5,5],dtype=int)
 
 # Pahlevan: initialization
 matchups_Lwn_0444p00_fq_ins_pa = []
@@ -932,10 +935,7 @@ matchups_Lwn_0497p00_fq_sat_pa_time = []
 matchups_Lwn_0560p00_fq_sat_pa_time = []
 matchups_Lwn_0664p00_fq_sat_pa_time = []
 
-mask_map_pa_0444p00 = np.zeros([7,7],dtype=int)
-mask_map_pa_0497p00 = np.zeros([7,7],dtype=int)
-mask_map_pa_0560p00 = np.zeros([7,7],dtype=int)
-mask_map_pa_0664p00 = np.zeros([7,7],dtype=int)
+map_valid_pxs_pa = np.zeros([len(station_list_main),len(msi_wl_list),7,7],dtype=int)
 
 # Vanhellemont: initialization
 matchups_Lwn_0444p00_fq_ins_va = []
@@ -960,18 +960,20 @@ matchups_Lwn_0664p00_fq_sat_va_time = []
 
 dt_ba = [] #delta time for BW06
 
-donut_mask = np.array([[False,False,False,False,False,False,False],\
-              [False,False,False,False,False,False,False],\
-              [False,False,True,True,True,False,False],\
-              [False,False,True,True,True,False,False],\
-              [False,False,True,True,True,False,False],\
-              [False,False,False,False,False,False,False],\
-              [False,False,False,False,False,False,False]])
+donut_mask = np.array(\
+    [[False,False,False,False,False,False,False],\
+    [ False,False,False,False,False,False,False],\
+    [ False,False,True ,True ,True ,False,False],\
+    [ False,False,True ,True ,True ,False,False],\
+    [ False,False,True ,True ,True ,False,False],\
+    [ False,False,False,False,False,False,False],\
+    [ False,False,False,False,False,False,False]])
    
 with open(path_to_list,'r') as file_list:
     for cnt, file_name in enumerate(file_list):
         folder_name = file_name.split('/')[1]
         station_name = folder_name[:-15]
+        station_idx = station_list_main.index(station_name)
         year_str = folder_name.split('_')[-3]
         month_str = folder_name.split('_')[-2]
         day_str = folder_name.split('_')[-1]
@@ -1160,9 +1162,9 @@ with open(path_to_list,'r') as file_list:
                         matchups_Lwn_0444p00_fq_ins_ba_station.append(station_name)
                         matchups_Lwn_0444p00_fq_sat_ba_time.append(sat_time)
 
-                        map_mask = np.ones(rhos_0444p00_box.shape,dtype=int)
-                        map_mask[rhos_0444p00_box.mask==True]=0
-                        mask_map_ba_0444p00 = mask_map_ba_0444p00 + map_mask
+                        map_valid_pxs = np.ones(rhos_0444p00_box.shape,dtype=int)
+                        map_valid_pxs[rhos_0444p00_box.mask==True]=0
+                        map_valid_pxs_ba[station_idx,0,:,:] = map_valid_pxs_ba[station_idx,0,:,:] + map_valid_pxs
                     # Rrs 0497p00
                     # print('497.0')
                     if NGP_rhos_0497p00<NTP/2+1:
@@ -1173,9 +1175,9 @@ with open(path_to_list,'r') as file_list:
                         matchups_Lwn_0497p00_fq_ins_ba_station.append(station_name)
                         matchups_Lwn_0497p00_fq_sat_ba_time.append(sat_time)
 
-                        map_mask = np.ones(rhos_0497p00_box.shape,dtype=int)
-                        map_mask[rhos_0497p00_box.mask==True]=0
-                        mask_map_ba_0497p00 = mask_map_ba_0497p00 + map_mask
+                        map_valid_pxs = np.ones(rhos_0497p00_box.shape,dtype=int)
+                        map_valid_pxs[rhos_0497p00_box.mask==True]=0
+                        map_valid_pxs_ba[station_idx,1,:,:] = map_valid_pxs_ba[station_idx,1,:,:] + map_valid_pxs
                     # Rrs 0560p00
                     # print('560.0')
                     if NGP_rhos_0560p00<NTP/2+1:
@@ -1186,9 +1188,9 @@ with open(path_to_list,'r') as file_list:
                         matchups_Lwn_0560p00_fq_ins_ba_station.append(station_name)
                         matchups_Lwn_0560p00_fq_sat_ba_time.append(sat_time)
 
-                        map_mask = np.ones(rhos_0560p00_box.shape,dtype=int)
-                        map_mask[rhos_0560p00_box.mask==True]=0
-                        mask_map_ba_0560p00 = mask_map_ba_0560p00 + map_mask
+                        map_valid_pxs = np.ones(rhos_0560p00_box.shape,dtype=int)
+                        map_valid_pxs[rhos_0560p00_box.mask==True]=0
+                        map_valid_pxs_ba[station_idx,2,:,:] = map_valid_pxs_ba[station_idx,2,:,:] + map_valid_pxs
                     # Rrs 0664p00
                     # print('664.0')
                     if NGP_rhos_0664p00<NTP/2+1:
@@ -1199,9 +1201,9 @@ with open(path_to_list,'r') as file_list:
                         matchups_Lwn_0664p00_fq_ins_ba_station.append(station_name)
                         matchups_Lwn_0664p00_fq_sat_ba_time.append(sat_time)  
 
-                        map_mask = np.ones(rhos_0664p00_box.shape,dtype=int)
-                        map_mask[rhos_0664p00_box.mask==True]=0
-                        mask_map_ba_0664p00 = mask_map_ba_0664p00 + map_mask
+                        map_valid_pxs = np.ones(rhos_0664p00_box.shape,dtype=int)
+                        map_valid_pxs[rhos_0664p00_box.mask==True]=0
+                        map_valid_pxs_ba[station_idx,3,:,:] = map_valid_pxs_ba[station_idx,3,:,:] + map_valid_pxs
                 else:
                     print('Median CV exceeds criteria: Median[CV]={:.4f}'.format(MedianCV))
             else:
@@ -1336,9 +1338,9 @@ with open(path_to_list,'r') as file_list:
                         matchups_Lwn_0444p00_fq_ins_pa_station.append(station_name)
                         matchups_Lwn_0444p00_fq_sat_pa_time.append(sat_time)
 
-                        map_mask = np.ones(rhos_0444p00_box.shape,dtype=int)
-                        map_mask[rhos_0444p00_box.mask==True]=0
-                        mask_map_pa_0444p00 = mask_map_pa_0444p00 + map_mask
+                        map_valid_pxs = np.ones(rhos_0444p00_box.shape,dtype=int)
+                        map_valid_pxs[rhos_0444p00_box.mask==True]=0
+                        map_valid_pxs_pa[station_idx,0,:,:] = map_valid_pxs_pa[station_idx,0,:,:] + map_valid_pxs
                     # Rrs 0497p00
                     # print('497.0')
                     if NGP_rhos_0497p00<NTP/2+1:
@@ -1349,9 +1351,9 @@ with open(path_to_list,'r') as file_list:
                         matchups_Lwn_0497p00_fq_ins_pa_station.append(station_name)
                         matchups_Lwn_0497p00_fq_sat_pa_time.append(sat_time)
 
-                        map_mask = np.ones(rhos_0497p00_box.shape,dtype=int)
-                        map_mask[rhos_0497p00_box.mask==True]=0
-                        mask_map_pa_0497p00 = mask_map_pa_0497p00 + map_mask
+                        map_valid_pxs = np.ones(rhos_0497p00_box.shape,dtype=int)
+                        map_valid_pxs[rhos_0497p00_box.mask==True]=0
+                        map_valid_pxs_pa[station_idx,1,:,:] = map_valid_pxs_pa[station_idx,1,:,:] + map_valid_pxs
                     # Rrs 0560p00
                     # print('560.0')
                     if NGP_rhos_0560p00<NTP/2+1:
@@ -1362,9 +1364,9 @@ with open(path_to_list,'r') as file_list:
                         matchups_Lwn_0560p00_fq_ins_pa_station.append(station_name)
                         matchups_Lwn_0560p00_fq_sat_pa_time.append(sat_time)
 
-                        map_mask = np.ones(rhos_0560p00_box.shape,dtype=int)
-                        map_mask[rhos_0560p00_box.mask==True]=0
-                        mask_map_pa_0560p00 = mask_map_pa_0560p00 + map_mask
+                        map_valid_pxs = np.ones(rhos_0560p00_box.shape,dtype=int)
+                        map_valid_pxs[rhos_0560p00_box.mask==True]=0
+                        map_valid_pxs_pa[station_idx,2,:,:] = map_valid_pxs_pa[station_idx,2,:,:] + map_valid_pxs
                     # Rrs 0664p00
                     # print('664.0')
                     if NGP_rhos_0664p00<NTP/2+1:
@@ -1375,9 +1377,9 @@ with open(path_to_list,'r') as file_list:
                         matchups_Lwn_0664p00_fq_ins_pa_station.append(station_name)
                         matchups_Lwn_0664p00_fq_sat_pa_time.append(sat_time)
 
-                        map_mask = np.ones(rhos_0664p00_box.shape,dtype=int)
-                        map_mask[rhos_0664p00_box.mask==True]=0
-                        mask_map_pa_0664p00 = mask_map_pa_0664p00 + map_mask
+                        map_valid_pxs = np.ones(rhos_0664p00_box.shape,dtype=int)
+                        map_valid_pxs[rhos_0664p00_box.mask==True]=0
+                        map_valid_pxs_pa[station_idx,3,:,:] = map_valid_pxs_pa[station_idx,3,:,:] + map_valid_pxs
                 else:
                     print('Median CV exceeds criteria: Median[CV]={:.4f}'.format(MedianCV))
             else:
@@ -1687,53 +1689,76 @@ plot_all_methods('444.0',notation_flag,path_out,min_val=-2.00,max_val=4.0)
 plot_all_methods('497.0',notation_flag,path_out,min_val=-1.00,max_val=8.0)
 plot_all_methods('560.0',notation_flag,path_out,min_val=-1.00,max_val=6.0)
 plot_all_methods('664.0',notation_flag,path_out,min_val=-0.60,max_val=2.0)                 
-#%% mask maps
-fig = plt.figure()
-plt.subplot(2,4,1)
-plt.imshow(mask_map_ba_0444p00,interpolation='none')
-plt.colorbar()
-plt.title('BW06: 444 nm')
+#%% maps valid pixels
+for station in station_list_main:
+    station_idx = station_list_main.index(station)
+    fig = plt.figure()
+    plt.subplot(2,4,1)
+    plt.imshow(map_valid_pxs_ba[station_idx,0,:,:],interpolation='none')
+    plt.colorbar()
+    plt.title('BW06: 444 nm')
 
-plt.subplot(2,4,2)
-plt.imshow(mask_map_ba_0497p00,interpolation='none')
-plt.colorbar()
-plt.title('BW06: 497 nm')
+    plt.subplot(2,4,2)
+    plt.imshow(map_valid_pxs_ba[station_idx,1,:,:],interpolation='none')
+    plt.colorbar()
+    plt.title('BW06: 497 nm')
 
-plt.subplot(2,4,3)
-plt.imshow(mask_map_ba_0560p00,interpolation='none')
-plt.colorbar()
-plt.title('BW06: 560 nm')
+    plt.subplot(2,4,3)
+    plt.imshow(map_valid_pxs_ba[station_idx,2,:,:],interpolation='none')
+    plt.colorbar()
+    plt.title('BW06: 560 nm')
 
-plt.subplot(2,4,4)
-plt.imshow(mask_map_ba_0664p00,interpolation='none')
-plt.colorbar()
-plt.title('BW06: 664 nm')
+    plt.subplot(2,4,4)
+    plt.imshow(map_valid_pxs_ba[station_idx,3,:,:],interpolation='none')
+    plt.colorbar()
+    plt.title('BW06: 664 nm')
 
-plt.subplot(2,4,5)
-minval = np.min(mask_map_pa_0444p00[np.nonzero(mask_map_pa_0444p00)])
-plt.imshow(mask_map_pa_0444p00,interpolation='none',vmin=minval)
-plt.colorbar()
-plt.title('IPK19: 444 nm')
+    plt.subplot(2,4,5)
+    if map_valid_pxs_pa[station_idx,0,:,:].sum() > 0:
+        minval = np.min(map_valid_pxs_pa[station_idx,0,np.nonzero(map_valid_pxs_pa[station_idx,0,:,:])])
+    else:
+        minval = 0
+    plt.imshow(map_valid_pxs_pa[station_idx,0,:,:],interpolation='none',vmin=minval)
+    plt.colorbar()
+    plt.title('IPK19: 444 nm')
 
-plt.subplot(2,4,6)
-minval = np.min(mask_map_pa_0497p00[np.nonzero(mask_map_pa_0497p00)])
-plt.imshow(mask_map_pa_0497p00,interpolation='none',vmin=minval)
-plt.colorbar()
-plt.title('IPK19: 497 nm')
+    plt.subplot(2,4,6)
+    if map_valid_pxs_pa[station_idx,1,:,:].sum() > 0:
+        minval = np.min(map_valid_pxs_pa[station_idx,1,np.nonzero(map_valid_pxs_pa[station_idx,1,:,:])])
+    else:
+        minval = 0
+    plt.imshow(map_valid_pxs_pa[station_idx,1,:,:],interpolation='none',vmin=minval)
+    plt.colorbar()
+    plt.title('IPK19: 497 nm')
 
-plt.subplot(2,4,7)
-minval = np.min(mask_map_pa_0560p00[np.nonzero(mask_map_pa_0560p00)])
-plt.imshow(mask_map_pa_0560p00,interpolation='none',vmin=minval)
-plt.colorbar()
-plt.title('IPK19: 560 nm')
+    plt.subplot(2,4,7)
+    if map_valid_pxs_pa[station_idx,2,:,:].sum() > 0:
+        minval = np.min(map_valid_pxs_pa[station_idx,2,np.nonzero(map_valid_pxs_pa[station_idx,2,:,:])])
+    else:
+        minval = 0
+    plt.imshow(map_valid_pxs_pa[station_idx,2,:,:],interpolation='none',vmin=minval)
+    plt.colorbar()
+    plt.title('IPK19: 560 nm')
 
-plt.subplot(2,4,8)
-minval = np.min(mask_map_pa_0664p00[np.nonzero(mask_map_pa_0664p00)])
-plt.imshow(mask_map_pa_0664p00,interpolation='none',vmin=minval)
-plt.colorbar()
-plt.title('IPK19: 664 nm')
-
-fig.suptitle('MSI Valid Pixels Maps')
+    plt.subplot(2,4,8)
+    if map_valid_pxs_pa[station_idx,3,:,:].sum() > 0:
+        minval = np.min(map_valid_pxs_pa[station_idx,3,np.nonzero(map_valid_pxs_pa[station_idx,3,:,:])])
+    else:
+        minval = 0
+    plt.imshow(map_valid_pxs_pa[station_idx,3,:,:],interpolation='none',vmin=minval)
+    plt.colorbar()
+    plt.title('IPK19: 664 nm')
+    
+    title_str = f'MSI Valid Pixels Maps - {station}'
+    fig.suptitle(title_str)
+    
+    mng = plt.get_current_fig_manager()
+    mng.full_screen_toggle()
+    plt.show()
+    
+    plt.savefig(os.path.join(path_out,title_str.replace(' ','_')+'.png'))
+    
+    # plt.close()
 #%%
 #if __name__ == '__main__':
 #    main()  

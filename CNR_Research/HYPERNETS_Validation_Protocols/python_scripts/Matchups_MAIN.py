@@ -976,10 +976,10 @@ mu_Lwn_0560p00_fq_ins_ba_time = []
 mu_Lwn_0665p00_fq_ins_ba_time = []        
 
 
-station_list = ['Venise','Galata_Platform','Gloria','Helsinki_Lighthouse','Gustav_Dalen_Tower']
-# station_list = ['Venise','Galata_Platform','Gloria']
-# station_list = ['Helsinki_Lighthouse','Gustav_Dalen_Tower']
-# station_list = ['Venise']
+station_list_main = ['Venise','Galata_Platform','Gloria','Helsinki_Lighthouse','Gustav_Dalen_Tower']
+# station_list_main = ['Venise','Galata_Platform','Gloria']
+# station_list_main = ['Helsinki_Lighthouse','Gustav_Dalen_Tower']
+# station_list_main = ['Venise']
 
 # for counting potential matchups
 pot_mu_cnt_zi = 0
@@ -1081,14 +1081,16 @@ idx_medianCV = []
 dt_mu_zi = [] # delta time for the matchups zi
 dt_mu_ba = [] # delta time for the matchups ba
 
-mask_map_ba_0412p50 = np.zeros([5,5],dtype=int)
-mask_map_ba_0442p50 = np.zeros([5,5],dtype=int)
-mask_map_ba_0490p00 = np.zeros([5,5],dtype=int)
-mask_map_ba_0560p00 = np.zeros([5,5],dtype=int)
-mask_map_ba_0665p00 = np.zeros([5,5],dtype=int)
+olci_wl_list = [412.5,442.5,490.0,560.0,665.0]
 
-for station_name in station_list:  
-    
+map_valid_pxs_ba = np.zeros([len(station_list_main),len(olci_wl_list),5,5],dtype=int)
+
+data_masked_Gloria = []
+data_masked_Gloria_value = []
+
+
+for station_idx in range(len(station_list_main)):  
+    station_name = station_list_main[station_idx]
 #    filename = station_name+'_20V3_20190927_20200110.nc'
     filename = station_name+'_20V3_20160426_20200206.nc'
     # filename = station_name+'_20V3_20180622_20180822.nc'
@@ -1610,9 +1612,10 @@ for station_name in station_list:
                         mu_Lwn_0412p50_fq_sat_ba_stop_time.append(sat_stop_time)
                         mu_Lwn_0412p50_fq_ins_ba_time.append(ins_time[idx_min])
                         
-                        map_mask = np.ones(rhow_0412p50_fq_box.shape,dtype=int)
-                        map_mask[rhow_0412p50_fq_box.mask==True]=0
-                        mask_map_ba_0412p50 = mask_map_ba_0412p50 + map_mask
+                        map_valid_pxs = np.ones(rhow_0412p50_fq_box.shape,dtype=int)
+                        map_valid_pxs[rhow_0412p50_fq_box.mask==True]=0
+                        map_valid_pxs_ba[station_idx,0,:,:] = map_valid_pxs_ba[station_idx,0,:,:] + map_valid_pxs
+                        
                     # Rrs 0442p50
                     # print('442.5')
                     if NGP_rhow_0442p50>NTP/2+1:
@@ -1624,9 +1627,9 @@ for station_name in station_list:
                         mu_Lwn_0442p50_fq_sat_ba_stop_time.append(sat_stop_time)
                         mu_Lwn_0442p50_fq_ins_ba_time.append(ins_time[idx_min])
 
-                        map_mask = np.ones(rhow_0442p50_fq_box.shape,dtype=int)
-                        map_mask[rhow_0442p50_fq_box.mask==True]=0
-                        mask_map_ba_0442p50 = mask_map_ba_0442p50 + map_mask
+                        map_valid_pxs = np.ones(rhow_0442p50_fq_box.shape,dtype=int)
+                        map_valid_pxs[rhow_0442p50_fq_box.mask==True]=0
+                        map_valid_pxs_ba[station_idx,1,:,:] = map_valid_pxs_ba[station_idx,1,:,:] + map_valid_pxs
                         
                     # Rrs 0490p00
                     # print('490.0')
@@ -1639,10 +1642,14 @@ for station_name in station_list:
                         mu_Lwn_0490p00_fq_sat_ba_stop_time.append(sat_stop_time)
                         mu_Lwn_0490p00_fq_ins_ba_time.append(ins_time[idx_min])
 
-                        map_mask = np.ones(rhow_0490p00_fq_box.shape,dtype=int)
-                        map_mask[rhow_0490p00_fq_box.mask==True]=0
-                        mask_map_ba_0490p00 = mask_map_ba_0490p00 + map_mask
+                        map_valid_pxs = np.ones(rhow_0490p00_fq_box.shape,dtype=int)
+                        map_valid_pxs[rhow_0490p00_fq_box.mask==True]=0
+                        map_valid_pxs_ba[station_idx,2,:,:] = map_valid_pxs_ba[station_idx,2,:,:] + map_valid_pxs
                         
+                        # for determining the pixels that are not used for the validation
+                        if rhow_0490p00_fq_box.mask[1,1] == True and station_list_main[station_idx] == 'Gloria':
+                            data_masked_Gloria.append(line)
+                            data_masked_Gloria_value.append(rhow_0490p00_fq_box.data[1,1])
                     # Rrs 0560p00
                     # print('560.0')
                     if NGP_rhow_0560p00>NTP/2+1:
@@ -1660,9 +1667,9 @@ for station_name in station_list:
                         mu_Lwn_0560p00_fq_sat_ba_stop_time.append(sat_stop_time)
                         mu_Lwn_0560p00_fq_ins_ba_time.append(ins_time[idx_min])
 
-                        map_mask = np.ones(rhow_0560p00_fq_box.shape,dtype=int)
-                        map_mask[rhow_0560p00_fq_box.mask==True]=0
-                        mask_map_ba_0560p00 = mask_map_ba_0560p00 + map_mask
+                        map_valid_pxs = np.ones(rhow_0560p00_fq_box.shape,dtype=int)
+                        map_valid_pxs[rhow_0560p00_fq_box.mask==True]=0
+                        map_valid_pxs_ba[station_idx,3,:,:] = map_valid_pxs_ba[station_idx,3,:,:] + map_valid_pxs
 
                         
                     # Rrs 0665p00
@@ -1676,9 +1683,9 @@ for station_name in station_list:
                         mu_Lwn_0665p00_fq_sat_ba_stop_time.append(sat_stop_time)
                         mu_Lwn_0665p00_fq_ins_ba_time.append(ins_time[idx_min])
 
-                        map_mask = np.ones(rhow_0665p00_fq_box.shape,dtype=int)
-                        map_mask[rhow_0665p00_fq_box.mask==True]=0
-                        mask_map_ba_0665p00 = mask_map_ba_0665p00 + map_mask
+                        map_valid_pxs = np.ones(rhow_0665p00_fq_box.shape,dtype=int)
+                        map_valid_pxs[rhow_0665p00_fq_box.mask==True]=0
+                        map_valid_pxs_ba[station_idx,4,:,:] = map_valid_pxs_ba[station_idx,4,:,:] + map_valid_pxs
                         
     #         else:
     #             print('Median CV exceeds criteria: Median[CV]='+str(MedianCV))
@@ -2625,46 +2632,70 @@ plot(fig, auto_open=True)
 
 #%% histograms of both delta time: zi and ba
 # delta time  => time_diff = ins_time - sat_stop_time
-kwargs2 = dict(bins='auto', histtype='step')
+kwargs2 = dict(histtype='step')
 fig, ax1=plt.subplots(1,1,sharey=True, facecolor='w',figsize=(8,6))
-ax1.hist(np.array(dt_mu_zi)*60,color='red', **kwargs2)
-ax1.hist(np.array(dt_mu_ba)*60,color='black', **kwargs2)
+
+# hist, bins = np.histogram(np.array(dt_mu_zi)*60)
+# ax1.bar(bins[:-1], 100*hist.astype(np.float32) / hist.sum(), width=(bins[1]-bins[0]), color='red')
+# hist, bins = np.histogram(np.array(dt_mu_ba)*60)
+# ax1.bar(bins[:-1], 100*hist.astype(np.float32) / hist.sum(), width=(bins[1]-bins[0]), color='black')
+bins_Dt = [-180,-165,-150,-135,-120,-105,-90,-75,-60,-45,-30,-15,0,15,30,45,60,75,90,105,120,135,150.65,180]
+
+counts_zi, bins_zi = np.histogram(np.array(dt_mu_zi)*60,bins=bins_Dt)
+ax1.hist(bins_zi[:-1], bins_zi, weights=100*counts_zi/counts_zi.sum(),color='red', **kwargs2)
+
+counts_ba, bins_ba = np.histogram(np.array(dt_mu_ba)*60,bins=bins_Dt)
+ax1.hist(bins_ba[:-1], bins_ba, weights=100*counts_ba/counts_ba.sum(),color='black', **kwargs2)
+
 x0, x1 = ax1.get_xlim()
 ax1.set_xlim([x0,x0+1*(x1-x0)])
 
-ax1.set_ylabel('Frequency (counts)',fontsize=12)
+ax1.set_ylabel('Frequency (%)',fontsize=12)
 ax1.set_xlabel('Delta time (minutes)',fontsize=12)
 plt.xticks([-180,-150,-120,-90,-60,-30,0,30,60,90,120,150,180])
 plt.legend(['Z09','BW06'],fontsize=12)
 # plt.title(f'{station.replace("_"," ")} Station')
-#%% mask maps
-fig = plt.figure()
-plt.subplot(2,3,1)
-plt.imshow(mask_map_ba_0412p50,interpolation='none')
-plt.colorbar()
-plt.title('BW06: 412.5 nm')
-
-plt.subplot(2,3,2)
-plt.imshow(mask_map_ba_0442p50,interpolation='none')
-plt.colorbar()
-plt.title('BW06: 442.5 nm')
-
-plt.subplot(2,3,3)
-plt.imshow(mask_map_ba_0490p00,interpolation='none')
-plt.colorbar()
-plt.title('BW06: 490 nm')
-
-plt.subplot(2,3,4)
-plt.imshow(mask_map_ba_0560p00,interpolation='none')
-plt.colorbar()
-plt.title('BW06: 560 nm')
-
-plt.subplot(2,3,5)
-plt.imshow(mask_map_ba_0665p00,interpolation='none')
-plt.colorbar()
-plt.title('BW06: 665 nm')
-
-fig.suptitle('OLCI Valid Pixels Maps')
+#%% maps valid pixels
+plot_flag = False
+if plot_flag:
+    for station in station_list_main:
+        station_idx = station_list_main.index(station)
+        fig = plt.figure()
+        plt.subplot(2,3,1)
+        plt.imshow(map_valid_pxs_ba[station_idx,0,:,:],interpolation='none')
+        plt.colorbar()
+        plt.title('BW06: 412.5 nm')
+        
+        plt.subplot(2,3,2)
+        plt.imshow(map_valid_pxs_ba[station_idx,1,:,:],interpolation='none')
+        plt.colorbar()
+        plt.title('BW06: 442.5 nm')
+        
+        plt.subplot(2,3,3)
+        plt.imshow(map_valid_pxs_ba[station_idx,2,:,:],interpolation='none')
+        plt.colorbar()
+        plt.title('BW06: 490 nm')
+        
+        plt.subplot(2,3,4)
+        plt.imshow(map_valid_pxs_ba[station_idx,3,:,:],interpolation='none')
+        plt.colorbar()
+        plt.title('BW06: 560 nm')
+        
+        plt.subplot(2,3,5)
+        plt.imshow(map_valid_pxs_ba[station_idx,4,:,:],interpolation='none')
+        plt.colorbar()
+        plt.title('BW06: 665 nm')
+        
+        title_str = f'OLCI Valid Pixels Maps - {station}'
+        fig.suptitle(title_str)
+        
+        mng = plt.get_current_fig_manager()
+        mng.full_screen_toggle()
+        plt.show()    
+        
+        plt.savefig(os.path.join(path_out,title_str.replace(' ','_')+'.png'))
+        
+        plt.close()
 #%%
 # if __name__ == '__main__':
 #     main()   
