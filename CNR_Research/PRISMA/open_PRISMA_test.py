@@ -46,8 +46,10 @@ def open_PRISMA(path_to_file,err_matrix=False):
      # reading SWIR & VNIR datacubes
     swir = f['/HDFEOS/SWATHS/PRS_'+prod_lvl+'_HCO/Data Fields/SWIR_Cube']
     vnir = f['/HDFEOS/SWATHS/PRS_'+prod_lvl+'_HCO/Data Fields/VNIR_Cube']
-    swir_err = f['/HDFEOS/SWATHS/PRS_'+prod_lvl+'_HCO/Data Fields/SWIR_PIXEL_L2_ERR_MATRIX']
-    vnir_err = f['/HDFEOS/SWATHS/PRS_'+prod_lvl+'_HCO/Data Fields/VNIR_PIXEL_L2_ERR_MATRIX']
+    
+    if err_matrix:
+        swir_err = f['/HDFEOS/SWATHS/PRS_'+prod_lvl+'_HCO/Data Fields/SWIR_PIXEL_L2_ERR_MATRIX']
+        vnir_err = f['/HDFEOS/SWATHS/PRS_'+prod_lvl+'_HCO/Data Fields/VNIR_PIXEL_L2_ERR_MATRIX']
     
     if prod_lvl == 'L1':
     	# get geolocation info ----
@@ -188,7 +190,7 @@ path_to_image = '/Users/javier.concha/Desktop/Javier/2019_Roma/CNR_Research/Imag
 file_name = 'PRS_L1_STD_OFFL_20200116101454_20200116101458_0001.he5'
 path_to_file = os.path.join(path_to_image,file_name)
 
-vnir, swir, lat_vnir, lon_vnir, lat_swir, lon_swir, wl_vnir, wl_swir = open_PRISMA(path_to_file)
+vnir, swir, lat_vnir, lon_vnir, lat_swir, lon_swir, wl_vnir, wl_swir = open_PRISMA(path_to_file,err_matrix=False)
 
 # list the structure of SWIR data
 swir.shape
@@ -485,7 +487,7 @@ file_list = ['PRS_L1_STD_OFFL_20200220101707_20200220101711_0001.he5',\
 
 fig = plt.figure(figsize=(10, 10))
 ax = fig.add_subplot(111)
-#%%
+
 for file_name in file_list:
     path_to_file = os.path.join(path_to_image,file_name)
     vnir, swir, lat_vnir, lon_vnir, lat_swir, lon_swir, wl_vnir, wl_swir = open_PRISMA(path_to_file)
@@ -495,7 +497,7 @@ for file_name in file_list:
     b_wl = 460
     stackedRGB = stack_rgb(vnir,r_wl,g_wl,b_wl,ls_pct=10)
     plot_geo(stackedRGB,lat_vnir,lon_vnir,lat_plot_limits=[44,46],lon_plot_limits=[12,14],mosaic_flag=True,one_channel=False)
-#%%
+
 plt.plot(12.59883333,45.02,'ro')
 plt.plot(12.75733333,45.1725,'go')
 plt.plot(12.50483333,45.31216667,'bo')
@@ -582,4 +584,62 @@ for wl in wllist:
     
     plt.close()
         
+#%% SNR calculation
+path_to_image = '/Users/javier.concha/Desktop/Javier/2019_Roma/CNR_Research/Images/PRISMA/dati_PRISMA_ADR/'
+path_out = '/Users/javier.concha/Desktop/Javier/2019_Roma/CNR_Research/PRISMA/Figures/'
 
+file_list = ['PRS_L1_STD_OFFL_20200220101716_20200220101720_0001.he5']
+
+
+fig = plt.figure(figsize=(10, 10))
+ax = fig.add_subplot(111)
+
+for file_name in file_list:
+    path_to_file = os.path.join(path_to_image,file_name)
+    vnir, swir, lat_vnir, lon_vnir, lat_swir, lon_swir, wl_vnir, wl_swir = open_PRISMA(path_to_file)
+    
+    r_wl = 620
+    g_wl = 550
+    b_wl = 460
+    stackedRGB = stack_rgb(vnir,r_wl,g_wl,b_wl,ls_pct=10)
+    plot_geo(stackedRGB,lat_vnir,lon_vnir,lat_plot_limits=[44,46],lon_plot_limits=[12,14],mosaic_flag=False,one_channel=False)
+
+plt.plot(12.508300,45.313900,'rx')
+colors = ['red']
+lines = [Line2D([0], [0], color=c, linewidth=3, linestyle='None',marker='x') for c in colors]
+labels = ['AAOT']
+plt.legend(lines, labels)
+
+r_center,c_center = 100,100
+plt.plot(lon_vnir[r_center,c_center],lat_vnir[r_center,c_center],'kx')
+
+plt.figure()
+dims = [11,51,101]
+for x_dim in dims:
+    y_dim = x_dim
+    
+    r_LL,c_LL = int(r_center + (x_dim-1)/2),int(c_center + (y_dim-1)/2)
+    r_LR,c_LR = int(r_center - (x_dim-1)/2),int(c_center + (y_dim-1)/2)
+    r_UL,c_UL = int(r_center + (x_dim-1)/2),int(c_center - (y_dim-1)/2)
+    r_UR,c_UR = int(r_center - (x_dim-1)/2),int(c_center - (y_dim-1)/2)
+    
+    
+    # plt.plot(lon_vnir[r_center,c_center],lat_vnir[r_center,c_center],'kx')
+    # plt.plot(lon_vnir[r_LL,c_LL],lat_vnir[r_LL,c_LL],'bx')
+    # plt.plot(lon_vnir[r_LR,c_LR],lat_vnir[r_LR,c_LR],'gx')
+    # plt.plot(lon_vnir[r_UL,c_UL],lat_vnir[r_UL,c_UL],'cx')
+    # plt.plot(lon_vnir[r_UR,c_UR],lat_vnir[r_UR,c_UR],'mx')
+    
+    #
+    vnr_roi = vnir[r_UR:r_UL+1,:,c_UR:c_LR+1]
+    roi_mean = vnr_roi.mean(axis=(0,2))
+    roi_stdv = vnr_roi.std(axis=(0,2))
+    roi_snr = roi_mean/roi_stdv
+    
+    
+    plt.plot(wl_vnir,roi_snr )
+
+plt.xlabel('wavelength (nm)')
+plt.ylabel('SNR')
+plt.legend([str(dims[0]),str(dims[1]),str(dims[2])])
+plt.title('Scene-derived SNR from PRISMA L1')
