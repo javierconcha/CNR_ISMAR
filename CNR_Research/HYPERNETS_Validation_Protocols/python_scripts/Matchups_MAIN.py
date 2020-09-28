@@ -41,6 +41,25 @@ path_main = '/Users/javier.concha/Desktop/Javier/2019_ROMA/CNR_Research/HYPERNET
 sys.path.insert(0,path_main)
 import apply_flags_OLCI as OLCI_flags
 
+# for plotting
+color_dict = dict({\
+ '400.00':'LightBlue',\
+ '412.50':'DeepSkyBlue',\
+ '442.50':'DodgerBlue',\
+ '490.00':'Blue',\
+ '510.00':'ForestGreen',\
+ '560.00':'Green',\
+ '620.00':'LightCoral',\
+ '665.00':'Red',\
+ '673.75':'Crimson',\
+ '681.25':'FireBrick',\
+ '708.75':'Silver',\
+ '753.75':'Gray',\
+ '778.75':'DimGray',\
+ '865.00':'SlateGray',\
+ '885.00':'DarkSlateGray',\
+'1020.50':'Black'})
+
 create_list_flag = 0
 #%% Open in situ in netcdf format from excel_to_nc_AquaAlta_merge_newsite.py by Marco B.
 """
@@ -1085,6 +1104,8 @@ olci_wl_list = [412.5,442.5,490.0,560.0,665.0]
 
 map_valid_pxs_ba = np.zeros([len(station_list_main),len(olci_wl_list),5,5],dtype=int)
 
+number_used_pixels = np.empty([0,len(olci_wl_list)],dtype=int)
+
 data_masked_Gloria = []
 data_masked_Gloria_value = []
 
@@ -1597,8 +1618,16 @@ for station_idx in range(len(station_list_main)):
                     idx_medianCV.append(idx_m)
 
                     # create matchup
-                if sza<=75 and vza<=60 and NGP>NTP/2+1 and MedianCV <= 0.15:  
+                if sza<=75 and vza<=60 and NGP>NTP/2+1 and MedianCV <= 0.15\
+                        and (NGP_rhow_0412p50>NTP/2+1)\
+                        and (NGP_rhow_0442p50>NTP/2+1)\
+                        and (NGP_rhow_0490p00>NTP/2+1)\
+                        and (NGP_rhow_0560p00>NTP/2+1)\
+                        and (NGP_rhow_0665p00>NTP/2+1):  
                     dt_mu_ba.append(dt_hour[idx_min])
+
+                    number_used_pixels = np.append(number_used_pixels,[[0, 0, 0, 0, 0]],axis=0)
+
                     mu_cnt_ba += 1              
                     # Rrs 0412p50
                     # print('412.5')
@@ -1615,6 +1644,8 @@ for station_idx in range(len(station_list_main)):
                         map_valid_pxs = np.ones(rhow_0412p50_fq_box.shape,dtype=int)
                         map_valid_pxs[rhow_0412p50_fq_box.mask==True]=0
                         map_valid_pxs_ba[station_idx,0,:,:] = map_valid_pxs_ba[station_idx,0,:,:] + map_valid_pxs
+
+                        number_used_pixels[-1,0] = rhow_0412p50_fq_box.count()
                         
                     # Rrs 0442p50
                     # print('442.5')
@@ -1630,6 +1661,8 @@ for station_idx in range(len(station_list_main)):
                         map_valid_pxs = np.ones(rhow_0442p50_fq_box.shape,dtype=int)
                         map_valid_pxs[rhow_0442p50_fq_box.mask==True]=0
                         map_valid_pxs_ba[station_idx,1,:,:] = map_valid_pxs_ba[station_idx,1,:,:] + map_valid_pxs
+
+                        number_used_pixels[-1,1] = rhow_0442p50_fq_box.count()
                         
                     # Rrs 0490p00
                     # print('490.0')
@@ -1645,6 +1678,8 @@ for station_idx in range(len(station_list_main)):
                         map_valid_pxs = np.ones(rhow_0490p00_fq_box.shape,dtype=int)
                         map_valid_pxs[rhow_0490p00_fq_box.mask==True]=0
                         map_valid_pxs_ba[station_idx,2,:,:] = map_valid_pxs_ba[station_idx,2,:,:] + map_valid_pxs
+
+                        number_used_pixels[-1,2] = rhow_0490p00_fq_box.count()
                         
                         # for determining the pixels that are not used for the validation
                         if rhow_0490p00_fq_box.mask[1,1] == True and station_list_main[station_idx] == 'Gloria':
@@ -1671,6 +1706,8 @@ for station_idx in range(len(station_list_main)):
                         map_valid_pxs[rhow_0560p00_fq_box.mask==True]=0
                         map_valid_pxs_ba[station_idx,3,:,:] = map_valid_pxs_ba[station_idx,3,:,:] + map_valid_pxs
 
+                        number_used_pixels[-1,3] = rhow_0560p00_fq_box.count()
+
                         
                     # Rrs 0665p00
                     # print('665.0')
@@ -1686,6 +1723,8 @@ for station_idx in range(len(station_list_main)):
                         map_valid_pxs = np.ones(rhow_0665p00_fq_box.shape,dtype=int)
                         map_valid_pxs[rhow_0665p00_fq_box.mask==True]=0
                         map_valid_pxs_ba[station_idx,4,:,:] = map_valid_pxs_ba[station_idx,4,:,:] + map_valid_pxs
+
+                        number_used_pixels[-1,4] = rhow_0665p00_fq_box.count()
                         
     #         else:
     #             print('Median CV exceeds criteria: Median[CV]='+str(MedianCV))
@@ -2696,6 +2735,32 @@ if plot_flag:
         plt.savefig(os.path.join(path_out,title_str.replace(' ','_')+'.png'))
         
         plt.close()
+#%% plot number of used pixels for BW06
+plt.figure()
+
+for sat_band_index in range(number_used_pixels.shape[1]):
+    plt.plot(number_used_pixels[:,sat_band_index],c=color_dict[f'{olci_wl_list[sat_band_index]:.2f}'])
+
+wl_str = ['412.5','442.5','490.0','560.0','665.0']
+plt.legend(wl_str,fontsize=12)
+plt.xlabel('Match-up Number',fontsize=12)
+plt.ylabel('Number of pixels used',fontsize=12)
+
+#%%
+
+for idx in range(number_used_pixels.shape[1]):
+
+    kwargs2 = dict(histtype='step')
+    fig, ax1=plt.subplots(1,1,sharey=True, facecolor='w',figsize=(8,6))
+    bins = [12,13,14,15,16,17,18,19,20,21,22,23,24,25]
+
+
+
+    counts, bins = np.histogram(number_used_pixels[:,idx],bins=bins)
+    ax1.hist(bins[:-1], bins, weights=100*counts/counts.sum(),color='red', **kwargs2)
+    plt.title(f'{olci_wl_list[idx]} nm',fontsize=12)
+    plt.xlabel('Number of Pixels Used',fontsize=12)
+    plt.ylabel('Frequency (%)',fontsize=12)
 #%%
 # if __name__ == '__main__':
 #     main()   
