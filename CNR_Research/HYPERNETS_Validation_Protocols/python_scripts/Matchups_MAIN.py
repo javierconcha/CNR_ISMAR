@@ -57,6 +57,7 @@ color_dict = dict({\
  '753.75':'Gray',\
  '778.75':'DimGray',\
  '865.00':'SlateGray',\
+ '865.50':'SlateGray',\
  '885.00':'DarkSlateGray',\
 '1020.50':'Black'})
 
@@ -1106,6 +1107,35 @@ map_valid_pxs_ba = np.zeros([len(station_list_main),len(olci_wl_list),5,5],dtype
 
 number_used_pixels = np.empty([0,len(olci_wl_list)],dtype=int)
 
+columns = ['BW06_MU','BW06_l2_mask',\
+        'BW06: rhow_412_box','BW06: rho_412_filt_mean',\
+        'BW06: rhow_442_box','BW06: rho_442_filt_mean',\
+        'BW06: rhow_490_box','BW06: rho_490_filt_mean',\
+        'BW06: rhow_560_box','BW06: rho_560_filt_mean',\
+        'BW06: rhow_665_box','BW06: rho_665_filt_mean',\
+        'BW06: MedianCV','BW06: Nfilt_560','BW06: NGP','BW06: NTP',\
+        'Z09_MU','Z09_l2_mask',\
+        'Z09: rhow_412_box','Z09: rho_412_mean',\
+        'Z09: rhow_442_box','Z09: rho_442_mean',\
+        'Z09: rhow_490_box','Z09: rho_490_mean',\
+        'Z09: rhow_560_box','Z09: rho_560_mean',\
+        'Z09: rhow_665_box','Z09: rho_665_mean',\
+        'Z09: CV_560','Z09: CV_865p5']
+  
+df_matchups = pd.DataFrame(columns=columns)
+
+
+
+# CVs = [CV_filtered_rhow_0412p50, CV_filtered_rhow_0442p50,\
+#                                      CV_filtered_rhow_0490p00, CV_filtered_rhow_0560p00,\
+#                                      CV_filtered_AOT_0865p50]
+columns = ['station_idx','rhow_412.5','rhow_442.5','rhow_490.0','rhow_560.0','rhow_665.0',\
+           'aot_865.5','MedianCV','MedianCV_band_idx','datetime']
+df_CVs_ba = pd.DataFrame(columns=columns)
+
+columns = ['station_idx','Lwn_560.0','aot_865.5','datetime']
+df_CVs_zi = pd.DataFrame(columns=columns)
+
 data_masked_Gloria = []
 data_masked_Gloria_value = []
 
@@ -1153,6 +1183,10 @@ for station_idx in range(len(station_list_main)):
         for cnt, line in enumerate(file):  
             # print('----------------------------')
             # print('line '+str(cnt))
+            
+            Z09_MU = False
+            BW06_MU = False
+            
             year_str = line.split('/')[-3]
             doy_str = line.split('/')[-2]       
             nc_f1 = Dataset(line[:-1],'r')
@@ -1196,17 +1230,34 @@ for station_idx in range(len(station_list_main)):
                 stop_idx_x = int(center_px+int(size_box/2)+1)
                 start_idx_y = int(center_px-int(size_box/2))
                 stop_idx_y = int(center_px+int(size_box/2)+1)
-                rhow_0412p50_fq_box = rhow_0412p50_fq[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
-                rhow_0442p50_fq_box = rhow_0442p50_fq[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
-                rhow_0490p00_fq_box = rhow_0490p00_fq[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
-                rhow_0560p00_fq_box = rhow_0560p00_fq[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
-                rhow_0665p00_fq_box = rhow_0665p00_fq[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
-    
-                AOT_0865p50_box = AOT_0865p50[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
-                
-                flags_mask = OLCI_flags.create_mask(WQSF[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y])
-                print('flags_mask:')
-                print(flags_mask)
+
+                flags_mask_zi = OLCI_flags.create_mask(WQSF[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y])
+                print('flags_mask_zi:')
+                print(flags_mask_zi)
+
+                rhow_0412p50_fq_box_zi = rhow_0412p50_fq[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+                rhow_0442p50_fq_box_zi = rhow_0442p50_fq[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+                rhow_0490p00_fq_box_zi = rhow_0490p00_fq[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+                rhow_0560p00_fq_box_zi = rhow_0560p00_fq[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+                rhow_0665p00_fq_box_zi = rhow_0665p00_fq[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+                AOT_0865p50_box_zi     = AOT_0865p50[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+
+                # apply L2 mask
+                rhow_0412p50_fq_box_zi = ma.masked_array(rhow_0412p50_fq_box_zi,flags_mask_zi) 
+                rhow_0442p50_fq_box_zi = ma.masked_array(rhow_0442p50_fq_box_zi,flags_mask_zi) 
+                rhow_0490p00_fq_box_zi = ma.masked_array(rhow_0490p00_fq_box_zi,flags_mask_zi) 
+                rhow_0560p00_fq_box_zi = ma.masked_array(rhow_0560p00_fq_box_zi,flags_mask_zi) 
+                rhow_0665p00_fq_box_zi = ma.masked_array(rhow_0665p00_fq_box_zi,flags_mask_zi) 
+                AOT_0865p50_box_zi     = ma.masked_array(AOT_0865p50_box_zi    ,flags_mask_zi) 
+
+
+                # if nan, change mask
+                rhow_0412p50_fq_box_zi = ma.masked_invalid(rhow_0412p50_fq_box_zi)
+                rhow_0442p50_fq_box_zi = ma.masked_invalid(rhow_0442p50_fq_box_zi)
+                rhow_0490p00_fq_box_zi = ma.masked_invalid(rhow_0490p00_fq_box_zi)
+                rhow_0560p00_fq_box_zi = ma.masked_invalid(rhow_0560p00_fq_box_zi)
+                rhow_0665p00_fq_box_zi = ma.masked_invalid(rhow_0665p00_fq_box_zi)
+                AOT_0865p50_box_zi = ma.masked_invalid(AOT_0865p50_box_zi)
 
                 # from AERONET-OC V3 file
                 # 0         1         2         3         4         5         6         7         8         9         10        11        12        13        14        15        16        17        18        19        20        21        22 
@@ -1214,9 +1265,9 @@ for station_idx in range(len(station_list_main)):
                 # -999,     -999,     -999,     412,      -999,     441.8,    488.5,    -999,     -999,     -999,     530.3,    551,      -999,     -999,     -999,     667.9,    -999,     -999,     -999,     -999,     -999,     870.8,    1020.5,
  
                 # cv
-                Lwn_560 = rhow_0560p00_fq_box*F0_0560p00/np.pi
+                Lwn_560 = rhow_0560p00_fq_box_zi*F0_0560p00/np.pi
                 Lwn_560_CV = np.abs(Lwn_560.std()/Lwn_560.mean())                    
-                AOT_0865p50_CV = np.abs(AOT_0865p50_box.std()/AOT_0865p50_box.mean())
+                AOT_0865p50_CV = np.abs(AOT_0865p50_box_zi.std()/AOT_0865p50_box_zi.mean())
 
                 # to count potential matchups total and per stations
                 pot_mu_cnt_zi += 1
@@ -1310,11 +1361,11 @@ for station_idx in range(len(station_list_main)):
                     elif station_name == 'Gustav_Dalen_Tower':
                         rej_vza_mu_cnt_zi_Gustav_Dalen_Tower += 1                               
 
-                if flags_mask.any() or ((rhow_0412p50_fq_box.mask.any() or np.isnan(rhow_0412p50_fq_box).any())\
-                        or (rhow_0442p50_fq_box.mask.any() or np.isnan(rhow_0442p50_fq_box).any())\
-                        or (rhow_0490p00_fq_box.mask.any() or np.isnan(rhow_0490p00_fq_box).any())\
-                        or (rhow_0560p00_fq_box.mask.any() or np.isnan(rhow_0560p00_fq_box).any())\
-                        or (rhow_0665p00_fq_box.mask.any() or np.isnan(rhow_0665p00_fq_box).any())):
+                if flags_mask_zi.any() or ((rhow_0412p50_fq_box_zi.mask.any() or np.isnan(rhow_0412p50_fq_box_zi).any())\
+                        or (rhow_0442p50_fq_box_zi.mask.any() or np.isnan(rhow_0442p50_fq_box_zi).any())\
+                        or (rhow_0490p00_fq_box_zi.mask.any() or np.isnan(rhow_0490p00_fq_box_zi).any())\
+                        or (rhow_0560p00_fq_box_zi.mask.any() or np.isnan(rhow_0560p00_fq_box_zi).any())\
+                        or (rhow_0665p00_fq_box_zi.mask.any() or np.isnan(rhow_0665p00_fq_box_zi).any())):
                     rej_inv_mu_cnt_zi += 1
                     if station_name == 'Venise':
                         rej_inv_mu_cnt_zi_Venise += 1
@@ -1328,25 +1379,24 @@ for station_idx in range(len(station_list_main)):
                         rej_inv_mu_cnt_zi_Gustav_Dalen_Tower += 1 
 
                 # create matchup
-                if (sza<=70 and vza<=56) and (not flags_mask.any()) and (Lwn_560_CV <= 0.2 and AOT_0865p50_CV <= 0.2): # if any of the pixels if flagged, Fails validation criteria because all have to be valid in Zibordi 2018
+                if (sza<=70 and vza<=56) and (not flags_mask_zi.any()) and (Lwn_560_CV <= 0.2 and AOT_0865p50_CV <= 0.2): # if any of the pixels if flagged, Fails validation criteria because all have to be valid in Zibordi 2018
                     dt_mu_zi.append(dt_hour[idx_min])
                     mu_cnt_zi += 1    
                     # if any is invalid, do not calculated matchup
-                    if not ((rhow_0412p50_fq_box.mask.any() or np.isnan(rhow_0412p50_fq_box).any())\
-                        or (rhow_0442p50_fq_box.mask.any() or np.isnan(rhow_0442p50_fq_box).any())\
-                        or (rhow_0490p00_fq_box.mask.any() or np.isnan(rhow_0490p00_fq_box).any())\
-                        or (rhow_0560p00_fq_box.mask.any() or np.isnan(rhow_0560p00_fq_box).any())\
-                        or (rhow_0665p00_fq_box.mask.any() or np.isnan(rhow_0665p00_fq_box).any())):
+                    if not ((rhow_0412p50_fq_box_zi.mask.any() or np.isnan(rhow_0412p50_fq_box_zi).any())\
+                        or (rhow_0442p50_fq_box_zi.mask.any() or np.isnan(rhow_0442p50_fq_box_zi).any())\
+                        or (rhow_0490p00_fq_box_zi.mask.any() or np.isnan(rhow_0490p00_fq_box_zi).any())\
+                        or (rhow_0560p00_fq_box_zi.mask.any() or np.isnan(rhow_0560p00_fq_box_zi).any())\
+                        or (rhow_0665p00_fq_box_zi.mask.any() or np.isnan(rhow_0665p00_fq_box_zi).any())):
 
                         mu_cnt2_zi += 1
-
-                    
+                        Z09_MU = True
                     # Rrs 0412p50
                     # print('412.5')
-                    # if not (rhow_0412p50_fq_box.mask.any() == True or np.isnan(rhow_0412p50_fq_box).any() == True):
+                    # if not (rhow_0412p50_fq_box_zi.mask.any() == True or np.isnan(rhow_0412p50_fq_box_zi).any() == True):
                     #     print('At least one element in sat product is invalid!')
                     # else:
-                        mu_Lwn_0412p50_fq_sat_zi.append(rhow_0412p50_fq_box.mean()*F0_0412p50/np.pi)
+                        mu_Lwn_0412p50_fq_sat_zi.append(rhow_0412p50_fq_box_zi.mean()*F0_0412p50/np.pi)
                         mu_Lwn_0412p50_fq_ins_zi.append(Lwn_fonQ[idx_min,3]) # 412,
                         mu_Lwn_0412p50_fq_ins_zi_station.append(station_name)
                         mu_Lwn_0412p50_fq_sat_zi_stop_time.append(sat_stop_time)
@@ -1354,10 +1404,10 @@ for station_idx in range(len(station_list_main)):
                         
                     # Rrs 0442p50
                     # print('442.5')
-                    # if not (rhow_0442p50_fq_box.mask.any() == True or np.isnan(rhow_0442p50_fq_box).any() == True):
+                    # if not (rhow_0442p50_fq_box_zi.mask.any() == True or np.isnan(rhow_0442p50_fq_box_zi).any() == True):
                         # print('At least one element in sat product is invalid!')
                     # else:
-                        mu_Lwn_0442p50_fq_sat_zi.append(rhow_0442p50_fq_box.mean()*F0_0442p50/np.pi)
+                        mu_Lwn_0442p50_fq_sat_zi.append(rhow_0442p50_fq_box_zi.mean()*F0_0442p50/np.pi)
                         mu_Lwn_0442p50_fq_ins_zi.append(Lwn_fonQ[idx_min,5]) # 441.8
                         mu_Lwn_0442p50_fq_ins_zi_station.append(station_name)
                         mu_Lwn_0442p50_fq_sat_zi_stop_time.append(sat_stop_time)
@@ -1365,10 +1415,10 @@ for station_idx in range(len(station_list_main)):
                         
                     # Rrs 0490p00
                     # print('490.0')
-                    # if not (rhow_0490p00_fq_box.mask.any() == True or np.isnan(rhow_0490p00_fq_box).any() == True):
+                    # if not (rhow_0490p00_fq_box_zi.mask.any() == True or np.isnan(rhow_0490p00_fq_box_zi).any() == True):
                         # print('At least one element in sat product is invalid!')
                     # else:
-                        mu_Lwn_0490p00_fq_sat_zi.append(rhow_0490p00_fq_box.mean()*F0_0490p00/np.pi)
+                        mu_Lwn_0490p00_fq_sat_zi.append(rhow_0490p00_fq_box_zi.mean()*F0_0490p00/np.pi)
                         mu_Lwn_0490p00_fq_ins_zi.append(Lwn_fonQ[idx_min,6]) # 488.5
                         mu_Lwn_0490p00_fq_ins_zi_station.append(station_name)
                         mu_Lwn_0490p00_fq_sat_zi_stop_time.append(sat_stop_time)
@@ -1376,7 +1426,7 @@ for station_idx in range(len(station_list_main)):
                         
                     # Rrs 0560p00
                     # print('560.0')
-                    # if not (rhow_0560p00_fq_box.mask.any() == True or np.isnan(rhow_0560p00_fq_box).any() == True):
+                    # if not (rhow_0560p00_fq_box_zi.mask.any() == True or np.isnan(rhow_0560p00_fq_box_zi).any() == True):
                         # print('At least one element in sat product is invalid!')
                     # else:
                         if Exact_wavelengths[idx_min,13] != -999:
@@ -1385,7 +1435,7 @@ for station_idx in range(len(station_list_main)):
                             idx_560 = 12
                         else: 
                             idx_560 = 11
-                        mu_Lwn_0560p00_fq_sat_zi.append(rhow_0560p00_fq_box.mean()*F0_0560p00/np.pi)
+                        mu_Lwn_0560p00_fq_sat_zi.append(rhow_0560p00_fq_box_zi.mean()*F0_0560p00/np.pi)
                         mu_Lwn_0560p00_fq_ins_zi.append(Lwn_fonQ[idx_min,idx_560]) # 551,
                         mu_Lwn_0560p00_fq_ins_zi_station.append(station_name)
                         mu_Lwn_0560p00_fq_sat_zi_stop_time.append(sat_stop_time)
@@ -1393,15 +1443,21 @@ for station_idx in range(len(station_list_main)):
                         
                     # Rrs 0665p00
                     # print('665.0')
-                    # if not (rhow_0665p00_fq_box.mask.any() == True or np.isnan(rhow_0665p00_fq_box).any() == True):
+                    # if not (rhow_0665p00_fq_box_zi.mask.any() == True or np.isnan(rhow_0665p00_fq_box_zi).any() == True):
                         # print('At least one element in sat product is invalid!')
                     # else:
-                        mu_Lwn_0665p00_fq_sat_zi.append(rhow_0665p00_fq_box.mean()*F0_0665p00/np.pi)
+                        mu_Lwn_0665p00_fq_sat_zi.append(rhow_0665p00_fq_box_zi.mean()*F0_0665p00/np.pi)
                         mu_Lwn_0665p00_fq_ins_zi.append(Lwn_fonQ[idx_min,15]) # 667.9    
                         mu_Lwn_0665p00_fq_ins_zi_station.append(station_name)
                         mu_Lwn_0665p00_fq_sat_zi_stop_time.append(sat_stop_time)
                         mu_Lwn_0665p00_fq_ins_zi_time.append(ins_time[idx_min])
-                        
+                    
+                    # to analyse CV
+                    
+                    df_CVs_zi = df_CVs_zi.append({'station_idx':station_idx,'Lwn_560.0':Lwn_560_CV,\
+                                    'aot_865.5':AOT_0865p50_CV,'datetime':sat_stop_time},ignore_index=True)
+                    # CVs_zi[station_idx,:] = np.append(CVs_zi[station_idx,:],[[Lwn_560_CV,AOT_0865p50_CV]],axis=0)
+                    # CVs_zi_time.append(sat_stop_time)                        
         #         else:
         #             print('CV exceeds criteria: CV[Lwn(560)]='+str(Lwn_560_CV)+'; CV[AOT(865.5)]='+str(AOT_0865p50_CV))
         #     else:
@@ -1430,94 +1486,101 @@ for station_idx in range(len(station_list_main)):
                 stop_idx_x = int(center_px+int(size_box/2)+1)
                 start_idx_y = int(center_px-int(size_box/2))
                 stop_idx_y = int(center_px+int(size_box/2)+1)
-                rhow_0412p50_fq_box = rhow_0412p50_fq[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
-                rhow_0442p50_fq_box = rhow_0442p50_fq[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
-                rhow_0490p00_fq_box = rhow_0490p00_fq[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
-                rhow_0560p00_fq_box = rhow_0560p00_fq[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
-                rhow_0665p00_fq_box = rhow_0665p00_fq[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
-    
-                AOT_0865p50_box = AOT_0865p50[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+                rhow_0412p50_fq_box_ba = rhow_0412p50_fq[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+                rhow_0442p50_fq_box_ba = rhow_0442p50_fq[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+                rhow_0490p00_fq_box_ba = rhow_0490p00_fq[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+                rhow_0560p00_fq_box_ba = rhow_0560p00_fq[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+                rhow_0665p00_fq_box_ba = rhow_0665p00_fq[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
+                AOT_0865p50_box_ba = AOT_0865p50[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y]
                 
-                print('rhow_0412p50_fq_box:')
-                print(rhow_0412p50_fq_box)
-                print('rhow_0412p50_fq_box.mask:')
-                print(rhow_0412p50_fq_box.mask)
+                print('rhow_0412p50_fq_box_ba:')
+                print(rhow_0412p50_fq_box_ba)
+                print('rhow_0412p50_fq_box_ba.mask:')
+                print(rhow_0412p50_fq_box_ba.mask)
                 
-                flags_mask = OLCI_flags.create_mask(WQSF[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y])
-                print('flags_mask:')
-                print(flags_mask)
+                flags_mask_ba = OLCI_flags.create_mask(WQSF[start_idx_x:stop_idx_x,start_idx_y:stop_idx_y])
+                print('flags_mask_ba:')
+                print(flags_mask_ba)
                 
-                NGP = np.count_nonzero(flags_mask == 0) # Number Good Pixels, Bailey and Werdell 2006
+                NGP = np.count_nonzero(flags_mask_ba == 0) # Number Good Pixels, Bailey and Werdell 2006
+
+                # apply L2 mask
+                rhow_0412p50_fq_box_ba = ma.masked_array(rhow_0412p50_fq_box_ba,flags_mask_ba) 
+                rhow_0442p50_fq_box_ba = ma.masked_array(rhow_0442p50_fq_box_ba,flags_mask_ba) 
+                rhow_0490p00_fq_box_ba = ma.masked_array(rhow_0490p00_fq_box_ba,flags_mask_ba) 
+                rhow_0560p00_fq_box_ba = ma.masked_array(rhow_0560p00_fq_box_ba,flags_mask_ba) 
+                rhow_0665p00_fq_box_ba = ma.masked_array(rhow_0665p00_fq_box_ba,flags_mask_ba) 
+                AOT_0865p50_box_ba     = ma.masked_array(AOT_0865p50_box_ba    ,flags_mask_ba) 
                 
                 # if nan, change mask
-                rhow_0412p50_fq_box = ma.masked_invalid(rhow_0412p50_fq_box)
-                rhow_0442p50_fq_box = ma.masked_invalid(rhow_0442p50_fq_box)
-                rhow_0490p00_fq_box = ma.masked_invalid(rhow_0490p00_fq_box)
-                rhow_0560p00_fq_box = ma.masked_invalid(rhow_0560p00_fq_box)
-                rhow_0665p00_fq_box = ma.masked_invalid(rhow_0665p00_fq_box)
-                AOT_0865p50_box = ma.masked_invalid(AOT_0865p50_box)
+                rhow_0412p50_fq_box_ba = ma.masked_invalid(rhow_0412p50_fq_box_ba)
+                rhow_0442p50_fq_box_ba = ma.masked_invalid(rhow_0442p50_fq_box_ba)
+                rhow_0490p00_fq_box_ba = ma.masked_invalid(rhow_0490p00_fq_box_ba)
+                rhow_0560p00_fq_box_ba = ma.masked_invalid(rhow_0560p00_fq_box_ba)
+                rhow_0665p00_fq_box_ba = ma.masked_invalid(rhow_0665p00_fq_box_ba)
+                AOT_0865p50_box_ba = ma.masked_invalid(AOT_0865p50_box_ba)
 
-                NGP_rhow_0412p50 = np.count_nonzero(rhow_0412p50_fq_box.mask == 0)
-                NGP_rhow_0442p50 = np.count_nonzero(rhow_0442p50_fq_box.mask == 0)
-                NGP_rhow_0490p00 = np.count_nonzero(rhow_0490p00_fq_box.mask == 0)
-                NGP_rhow_0560p00 = np.count_nonzero(rhow_0560p00_fq_box.mask == 0)
-                NGP_rhow_0665p00 = np.count_nonzero(rhow_0665p00_fq_box.mask == 0)
-                NGP_AOT_0865p50 = np.count_nonzero(AOT_0865p50_box.mask == 0)
+                NGP_rhow_0412p50 = np.count_nonzero(rhow_0412p50_fq_box_ba.mask == 0)
+                NGP_rhow_0442p50 = np.count_nonzero(rhow_0442p50_fq_box_ba.mask == 0)
+                NGP_rhow_0490p00 = np.count_nonzero(rhow_0490p00_fq_box_ba.mask == 0)
+                NGP_rhow_0560p00 = np.count_nonzero(rhow_0560p00_fq_box_ba.mask == 0)
+                NGP_rhow_0665p00 = np.count_nonzero(rhow_0665p00_fq_box_ba.mask == 0)
+                NGP_AOT_0865p50 = np.count_nonzero(AOT_0865p50_box_ba.mask == 0)
 
-                mean_unfiltered_rhow_0412p50 = rhow_0412p50_fq_box.mean()
-                mean_unfiltered_rhow_0442p50 = rhow_0442p50_fq_box.mean()
-                mean_unfiltered_rhow_0490p00 = rhow_0490p00_fq_box.mean()
-                mean_unfiltered_rhow_0560p00 = rhow_0560p00_fq_box.mean()
-                mean_unfiltered_rhow_0665p00 = rhow_0665p00_fq_box.mean()
-                mean_unfiltered_AOT_0865p50 = AOT_0865p50_box.mean()
+                mean_unfiltered_rhow_0412p50 = rhow_0412p50_fq_box_ba.mean()
+                mean_unfiltered_rhow_0442p50 = rhow_0442p50_fq_box_ba.mean()
+                mean_unfiltered_rhow_0490p00 = rhow_0490p00_fq_box_ba.mean()
+                mean_unfiltered_rhow_0560p00 = rhow_0560p00_fq_box_ba.mean()
+                mean_unfiltered_rhow_0665p00 = rhow_0665p00_fq_box_ba.mean()
+                mean_unfiltered_AOT_0865p50 = AOT_0865p50_box_ba.mean()
 
-                std_unfiltered_rhow_0412p50 = rhow_0412p50_fq_box.std()
-                std_unfiltered_rhow_0442p50 = rhow_0442p50_fq_box.std()
-                std_unfiltered_rhow_0490p00 = rhow_0490p00_fq_box.std()
-                std_unfiltered_rhow_0560p00 = rhow_0560p00_fq_box.std()
-                std_unfiltered_rhow_0665p00 = rhow_0665p00_fq_box.std()
-                std_unfiltered_AOT_0865p50 = AOT_0865p50_box.std()
+                std_unfiltered_rhow_0412p50 = rhow_0412p50_fq_box_ba.std()
+                std_unfiltered_rhow_0442p50 = rhow_0442p50_fq_box_ba.std()
+                std_unfiltered_rhow_0490p00 = rhow_0490p00_fq_box_ba.std()
+                std_unfiltered_rhow_0560p00 = rhow_0560p00_fq_box_ba.std()
+                std_unfiltered_rhow_0665p00 = rhow_0665p00_fq_box_ba.std()
+                std_unfiltered_AOT_0865p50 = AOT_0865p50_box_ba.std()
 
                 # mask values that are not within +/- 1.5*std of mean\
                 
-                rhow_0412p50_fq_box = ma.masked_outside(rhow_0412p50_fq_box,mean_unfiltered_rhow_0412p50\
+                rhow_0412p50_fq_box_ba = ma.masked_outside(rhow_0412p50_fq_box_ba,mean_unfiltered_rhow_0412p50\
                     -1.5*std_unfiltered_rhow_0412p50\
                     , mean_unfiltered_rhow_0412p50\
                     +1.5*std_unfiltered_rhow_0412p50)
-                rhow_0442p50_fq_box = ma.masked_outside(rhow_0442p50_fq_box,mean_unfiltered_rhow_0442p50\
+                rhow_0442p50_fq_box_ba = ma.masked_outside(rhow_0442p50_fq_box_ba,mean_unfiltered_rhow_0442p50\
                     -1.5*std_unfiltered_rhow_0442p50\
                     , mean_unfiltered_rhow_0442p50\
                     +1.5*std_unfiltered_rhow_0442p50)
-                rhow_0490p00_fq_box = ma.masked_outside(rhow_0490p00_fq_box,mean_unfiltered_rhow_0490p00\
+                rhow_0490p00_fq_box_ba = ma.masked_outside(rhow_0490p00_fq_box_ba,mean_unfiltered_rhow_0490p00\
                     -1.5*std_unfiltered_rhow_0490p00\
                     , mean_unfiltered_rhow_0490p00\
                     +1.5*std_unfiltered_rhow_0490p00)
-                rhow_0560p00_fq_box = ma.masked_outside(rhow_0560p00_fq_box,mean_unfiltered_rhow_0560p00\
+                rhow_0560p00_fq_box_ba = ma.masked_outside(rhow_0560p00_fq_box_ba,mean_unfiltered_rhow_0560p00\
                     -1.5*std_unfiltered_rhow_0560p00\
                     , mean_unfiltered_rhow_0560p00\
                     +1.5*std_unfiltered_rhow_0560p00)
-                rhow_0665p00_fq_box = ma.masked_outside(rhow_0665p00_fq_box,mean_unfiltered_rhow_0665p00\
+                rhow_0665p00_fq_box_ba = ma.masked_outside(rhow_0665p00_fq_box_ba,mean_unfiltered_rhow_0665p00\
                     -1.5*std_unfiltered_rhow_0665p00\
                     , mean_unfiltered_rhow_0665p00\
                     +1.5*std_unfiltered_rhow_0665p00)
-                AOT_0865p50_box = ma.masked_outside(AOT_0865p50_box,mean_unfiltered_AOT_0865p50\
+                AOT_0865p50_box_ba = ma.masked_outside(AOT_0865p50_box_ba,mean_unfiltered_AOT_0865p50\
                     -1.5*std_unfiltered_AOT_0865p50\
                     , mean_unfiltered_AOT_0865p50\
                     +1.5*std_unfiltered_AOT_0865p50)
 
-                mean_filtered_rhow_0412p50 = rhow_0412p50_fq_box.mean()
-                mean_filtered_rhow_0442p50 = rhow_0442p50_fq_box.mean()
-                mean_filtered_rhow_0490p00 = rhow_0490p00_fq_box.mean()
-                mean_filtered_rhow_0560p00 = rhow_0560p00_fq_box.mean()
-                mean_filtered_rhow_0665p00 = rhow_0665p00_fq_box.mean()
-                mean_filtered_AOT_0865p50  = AOT_0865p50_box.mean()
+                mean_filtered_rhow_0412p50 = rhow_0412p50_fq_box_ba.mean()
+                mean_filtered_rhow_0442p50 = rhow_0442p50_fq_box_ba.mean()
+                mean_filtered_rhow_0490p00 = rhow_0490p00_fq_box_ba.mean()
+                mean_filtered_rhow_0560p00 = rhow_0560p00_fq_box_ba.mean()
+                mean_filtered_rhow_0665p00 = rhow_0665p00_fq_box_ba.mean()
+                mean_filtered_AOT_0865p50  = AOT_0865p50_box_ba.mean()
 
-                std_filtered_rhow_0412p50 = rhow_0412p50_fq_box.std()
-                std_filtered_rhow_0442p50 = rhow_0442p50_fq_box.std()
-                std_filtered_rhow_0490p00 = rhow_0490p00_fq_box.std()
-                std_filtered_rhow_0560p00 = rhow_0560p00_fq_box.std()
-                std_filtered_rhow_0665p00 = rhow_0665p00_fq_box.std()
-                std_filtered_AOT_0865p50  = AOT_0865p50_box.std()
+                std_filtered_rhow_0412p50 = rhow_0412p50_fq_box_ba.std()
+                std_filtered_rhow_0442p50 = rhow_0442p50_fq_box_ba.std()
+                std_filtered_rhow_0490p00 = rhow_0490p00_fq_box_ba.std()
+                std_filtered_rhow_0560p00 = rhow_0560p00_fq_box_ba.std()
+                std_filtered_rhow_0665p00 = rhow_0665p00_fq_box_ba.std()
+                std_filtered_AOT_0865p50  = AOT_0865p50_box_ba.std()
 
                 CV_filtered_rhow_0412p50 = std_filtered_rhow_0412p50/mean_filtered_rhow_0412p50
                 CV_filtered_rhow_0442p50 = std_filtered_rhow_0442p50/mean_filtered_rhow_0442p50
@@ -1625,9 +1688,9 @@ for station_idx in range(len(station_list_main)):
                         and (NGP_rhow_0560p00>NTP/2+1)\
                         and (NGP_rhow_0665p00>NTP/2+1):  
                     dt_mu_ba.append(dt_hour[idx_min])
-
+                    
                     number_used_pixels = np.append(number_used_pixels,[[0, 0, 0, 0, 0]],axis=0)
-
+                    BW06_MU = True
                     mu_cnt_ba += 1              
                     # Rrs 0412p50
                     # print('412.5')
@@ -1641,11 +1704,11 @@ for station_idx in range(len(station_list_main)):
                         mu_Lwn_0412p50_fq_sat_ba_stop_time.append(sat_stop_time)
                         mu_Lwn_0412p50_fq_ins_ba_time.append(ins_time[idx_min])
                         
-                        map_valid_pxs = np.ones(rhow_0412p50_fq_box.shape,dtype=int)
-                        map_valid_pxs[rhow_0412p50_fq_box.mask==True]=0
+                        map_valid_pxs = np.ones(rhow_0412p50_fq_box_ba.shape,dtype=int)
+                        map_valid_pxs[rhow_0412p50_fq_box_ba.mask==True]=0
                         map_valid_pxs_ba[station_idx,0,:,:] = map_valid_pxs_ba[station_idx,0,:,:] + map_valid_pxs
 
-                        number_used_pixels[-1,0] = rhow_0412p50_fq_box.count()
+                        number_used_pixels[-1,0] = rhow_0412p50_fq_box_ba.count()
                         
                     # Rrs 0442p50
                     # print('442.5')
@@ -1658,11 +1721,11 @@ for station_idx in range(len(station_list_main)):
                         mu_Lwn_0442p50_fq_sat_ba_stop_time.append(sat_stop_time)
                         mu_Lwn_0442p50_fq_ins_ba_time.append(ins_time[idx_min])
 
-                        map_valid_pxs = np.ones(rhow_0442p50_fq_box.shape,dtype=int)
-                        map_valid_pxs[rhow_0442p50_fq_box.mask==True]=0
+                        map_valid_pxs = np.ones(rhow_0442p50_fq_box_ba.shape,dtype=int)
+                        map_valid_pxs[rhow_0442p50_fq_box_ba.mask==True]=0
                         map_valid_pxs_ba[station_idx,1,:,:] = map_valid_pxs_ba[station_idx,1,:,:] + map_valid_pxs
 
-                        number_used_pixels[-1,1] = rhow_0442p50_fq_box.count()
+                        number_used_pixels[-1,1] = rhow_0442p50_fq_box_ba.count()
                         
                     # Rrs 0490p00
                     # print('490.0')
@@ -1675,16 +1738,16 @@ for station_idx in range(len(station_list_main)):
                         mu_Lwn_0490p00_fq_sat_ba_stop_time.append(sat_stop_time)
                         mu_Lwn_0490p00_fq_ins_ba_time.append(ins_time[idx_min])
 
-                        map_valid_pxs = np.ones(rhow_0490p00_fq_box.shape,dtype=int)
-                        map_valid_pxs[rhow_0490p00_fq_box.mask==True]=0
+                        map_valid_pxs = np.ones(rhow_0490p00_fq_box_ba.shape,dtype=int)
+                        map_valid_pxs[rhow_0490p00_fq_box_ba.mask==True]=0
                         map_valid_pxs_ba[station_idx,2,:,:] = map_valid_pxs_ba[station_idx,2,:,:] + map_valid_pxs
 
-                        number_used_pixels[-1,2] = rhow_0490p00_fq_box.count()
+                        number_used_pixels[-1,2] = rhow_0490p00_fq_box_ba.count()
                         
                         # for determining the pixels that are not used for the validation
-                        if rhow_0490p00_fq_box.mask[1,1] == True and station_list_main[station_idx] == 'Gloria':
+                        if rhow_0490p00_fq_box_ba.mask[1,1] == True and station_list_main[station_idx] == 'Gloria':
                             data_masked_Gloria.append(line)
-                            data_masked_Gloria_value.append(rhow_0490p00_fq_box.data[1,1])
+                            data_masked_Gloria_value.append(rhow_0490p00_fq_box_ba.data[1,1])
                     # Rrs 0560p00
                     # print('560.0')
                     if NGP_rhow_0560p00>NTP/2+1:
@@ -1702,11 +1765,11 @@ for station_idx in range(len(station_list_main)):
                         mu_Lwn_0560p00_fq_sat_ba_stop_time.append(sat_stop_time)
                         mu_Lwn_0560p00_fq_ins_ba_time.append(ins_time[idx_min])
 
-                        map_valid_pxs = np.ones(rhow_0560p00_fq_box.shape,dtype=int)
-                        map_valid_pxs[rhow_0560p00_fq_box.mask==True]=0
+                        map_valid_pxs = np.ones(rhow_0560p00_fq_box_ba.shape,dtype=int)
+                        map_valid_pxs[rhow_0560p00_fq_box_ba.mask==True]=0
                         map_valid_pxs_ba[station_idx,3,:,:] = map_valid_pxs_ba[station_idx,3,:,:] + map_valid_pxs
 
-                        number_used_pixels[-1,3] = rhow_0560p00_fq_box.count()
+                        number_used_pixels[-1,3] = rhow_0560p00_fq_box_ba.count()
 
                         
                     # Rrs 0665p00
@@ -1720,12 +1783,33 @@ for station_idx in range(len(station_list_main)):
                         mu_Lwn_0665p00_fq_sat_ba_stop_time.append(sat_stop_time)
                         mu_Lwn_0665p00_fq_ins_ba_time.append(ins_time[idx_min])
 
-                        map_valid_pxs = np.ones(rhow_0665p00_fq_box.shape,dtype=int)
-                        map_valid_pxs[rhow_0665p00_fq_box.mask==True]=0
+                        map_valid_pxs = np.ones(rhow_0665p00_fq_box_ba.shape,dtype=int)
+                        map_valid_pxs[rhow_0665p00_fq_box_ba.mask==True]=0
                         map_valid_pxs_ba[station_idx,4,:,:] = map_valid_pxs_ba[station_idx,4,:,:] + map_valid_pxs
 
-                        number_used_pixels[-1,4] = rhow_0665p00_fq_box.count()
-                        
+                        number_used_pixels[-1,4] = rhow_0665p00_fq_box_ba.count()
+
+                    # to analyze CV
+                    df_CVs_ba = df_CVs_ba.append({'station_idx':station_idx,'rhow_412.5':CV_filtered_rhow_0412p50,'rhow_442.5':CV_filtered_rhow_0442p50,\
+                        'rhow_490.0':CV_filtered_rhow_0490p00,'rhow_560.0':CV_filtered_rhow_0560p00,'rhow_665.0':CV_filtered_rhow_0665p00,\
+                        'aot_865.5':CV_filtered_AOT_0865p50,'MedianCV':MedianCV,'MedianCV_band_idx':idx_m,'datetime':sat_stop_time},\
+                        ignore_index=True)
+    
+            df_matchups = df_matchups.append({'station':station_list_main[station_idx],'datetime':sat_stop_time,'vza':vza,'sza':sza,\
+                     'BW06_MU':BW06_MU,'BW06_l2_mask':flags_mask_ba,\
+                     'BW06: rhow_412_box':rhow_0412p50_fq_box_ba,'BW06: rho_412_filt_mean':mean_filtered_rhow_0412p50,\
+                     'BW06: rhow_442_box':rhow_0442p50_fq_box_ba,'BW06: rho_442_filt_mean':mean_filtered_rhow_0442p50,\
+                     'BW06: rhow_490_box':rhow_0490p00_fq_box_ba,'BW06: rho_490_filt_mean':mean_filtered_rhow_0490p00,\
+                     'BW06: rhow_560_box':rhow_0560p00_fq_box_ba,'BW06: rho_560_filt_mean':mean_filtered_rhow_0560p00,\
+                     'BW06: rhow_665_box':rhow_0665p00_fq_box_ba,'BW06: rho_665_filt_mean':mean_filtered_rhow_0665p00,\
+                     'BW06: MedianCV':MedianCV,'BW06: Nfilt_560':rhow_0560p00_fq_box_ba.count(),'BW06: NGP':NGP,'BW06: NTP':NTP,\
+                     'Z09_MU':Z09_MU,'Z09_l2_mask':flags_mask_zi,\
+                     'Z09: rhow_412_box':rhow_0412p50_fq_box_zi,'Z09: rho_412_mean':rhow_0412p50_fq_box_zi.mean(),\
+                     'Z09: rhow_442_box':rhow_0442p50_fq_box_zi,'Z09: rho_442_mean':rhow_0442p50_fq_box_zi.mean(),\
+                     'Z09: rhow_490_box':rhow_0490p00_fq_box_zi,'Z09: rho_490_mean':rhow_0490p00_fq_box_zi.mean(),\
+                     'Z09: rhow_560_box':rhow_0560p00_fq_box_zi,'Z09: rho_560_mean':rhow_0560p00_fq_box_zi.mean(),\
+                     'Z09: rhow_665_box':rhow_0665p00_fq_box_zi,'Z09: rho_665_mean':rhow_0665p00_fq_box_zi.mean(),\
+                     'Z09: CV_560':Lwn_560_CV,'Z09: CV_865p5':AOT_0865p50_CV},ignore_index=True)          
     #         else:
     #             print('Median CV exceeds criteria: Median[CV]='+str(MedianCV))
     #     else:
@@ -2746,7 +2830,6 @@ plt.legend(wl_str,fontsize=12)
 plt.xlabel('Match-up Number',fontsize=12)
 plt.ylabel('Number of pixels used',fontsize=12)
 
-#%%
 
 for idx in range(number_used_pixels.shape[1]):
 
@@ -2761,6 +2844,196 @@ for idx in range(number_used_pixels.shape[1]):
     plt.title(f'{olci_wl_list[idx]} nm',fontsize=12)
     plt.xlabel('Number of Pixels Used',fontsize=12)
     plt.ylabel('Frequency (%)',fontsize=12)
+#%% plot CVS
+CVs_ba_bands_list =[ 'rhow_412.5','rhow_442.5','rhow_490.0','rhow_560.0','rhow_665.0','aot_865.5']
+
+kwargs2 = dict(histtype='step')
+bins = [0.0,0.02,0.04,0.06,0.08,0.10,0.12,0.14,0.16,0.18,0.20]
+
+for station_idx in range(len(station_list_main)):
+    df_ba = df_CVs_ba.loc[df_CVs_ba['station_idx']==station_idx]
+    df_zi = df_CVs_zi.loc[df_CVs_zi['station_idx']==station_idx]
+    
+    plt.figure(figsize=(20,8))
+    for band in CVs_ba_bands_list:
+        plt.plot(df_ba['datetime'],df_ba[band],c=color_dict[f'{float(band[-5:]):.2f}'],linestyle='none',marker='.')
+        
+        
+    plt.plot(df_ba['datetime'],df_ba['MedianCV'],'k')
+    
+    plt.plot(df_zi['datetime'],df_zi['Lwn_560.0'],c=color_dict[f'{float(560.0):.2f}'],linestyle='-',marker='o',fillstyle='none')
+    plt.plot(df_zi['datetime'],df_zi['aot_865.5'],c=color_dict[f'{float(865.5):.2f}'],linestyle='-',marker='o',fillstyle='none')
+    plt.ylim([-0.2,0.2])
+        
+    legen_items =['BW06: rhow_412.5','BW06: rhow_442.5','BW06: rhow_490.0','BW06: rhow_560.0','BW06: rhow_665.0','BW06: aot_865.5',\
+                'BW06: MedianCV','Z09: Lwn_560.0','Z09: aot_865.5']
+    plt.legend(legen_items)
+    plt.title(station_list_main[station_idx])
+    plt.suptitle('CV')
+    
+    fig, ax1=plt.subplots(1,1,sharey=True, facecolor='w',figsize=(8,6))
+    counts, bins2 = np.histogram(df_ba['MedianCV'],bins=bins)
+    ax1.hist(bins2[:-1], bins2, weights=100*counts/counts.sum(),color='red', **kwargs2)
+    counts, bins2 = np.histogram(df_zi['Lwn_560.0'],bins=bins)
+    ax1.hist(bins2[:-1], bins2, weights=100*counts/counts.sum(),color='green', **kwargs2)
+    counts, bins2 = np.histogram(df_zi['aot_865.5'],bins=bins)
+    ax1.hist(bins2[:-1], bins2, weights=100*counts/counts.sum(),color='blue', **kwargs2)
+    plt.title(station_list_main[station_idx])
+    plt.legend(['BW06: MedianCV','Z09: Lwn_560.0','Z09: aot_865.5'])
+    plt.xlim([0,0.2])
+    plt.xlabel('CV')
+    plt.ylabel('Frequency (%)',fontsize=12)
+    
+    fig, ax1=plt.subplots(1,1,sharey=True, facecolor='w',figsize=(8,6))
+    counts, bins2 = np.histogram(df_ba['rhow_560.0'],bins=bins)
+    ax1.hist(bins2[:-1], bins2, weights=100*counts/counts.sum(),color='red', **kwargs2)
+    counts, bins2 = np.histogram(df_zi['Lwn_560.0'],bins=bins)
+    ax1.hist(bins2[:-1], bins2, weights=100*counts/counts.sum(),color='green', **kwargs2)
+    
+    # plt.hist(df_ba['rhow_560.0'],**kwargs2)
+    # plt.hist(df_zi['Lwn_560.0'],**kwargs2)
+    plt.title(station_list_main[station_idx])
+    plt.legend(['BW06: rhow_560.0','Z09: Lwn_560.0'])  
+    plt.xlim([0,0.2])
+    plt.xlabel('CV')
+    plt.ylabel('Frequency (%)',fontsize=12)
+
+#%% plot matchups
+# df_matchups = df_matchups.append({'station':station_list_main[station_idx],'datetime':sat_stop_time,'vza':vza,'sza':sza,\
+#          'BW06_MU':BW06_MU,'BW06_l2_mask':flags_mask_ba,\
+#          'BW06: rhow_412_box':rhow_0412p50_fq_box_ba,'BW06: rho_412_filt_mean':mean_filtered_rhow_0412p50,\
+#          'BW06: rhow_442_box':rhow_0442p50_fq_box_ba,'BW06: rho_442_filt_mean':mean_filtered_rhow_0442p50,\
+#          'BW06: rhow_490_box':rhow_0490p00_fq_box_ba,'BW06: rho_490_filt_mean':mean_filtered_rhow_0490p00,\
+#          'BW06: rhow_560_box':rhow_0560p00_fq_box_ba,'BW06: rho_560_filt_mean':mean_filtered_rhow_0560p00,\
+#          'BW06: rhow_665_box':rhow_0665p00_fq_box_ba,'BW06: rho_665_filt_mean':mean_filtered_rhow_0665p00,\
+#          'BW06: MedianCV':MedianCV,'BW06: Nfilt_560':rhow_0560p00_fq_box_ba.count(),'BW06: NGP':NGP,'BW06: NTP':NTP,\
+#          'Z09_MU':Z09_MU,'Z09_l2_mask':flags_mask_zi,\
+#          'Z09: rhow_412_box':rhow_0412p50_fq_box_zi,'Z09: rho_412_mean':rhow_0412p50_fq_box_zi.mean(),\
+#          'Z09: rhow_442_box':rhow_0442p50_fq_box_zi,'Z09: rho_442_mean':rhow_0442p50_fq_box_zi.mean(),\
+#          'Z09: rhow_490_box':rhow_0490p00_fq_box_zi,'Z09: rho_490_mean':rhow_0490p00_fq_box_zi.mean(),\
+#          'Z09: rhow_560_box':rhow_0560p00_fq_box_zi,'Z09: rho_560_mean':rhow_0560p00_fq_box_zi.mean(),\
+#          'Z09: rhow_665_box':rhow_0665p00_fq_box_zi,'Z09: rho_665_mean':rhow_0665p00_fq_box_zi.mean(),\
+#          'Z09: CV_560':Lwn_560_CV,'Z09: CV_865p5':AOT_0865p50_CV},ignore_index=True)     
+
+# for idx, row in df_matchups.iterrows()[0]:
+#     if row['BW06: MU'] == True:
+#         print(row['BW06: rhow_560_box'])
+        
+for idx in range(len(df_matchups)): 
+# for idx in range(3):
+    if True and df_matchups.loc[idx,'BW06_MU'] == True or df_matchups.loc[idx,'Z09_MU'] == True:
+        print('---------------')
+        # print(df_matchups.loc[idx,'BW06: rhow_560_box'])
+       
+        fig = plt.figure(figsize=(20,8))
+        date_str = str(df_matchups.loc[idx,'datetime'].date())
+        print(date_str)
+        plt.suptitle(f'{date_str}, {df_matchups.loc[idx,"station"]}')
+
+        # Z09
+        ax0 = plt.subplot(4,5,1)
+        ax0.imshow(df_matchups.loc[idx,'Z09: rhow_412_box'])
+        ax0.set_xlim([-1.5,3.5])
+        ax0.set_ylim([3.5,-1.5])
+        plt.axis('off')
+        plt.title('Z09: rhow_412')
+
+        ax0 = plt.subplot(4,5,2)
+        ax0.imshow(df_matchups.loc[idx,'Z09: rhow_442_box'])
+        ax0.set_xlim([-1.5,3.5])
+        ax0.set_ylim([3.5,-1.5])
+        plt.axis('off')
+        plt.title('Z09: rhow_442')
+
+        ax0 = plt.subplot(4,5,6)
+        ax0.imshow(df_matchups.loc[idx,'Z09: rhow_490_box'])
+        ax0.set_xlim([-1.5,3.5])
+        ax0.set_ylim([3.5,-1.5])
+        plt.axis('off')
+        plt.title('Z09: rhow_490')
+
+        ax0 = plt.subplot(4,5,7)
+        ax0.imshow(df_matchups.loc[idx,'Z09: rhow_560_box'])
+        ax0.set_xlim([-1.5,3.5])
+        ax0.set_ylim([3.5,-1.5])
+        plt.axis('off')
+        plt.title('Z09: rhow_560')
+
+        ax0 = plt.subplot(4,5,11)
+        ax0.imshow(df_matchups.loc[idx,'Z09: rhow_665_box'])
+        ax0.set_xlim([-1.5,3.5])
+        ax0.set_ylim([3.5,-1.5])
+        plt.axis('off')
+        plt.title('Z09: rhow_665')
+
+        ax0 = plt.subplot(4,5,12)
+        ax0.imshow(df_matchups.loc[idx,'Z09_l2_mask'])
+        ax0.set_xlim([-1.5,3.5])
+        ax0.set_ylim([3.5,-1.5])
+        plt.axis('off')
+        plt.title('Z09: L2 mask')
+
+        # BW06
+        plt.subplot(4,5,3)
+        plt.imshow(df_matchups.loc[idx,'BW06: rhow_412_box'])
+        plt.axis('off')
+        plt.title('BW06: rhow_412')
+        
+        plt.subplot(4,5,4)
+        plt.imshow(df_matchups.loc[idx,'BW06: rhow_442_box'])
+        plt.axis('off')
+        plt.title('BW06: rhow_442')
+        
+        plt.subplot(4,5,8)
+        plt.imshow(df_matchups.loc[idx,'BW06: rhow_490_box'])
+        plt.axis('off')
+        plt.title('BW06: rhow_490')
+        
+        plt.subplot(4,5,9)
+        plt.imshow(df_matchups.loc[idx,'BW06: rhow_560_box'])
+        plt.axis('off')
+        plt.title('BW06: rhow_560')
+        
+        plt.subplot(4,5,13)
+        plt.imshow(df_matchups.loc[idx,'BW06: rhow_665_box'])
+        plt.axis('off')
+        plt.title('BW06: rhow_665')
+        
+        plt.subplot(4,5,14)
+        plt.imshow(df_matchups.loc[idx,'BW06_l2_mask'])
+        plt.axis('off')
+        plt.title('BW06: L2 mask')
+
+        ax1 = plt.subplot(2,5,5)
+        ba_MU = zi_MU = 'Rejected'
+        if df_matchups.loc[idx,"BW06_MU"]: ba_MU = 'Passed'
+        if df_matchups.loc[idx,"Z09_MU"]: zi_MU = 'Passed'
+        panel_ba = f'BW06\n{ba_MU}\nNGP: {int(df_matchups.loc[idx,"BW06: NGP"])}\nMedianCV = {df_matchups.loc[idx,"BW06: MedianCV"]:0.3f}\nmean={df_matchups.loc[idx,"BW06: rho_560_filt_mean"]:0.4f}' 
+        panel_zi = f'Z09\n{zi_MU}\nCV_560 = {df_matchups.loc[idx,"Z09: CV_560"]:0.3f}\nCV_865.5 = {df_matchups.loc[idx,"Z09: CV_865p5"]:0.3f}\nmean={df_matchups.loc[idx,"Z09: rho_560_mean"]:0.4f}'
+        panel_str = f'vza: {float(df_matchups.loc[idx,"vza"]):0.2f}; sza: {float(df_matchups.loc[idx,"sza"]):0.2f}'
+        
+        ax1.annotate(panel_str, (0.01, 0.95), textcoords='data', size=12)
+        ax1.annotate(panel_ba, (0.01, 0.50), textcoords='data', size=12)
+        ax1.annotate(panel_zi, (0.01, 0.01), textcoords='data', size=12)
+        plt.axis('off')
+
+        plt.subplot(4,1,4)
+        plt.plot(df_matchups.loc[idx,'BW06: rhow_560_box'].ravel(),'r+')
+        plt.plot([6,7,8,11,12,13,16,17,18],df_matchups.loc[idx,'Z09: rhow_560_box'].ravel(),'bx')
+        plt.plot([0,24],[df_matchups.loc[idx,'BW06: rho_560_filt_mean'],df_matchups.loc[idx,'BW06: rho_560_filt_mean']],'r--')
+        plt.plot([0,24],[df_matchups.loc[idx,'Z09: rho_560_mean'],df_matchups.loc[idx,'Z09: rho_560_mean']],'b--')
+        plt.xlabel('Pixel Number')
+        plt.ylabel(r'$\rho_{W}(560)$')
+        plt.legend([r'BW06: $\rho_{W}(560)$',r'Z09: $\rho_{W}(560)$',r'BW06: filt. mean $\rho_{W}(560)$',r'Z09: mean $\rho_{W}(560)$'],\
+                   ncol=4,bbox_to_anchor=(0.15, 0.93, 1., .4), loc='lower left',frameon=False)
+        
+        ofname = f'{df_matchups.loc[idx,"station"]}_{date_str}.png'
+
+        ofname = os.path.join(path_out,ofname)
+        plt.savefig(ofname, dpi=100)
+        
+        plt.close()
+
 #%%
 # if __name__ == '__main__':
 #     main()   
