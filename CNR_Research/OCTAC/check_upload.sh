@@ -17,5 +17,5 @@ echo '----------------------------'
 echo 'Checking DT 24 days:'
 ckdu_EiS202007.py -d $(date +%Y%m%d -d "24 days ago") -m DT -v
 echo '----------------------------'
-echo 'Checking EUR 20 days:'
+echo 'Checking EUR 27 days:'
 ckdu_EiS202007.py -d $(date +%Y%m%d -d "27 days ago") --EUR -v
