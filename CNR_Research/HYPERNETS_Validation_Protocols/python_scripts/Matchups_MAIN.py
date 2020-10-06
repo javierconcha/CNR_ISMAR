@@ -1107,40 +1107,70 @@ map_valid_pxs_ba = np.zeros([len(station_list_main),len(olci_wl_list),5,5],dtype
 
 number_used_pixels = np.empty([0,len(olci_wl_list)],dtype=int)
 
-columns = ['BW06_MU','BW06_l2_mask',\
-        'BW06: rhow_412_box','BW06: rho_412_filt_mean',\
-        'BW06: rhow_442_box','BW06: rho_442_filt_mean',\
-        'BW06: rhow_490_box','BW06: rho_490_filt_mean',\
-        'BW06: rhow_560_box','BW06: rho_560_filt_mean',\
-        'BW06: rhow_665_box','BW06: rho_665_filt_mean',\
-        'BW06: MedianCV','BW06: Nfilt_560','BW06: NGP','BW06: NTP',\
-        'Z09_MU','Z09_l2_mask',\
-        'Z09: rhow_412_box','Z09: rho_412_mean',\
-        'Z09: rhow_442_box','Z09: rho_442_mean',\
-        'Z09: rhow_490_box','Z09: rho_490_mean',\
-        'Z09: rhow_560_box','Z09: rho_560_mean',\
-        'Z09: rhow_665_box','Z09: rho_665_mean',\
-        'Z09: CV_560','Z09: CV_865p5']
-  
+columns = ['station','sat_datetime','insitu_datetime','vza','sza',\
+         'BW06_MU','BW06_l2_mask',\
+         'BW06: rhow_412_box','BW06: rho_412_filt_mean',\
+         'BW06: rhow_442_box','BW06: rho_442_filt_mean',\
+         'BW06: rhow_490_box','BW06: rho_490_filt_mean',\
+         'BW06: rhow_560_box','BW06: rho_560_filt_mean',\
+         'BW06: rhow_665_box','BW06: rho_665_filt_mean',\
+         'BW06: MedianCV','BW06: Nfilt_560','BW06: NGP','BW06: NTP',\
+         'BW06: CV_rhow_412.5','BW06: CV_rhow_442.5',\
+         'BW06: CV_rhow_490.0','BW06: CV_rhow_560.0',\
+         'BW06: CV_rhow_665.0','BW06: CV_aot_865.5',\
+         'BW06: MedianCV_band_idx',\
+         'Z09_MU','Z09_l2_mask',\
+         'Z09: rhow_412_box','Z09: rho_412_mean',\
+         'Z09: rhow_442_box','Z09: rho_442_mean',\
+         'Z09: rhow_490_box','Z09: rho_490_mean',\
+         'Z09: rhow_560_box','Z09: rho_560_mean',\
+         'Z09: rhow_665_box','Z09: rho_665_mean',\
+         'Z09: CV_560','Z09: CV_865p5']
 df_matchups = pd.DataFrame(columns=columns)
-
-
 
 # CVs = [CV_filtered_rhow_0412p50, CV_filtered_rhow_0442p50,\
 #                                      CV_filtered_rhow_0490p00, CV_filtered_rhow_0560p00,\
 #                                      CV_filtered_AOT_0865p50]
 columns = ['station_idx','rhow_412.5','rhow_442.5','rhow_490.0','rhow_560.0','rhow_665.0',\
-           'aot_865.5','MedianCV','MedianCV_band_idx','datetime']
+           'aot_865.5','MedianCV','MedianCV_band_idx','sat_datetime']
 df_CVs_ba = pd.DataFrame(columns=columns)
 
-columns = ['station_idx','Lwn_560.0','aot_865.5','datetime']
+columns = ['station_idx','Lwn_560.0','aot_865.5','sat_datetime']
 df_CVs_zi = pd.DataFrame(columns=columns)
 
 data_masked_Gloria = []
 data_masked_Gloria_value = []
 
-
 for station_idx in range(len(station_list_main)):  
+
+    # Initialization
+    sat_stop_time = np.nan
+    ins_time = np.nan
+    vza = np.nan
+    sza = np.nan
+    BW06_MU = np.nan
+    flags_mask_ba = np.nan
+    MedianCV = np.nan
+    rhow_0560p00_fq_box_ba = np.nan
+    NGP = np.nan
+    NTP = np.nan
+    CV_filtered_rhow_0412p50 = np.nan
+    CV_filtered_rhow_0442p50 = np.nan
+    CV_filtered_rhow_0490p00 = np.nan
+    CV_filtered_rhow_0560p00 = np.nan
+    CV_filtered_rhow_0665p00 = np.nan
+    CV_filtered_AOT_0865p50 = np.nan
+    idx_m = np.nan
+    Z09_MU = np.nan
+    flags_mask_zi = np.nan
+    rhow_0412p50_fq_box_zi = np.nan
+    rhow_0442p50_fq_box_zi = np.nan
+    rhow_0490p00_fq_box_zi = np.nan
+    rhow_0560p00_fq_box_zi = np.nan
+    rhow_0665p00_fq_box_zi = np.nan
+    Lwn_560_CV = np.nan
+    AOT_0865p50_CV = np.nan
+
     station_name = station_list_main[station_idx]
 #    filename = station_name+'_20V3_20190927_20200110.nc'
     filename = station_name+'_20V3_20160426_20200206.nc'
@@ -1455,7 +1485,7 @@ for station_idx in range(len(station_list_main)):
                     # to analyse CV
                     
                     df_CVs_zi = df_CVs_zi.append({'station_idx':station_idx,'Lwn_560.0':Lwn_560_CV,\
-                                    'aot_865.5':AOT_0865p50_CV,'datetime':sat_stop_time},ignore_index=True)
+                                    'aot_865.5':AOT_0865p50_CV,'sat_datetime':sat_stop_time},ignore_index=True)
                     # CVs_zi[station_idx,:] = np.append(CVs_zi[station_idx,:],[[Lwn_560_CV,AOT_0865p50_CV]],axis=0)
                     # CVs_zi_time.append(sat_stop_time)                        
         #         else:
@@ -1792,10 +1822,10 @@ for station_idx in range(len(station_list_main)):
                     # to analyze CV
                     df_CVs_ba = df_CVs_ba.append({'station_idx':station_idx,'rhow_412.5':CV_filtered_rhow_0412p50,'rhow_442.5':CV_filtered_rhow_0442p50,\
                         'rhow_490.0':CV_filtered_rhow_0490p00,'rhow_560.0':CV_filtered_rhow_0560p00,'rhow_665.0':CV_filtered_rhow_0665p00,\
-                        'aot_865.5':CV_filtered_AOT_0865p50,'MedianCV':MedianCV,'MedianCV_band_idx':idx_m,'datetime':sat_stop_time},\
+                        'aot_865.5':CV_filtered_AOT_0865p50,'MedianCV':MedianCV,'MedianCV_band_idx':idx_m,'sat_datetime':sat_stop_time},\
                         ignore_index=True)
     
-            df_matchups = df_matchups.append({'station':station_list_main[station_idx],'datetime':sat_stop_time,'vza':vza,'sza':sza,\
+            df_matchups = df_matchups.append({'station':station_list_main[station_idx],'sat_datetime':sat_stop_time,'insitu_datetime':ins_time[idx_min],'vza':vza,'sza':sza,\
                      'BW06_MU':BW06_MU,'BW06_l2_mask':flags_mask_ba,\
                      'BW06: rhow_412_box':rhow_0412p50_fq_box_ba,'BW06: rho_412_filt_mean':mean_filtered_rhow_0412p50,\
                      'BW06: rhow_442_box':rhow_0442p50_fq_box_ba,'BW06: rho_442_filt_mean':mean_filtered_rhow_0442p50,\
@@ -1803,13 +1833,20 @@ for station_idx in range(len(station_list_main)):
                      'BW06: rhow_560_box':rhow_0560p00_fq_box_ba,'BW06: rho_560_filt_mean':mean_filtered_rhow_0560p00,\
                      'BW06: rhow_665_box':rhow_0665p00_fq_box_ba,'BW06: rho_665_filt_mean':mean_filtered_rhow_0665p00,\
                      'BW06: MedianCV':MedianCV,'BW06: Nfilt_560':rhow_0560p00_fq_box_ba.count(),'BW06: NGP':NGP,'BW06: NTP':NTP,\
+                     'BW06: CV_rhow_412.5':CV_filtered_rhow_0412p50,'BW06: CV_rhow_442.5':CV_filtered_rhow_0442p50,\
+                     'BW06: CV_rhow_490.0':CV_filtered_rhow_0490p00,'BW06: CV_rhow_560.0':CV_filtered_rhow_0560p00,\
+                     'BW06: CV_rhow_665.0':CV_filtered_rhow_0665p00,'BW06: CV_aot_865.5':CV_filtered_AOT_0865p50,\
+                     'BW06: MedianCV_band_idx':idx_m,\
                      'Z09_MU':Z09_MU,'Z09_l2_mask':flags_mask_zi,\
                      'Z09: rhow_412_box':rhow_0412p50_fq_box_zi,'Z09: rho_412_mean':rhow_0412p50_fq_box_zi.mean(),\
                      'Z09: rhow_442_box':rhow_0442p50_fq_box_zi,'Z09: rho_442_mean':rhow_0442p50_fq_box_zi.mean(),\
                      'Z09: rhow_490_box':rhow_0490p00_fq_box_zi,'Z09: rho_490_mean':rhow_0490p00_fq_box_zi.mean(),\
                      'Z09: rhow_560_box':rhow_0560p00_fq_box_zi,'Z09: rho_560_mean':rhow_0560p00_fq_box_zi.mean(),\
                      'Z09: rhow_665_box':rhow_0665p00_fq_box_zi,'Z09: rho_665_mean':rhow_0665p00_fq_box_zi.mean(),\
-                     'Z09: CV_560':Lwn_560_CV,'Z09: CV_865p5':AOT_0865p50_CV},ignore_index=True)          
+                     'Z09: CV_560':Lwn_560_CV,'Z09: CV_865p5':AOT_0865p50_CV},ignore_index=True)   
+
+  
+
     #         else:
     #             print('Median CV exceeds criteria: Median[CV]='+str(MedianCV))
     #     else:
@@ -2850,56 +2887,75 @@ CVs_ba_bands_list =[ 'rhow_412.5','rhow_442.5','rhow_490.0','rhow_560.0','rhow_6
 kwargs2 = dict(histtype='step')
 bins = [0.0,0.02,0.04,0.06,0.08,0.10,0.12,0.14,0.16,0.18,0.20]
 
+dataset_name = 'all' # all, all_MUs, common, notBW06_Z09, BW06_notZ09  ((df_matchups['BW06_MU']==True) | (df_matchups['Z09_MU']==True))
+savefig_flag = False
 for station_idx in range(len(station_list_main)):
-    df_ba = df_CVs_ba.loc[df_CVs_ba['station_idx']==station_idx]
-    df_zi = df_CVs_zi.loc[df_CVs_zi['station_idx']==station_idx]
-    
+    station = station_list_main[station_idx]
+    if dataset_name == 'BW06_notZ09':
+        df = df_matchups.loc[(df_matchups['station']==station) & ((df_matchups['BW06_MU']==True) & (df_matchups['Z09_MU']==False))]
+    elif dataset_name == 'notBW06_Z09':
+        df = df_matchups.loc[(df_matchups['station']==station) & ((df_matchups['BW06_MU']==False) & (df_matchups['Z09_MU']==True))]
+    elif dataset_name == 'all_MUs':
+        df = df_matchups.loc[(df_matchups['station']==station) & ((df_matchups['BW06_MU']==True) | (df_matchups['Z09_MU']==True))]
+    elif dataset_name == 'common':
+        df = df_matchups.loc[(df_matchups['station']==station) & ((df_matchups['BW06_MU']==True) & (df_matchups['Z09_MU']==True))]
+    elif dataset_name == 'all':
+        df = df_matchups.loc[(df_matchups['station']==station)]        
+        
     plt.figure(figsize=(20,8))
     for band in CVs_ba_bands_list:
-        plt.plot(df_ba['datetime'],df_ba[band],c=color_dict[f'{float(band[-5:]):.2f}'],linestyle='none',marker='.')
-        
-        
-    plt.plot(df_ba['datetime'],df_ba['MedianCV'],'k')
+        plt.plot(df['sat_datetime'],df['BW06: CV_'+band],c=color_dict[f'{float(band[-5:]):.2f}'],linestyle='none',marker='.')
+    plt.plot(df['sat_datetime'],df['BW06: MedianCV'],'k')
     
-    plt.plot(df_zi['datetime'],df_zi['Lwn_560.0'],c=color_dict[f'{float(560.0):.2f}'],linestyle='-',marker='o',fillstyle='none')
-    plt.plot(df_zi['datetime'],df_zi['aot_865.5'],c=color_dict[f'{float(865.5):.2f}'],linestyle='-',marker='o',fillstyle='none')
+    plt.plot(df['sat_datetime'],df['Z09: CV_560'],c=color_dict[f'{float(560.0):.2f}'],linestyle='-',marker='o',fillstyle='none')
+    plt.plot(df['sat_datetime'],df['Z09: CV_865p5'],c=color_dict[f'{float(865.5):.2f}'],linestyle='-',marker='o',fillstyle='none')
     plt.ylim([-0.2,0.2])
-        
-    legen_items =['BW06: rhow_412.5','BW06: rhow_442.5','BW06: rhow_490.0','BW06: rhow_560.0','BW06: rhow_665.0','BW06: aot_865.5',\
+    legend_items =['BW06: rhow_412.5','BW06: rhow_442.5','BW06: rhow_490.0','BW06: rhow_560.0','BW06: rhow_665.0','BW06: aot_865.5',\
                 'BW06: MedianCV','Z09: Lwn_560.0','Z09: aot_865.5']
-    plt.legend(legen_items)
-    plt.title(station_list_main[station_idx])
-    plt.suptitle('CV')
-    
+    plt.legend(legend_items)
+    plt.title(f'{station_list_main[station_idx]}; Dataset: {dataset_name}')
+    plt.xlabel('time')
+    plt.ylabel('CV')
+    if savefig_flag:
+        plt.savefig(os.path.join(path_out,f'CVs_ba_zi_timeseriet_{station_list_main[station_idx]}_{dataset_name}.png'))
+        plt.close()
+ 
     fig, ax1=plt.subplots(1,1,sharey=True, facecolor='w',figsize=(8,6))
-    counts, bins2 = np.histogram(df_ba['MedianCV'],bins=bins)
+    counts, bins2 = np.histogram(df['BW06: MedianCV'],bins=bins)
     ax1.hist(bins2[:-1], bins2, weights=100*counts/counts.sum(),color='red', **kwargs2)
-    counts, bins2 = np.histogram(df_zi['Lwn_560.0'],bins=bins)
+    str1 = f'BW06: MedianCV (N={counts.sum()})'
+    counts, bins2 = np.histogram(df['Z09: CV_560'],bins=bins)
     ax1.hist(bins2[:-1], bins2, weights=100*counts/counts.sum(),color='green', **kwargs2)
-    counts, bins2 = np.histogram(df_zi['aot_865.5'],bins=bins)
+    counts, bins2 = np.histogram(df['Z09: CV_865p5'],bins=bins)
+    str2 = f'Z09: Lwn_560.0 (N={counts.sum()})'
     ax1.hist(bins2[:-1], bins2, weights=100*counts/counts.sum(),color='blue', **kwargs2)
-    plt.title(station_list_main[station_idx])
-    plt.legend(['BW06: MedianCV','Z09: Lwn_560.0','Z09: aot_865.5'])
+    str3 = f'Z09: aot_865.5 (N={counts.sum()})'
+    plt.title(f'{station_list_main[station_idx]}; Dataset: {dataset_name}')
+    plt.legend([str1,str2,str3])
     plt.xlim([0,0.2])
     plt.xlabel('CV')
     plt.ylabel('Frequency (%)',fontsize=12)
+    if savefig_flag:
+        plt.savefig(os.path.join(path_out,f'CVs_ba_zi_hist_{station_list_main[station_idx]}_{dataset_name}.png'))
+        plt.close()
     
     fig, ax1=plt.subplots(1,1,sharey=True, facecolor='w',figsize=(8,6))
-    counts, bins2 = np.histogram(df_ba['rhow_560.0'],bins=bins)
+    counts, bins2 = np.histogram(df['BW06: CV_rhow_560.0'],bins=bins)
     ax1.hist(bins2[:-1], bins2, weights=100*counts/counts.sum(),color='red', **kwargs2)
-    counts, bins2 = np.histogram(df_zi['Lwn_560.0'],bins=bins)
+    str1 = f'BW06: rhow_560.0 (N={counts.sum()})'
+    counts, bins2 = np.histogram(df['Z09: CV_560'],bins=bins)
     ax1.hist(bins2[:-1], bins2, weights=100*counts/counts.sum(),color='green', **kwargs2)
-    
-    # plt.hist(df_ba['rhow_560.0'],**kwargs2)
-    # plt.hist(df_zi['Lwn_560.0'],**kwargs2)
-    plt.title(station_list_main[station_idx])
-    plt.legend(['BW06: rhow_560.0','Z09: Lwn_560.0'])  
+    str2 = f'Z09: Lwn_560.0 (N={counts.sum()})'
+    plt.title(f'{station_list_main[station_idx]}; Dataset: {dataset_name}')
+    plt.legend([str1,str2])  
     plt.xlim([0,0.2])
     plt.xlabel('CV')
     plt.ylabel('Frequency (%)',fontsize=12)
-
+    if savefig_flag:
+        plt.savefig(os.path.join(path_out,f'CVs_ba_zi_560_hist_{station_list_main[station_idx]}_{dataset_name}.png'))           
+        plt.close()
 #%% plot matchups
-# df_matchups = df_matchups.append({'station':station_list_main[station_idx],'datetime':sat_stop_time,'vza':vza,'sza':sza,\
+# df_matchups = df_matchups.append({'station':station_list_main[station_idx],'sat_datetime':sat_stop_time,'insitu_datetime':ins_time[idx_min],'vza':vza,'sza':sza,\
 #          'BW06_MU':BW06_MU,'BW06_l2_mask':flags_mask_ba,\
 #          'BW06: rhow_412_box':rhow_0412p50_fq_box_ba,'BW06: rho_412_filt_mean':mean_filtered_rhow_0412p50,\
 #          'BW06: rhow_442_box':rhow_0442p50_fq_box_ba,'BW06: rho_442_filt_mean':mean_filtered_rhow_0442p50,\
@@ -2907,26 +2963,64 @@ for station_idx in range(len(station_list_main)):
 #          'BW06: rhow_560_box':rhow_0560p00_fq_box_ba,'BW06: rho_560_filt_mean':mean_filtered_rhow_0560p00,\
 #          'BW06: rhow_665_box':rhow_0665p00_fq_box_ba,'BW06: rho_665_filt_mean':mean_filtered_rhow_0665p00,\
 #          'BW06: MedianCV':MedianCV,'BW06: Nfilt_560':rhow_0560p00_fq_box_ba.count(),'BW06: NGP':NGP,'BW06: NTP':NTP,\
+#          'BW06: CV_rhow_412.5':CV_filtered_rhow_0412p50,'BW06: CV_rhow_442.5':CV_filtered_rhow_0442p50,\
+#          'BW06: CV_rhow_490.0':CV_filtered_rhow_0490p00,'BW06: CV_rhow_560.0':CV_filtered_rhow_0560p00,\
+#          'BW06: CV_rhow_665.0':CV_filtered_rhow_0665p00,'BW06: CV_aot_865.5':CV_filtered_AOT_0865p50,\
+#          'BW06: MedianCV_band_idx':idx_m,\
 #          'Z09_MU':Z09_MU,'Z09_l2_mask':flags_mask_zi,\
 #          'Z09: rhow_412_box':rhow_0412p50_fq_box_zi,'Z09: rho_412_mean':rhow_0412p50_fq_box_zi.mean(),\
 #          'Z09: rhow_442_box':rhow_0442p50_fq_box_zi,'Z09: rho_442_mean':rhow_0442p50_fq_box_zi.mean(),\
 #          'Z09: rhow_490_box':rhow_0490p00_fq_box_zi,'Z09: rho_490_mean':rhow_0490p00_fq_box_zi.mean(),\
 #          'Z09: rhow_560_box':rhow_0560p00_fq_box_zi,'Z09: rho_560_mean':rhow_0560p00_fq_box_zi.mean(),\
 #          'Z09: rhow_665_box':rhow_0665p00_fq_box_zi,'Z09: rho_665_mean':rhow_0665p00_fq_box_zi.mean(),\
-#          'Z09: CV_560':Lwn_560_CV,'Z09: CV_865p5':AOT_0865p50_CV},ignore_index=True)     
+#          'Z09: CV_560':Lwn_560_CV,'Z09: CV_865p5':AOT_0865p50_CV},ignore_index=True) 
 
 # for idx, row in df_matchups.iterrows()[0]:
 #     if row['BW06: MU'] == True:
 #         print(row['BW06: rhow_560_box'])
+
+rhow_412_core_incl_cnt = 0
+rhow_442_core_incl_cnt = 0
+rhow_490_core_incl_cnt = 0
+rhow_560_core_incl_cnt = 0
+rhow_665_core_incl_cnt = 0
         
-for idx in range(len(df_matchups)): 
-# for idx in range(3):
+# for idx in range(len(df_matchups)): 
+for idx in range(3):
     if True and df_matchups.loc[idx,'BW06_MU'] == True or df_matchups.loc[idx,'Z09_MU'] == True:
         print('---------------')
         # print(df_matchups.loc[idx,'BW06: rhow_560_box'])
+
+        rhow_412_core_incl = False
+        rhow_442_core_incl = False
+        rhow_490_core_incl = False
+        rhow_560_core_incl = False
+        rhow_665_core_incl = False
+
+        if (not df_matchups.loc[idx,'BW06: rhow_412_box'][1:4,1:4].mask.any()) \
+            and (df_matchups.loc[idx,'BW06_MU']==True and (df_matchups.loc[idx,'Z09_MU'])):
+            rhow_412_core_incl = True
+            rhow_412_core_incl_cnt += 1
+        if (not df_matchups.loc[idx,'BW06: rhow_442_box'][1:4,1:4].mask.any()) \
+            and (df_matchups.loc[idx,'BW06_MU']==True and (df_matchups.loc[idx,'Z09_MU'])):
+            rhow_442_core_incl = True
+            rhow_442_core_incl_cnt += 1
+        if (not df_matchups.loc[idx,'BW06: rhow_490_box'][1:4,1:4].mask.any()) \
+            and (df_matchups.loc[idx,'BW06_MU']==True and (df_matchups.loc[idx,'Z09_MU'])):
+            rhow_490_core_incl = True
+            rhow_490_core_incl_cnt += 1
+        if (not df_matchups.loc[idx,'BW06: rhow_560_box'][1:4,1:4].mask.any()) \
+            and (df_matchups.loc[idx,'BW06_MU']==True and (df_matchups.loc[idx,'Z09_MU'])):
+            rhow_560_core_incl = True
+            rhow_560_core_incl_cnt += 1
+        if (not df_matchups.loc[idx,'BW06: rhow_665_box'][1:4,1:4].mask.any()) \
+            and (df_matchups.loc[idx,'BW06_MU']==True and (df_matchups.loc[idx,'Z09_MU'])):
+            rhow_665_core_incl = True
+            rhow_665_core_incl_cnt += 1
        
         fig = plt.figure(figsize=(20,8))
-        date_str = str(df_matchups.loc[idx,'datetime'].date())
+        date_str = str(df_matchups.loc[idx,'sat_datetime'].date())
+        print(df_matchups.loc[idx,"station"])
         print(date_str)
         plt.suptitle(f'{date_str}, {df_matchups.loc[idx,"station"]}')
 
@@ -2937,6 +3031,7 @@ for idx in range(len(df_matchups)):
         ax0.set_ylim([3.5,-1.5])
         plt.axis('off')
         plt.title('Z09: rhow_412')
+        ax0.annotate((f'\nCore incl: {str(rhow_412_core_incl)}'), (-1.0,3.0), textcoords='data', size=10)
 
         ax0 = plt.subplot(4,5,2)
         ax0.imshow(df_matchups.loc[idx,'Z09: rhow_442_box'])
@@ -2944,6 +3039,7 @@ for idx in range(len(df_matchups)):
         ax0.set_ylim([3.5,-1.5])
         plt.axis('off')
         plt.title('Z09: rhow_442')
+        ax0.annotate((f'\nCore incl: {str(rhow_442_core_incl)}'), (-1.0,3.0), textcoords='data', size=10)
 
         ax0 = plt.subplot(4,5,6)
         ax0.imshow(df_matchups.loc[idx,'Z09: rhow_490_box'])
@@ -2951,6 +3047,7 @@ for idx in range(len(df_matchups)):
         ax0.set_ylim([3.5,-1.5])
         plt.axis('off')
         plt.title('Z09: rhow_490')
+        ax0.annotate((f'\nCore incl: {str(rhow_490_core_incl)}'), (-1.0,3.0), textcoords='data', size=10)
 
         ax0 = plt.subplot(4,5,7)
         ax0.imshow(df_matchups.loc[idx,'Z09: rhow_560_box'])
@@ -2958,6 +3055,7 @@ for idx in range(len(df_matchups)):
         ax0.set_ylim([3.5,-1.5])
         plt.axis('off')
         plt.title('Z09: rhow_560')
+        ax0.annotate((f'\nCore incl: {str(rhow_560_core_incl)}'), (-1.0,3.0), textcoords='data', size=10)
 
         ax0 = plt.subplot(4,5,11)
         ax0.imshow(df_matchups.loc[idx,'Z09: rhow_665_box'])
@@ -2965,6 +3063,7 @@ for idx in range(len(df_matchups)):
         ax0.set_ylim([3.5,-1.5])
         plt.axis('off')
         plt.title('Z09: rhow_665')
+        ax0.annotate((f'\nCore incl: {str(rhow_665_core_incl)}'), (-1.0,3.0), textcoords='data', size=10)
 
         ax0 = plt.subplot(4,5,12)
         ax0.imshow(df_matchups.loc[idx,'Z09_l2_mask'])
@@ -2978,27 +3077,27 @@ for idx in range(len(df_matchups)):
         plt.imshow(df_matchups.loc[idx,'BW06: rhow_412_box'])
         plt.axis('off')
         plt.title('BW06: rhow_412')
-        
+            
         plt.subplot(4,5,4)
         plt.imshow(df_matchups.loc[idx,'BW06: rhow_442_box'])
         plt.axis('off')
         plt.title('BW06: rhow_442')
-        
+            
         plt.subplot(4,5,8)
         plt.imshow(df_matchups.loc[idx,'BW06: rhow_490_box'])
         plt.axis('off')
         plt.title('BW06: rhow_490')
-        
+            
         plt.subplot(4,5,9)
         plt.imshow(df_matchups.loc[idx,'BW06: rhow_560_box'])
         plt.axis('off')
         plt.title('BW06: rhow_560')
-        
+            
         plt.subplot(4,5,13)
         plt.imshow(df_matchups.loc[idx,'BW06: rhow_665_box'])
         plt.axis('off')
         plt.title('BW06: rhow_665')
-        
+            
         plt.subplot(4,5,14)
         plt.imshow(df_matchups.loc[idx,'BW06_l2_mask'])
         plt.axis('off')
@@ -3010,13 +3109,22 @@ for idx in range(len(df_matchups)):
         if df_matchups.loc[idx,"Z09_MU"]: zi_MU = 'Passed'
         panel_ba = f'BW06\n{ba_MU}\nNGP: {int(df_matchups.loc[idx,"BW06: NGP"])}\nMedianCV = {df_matchups.loc[idx,"BW06: MedianCV"]:0.3f}\nmean={df_matchups.loc[idx,"BW06: rho_560_filt_mean"]:0.4f}' 
         panel_zi = f'Z09\n{zi_MU}\nCV_560 = {df_matchups.loc[idx,"Z09: CV_560"]:0.3f}\nCV_865.5 = {df_matchups.loc[idx,"Z09: CV_865p5"]:0.3f}\nmean={df_matchups.loc[idx,"Z09: rho_560_mean"]:0.4f}'
-        panel_str = f'vza: {float(df_matchups.loc[idx,"vza"]):0.2f}; sza: {float(df_matchups.loc[idx,"sza"]):0.2f}'
+        Dt = df_matchups.loc[idx,"sat_datetime"]-df_matchups.loc[idx,"insitu_datetime"]
+        panel_str = f'Delta t={abs(Dt).total_seconds()/60/60:0.2f} hours\nvza: {float(df_matchups.loc[idx,"vza"]):0.2f}; sza: {float(df_matchups.loc[idx,"sza"]):0.2f}'
         
+        # core_incl_str = \
+        # f'\nrhow_412 core incl.: {str(rhow_412_core_incl)}'+\
+        # f'\nrhow_442 core incl.: {str(rhow_442_core_incl)}'+\
+        # f'\nrhow_490 core incl.: {str(rhow_490_core_incl)}'+\
+        # f'\nrhow_560 core incl.: {str(rhow_560_core_incl)}'+\
+        # f'\nrhow_665 core incl.: {str(rhow_665_core_incl)}'
+
         ax1.annotate(panel_str, (0.01, 0.95), textcoords='data', size=12)
         ax1.annotate(panel_ba, (0.01, 0.50), textcoords='data', size=12)
         ax1.annotate(panel_zi, (0.01, 0.01), textcoords='data', size=12)
         plt.axis('off')
 
+        # individual pixels
         plt.subplot(4,1,4)
         plt.plot(df_matchups.loc[idx,'BW06: rhow_560_box'].ravel(),'r+')
         plt.plot([6,7,8,11,12,13,16,17,18],df_matchups.loc[idx,'Z09: rhow_560_box'].ravel(),'bx')
@@ -3027,12 +3135,12 @@ for idx in range(len(df_matchups)):
         plt.legend([r'BW06: $\rho_{W}(560)$',r'Z09: $\rho_{W}(560)$',r'BW06: filt. mean $\rho_{W}(560)$',r'Z09: mean $\rho_{W}(560)$'],\
                    ncol=4,bbox_to_anchor=(0.15, 0.93, 1., .4), loc='lower left',frameon=False)
         
-        ofname = f'{df_matchups.loc[idx,"station"]}_{date_str}.png'
+        ofname = f'MU_report_{df_matchups.loc[idx,"station"]}_{date_str}.png'
 
         ofname = os.path.join(path_out,ofname)
         plt.savefig(ofname, dpi=100)
         
-        plt.close()
+        # plt.close()
 
 #%%
 # if __name__ == '__main__':
