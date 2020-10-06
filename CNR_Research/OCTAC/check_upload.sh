@@ -2,6 +2,8 @@
 # bash script to check upload of file to CMEMS server
 # created by Javier Concha
 # 2020-10-06
+source ~/Processing/OC_PROC_EIS201912/s3olciProcessing/s3olciProcessing_ENV_on_BLADES_202007.sh
+
 echo '----------------------------'
 echo 'Checking NRT 1 day:'
 ckdu_EiS202007.py -d $(date +%Y%m%d -d "1 days ago")  -m NRT -v
