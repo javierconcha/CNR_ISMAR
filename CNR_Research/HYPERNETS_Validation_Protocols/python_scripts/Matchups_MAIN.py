@@ -1141,39 +1141,10 @@ df_CVs_zi = pd.DataFrame(columns=columns)
 data_masked_Gloria = []
 data_masked_Gloria_value = []
 
-for station_idx in range(len(station_list_main)):  
-
-    # Initialization
-    sat_stop_time = np.nan
-    ins_time = np.nan
-    vza = np.nan
-    sza = np.nan
-    BW06_MU = np.nan
-    flags_mask_ba = np.nan
-    MedianCV = np.nan
-    rhow_0560p00_fq_box_ba = np.nan
-    NGP = np.nan
-    NTP = np.nan
-    CV_filtered_rhow_0412p50 = np.nan
-    CV_filtered_rhow_0442p50 = np.nan
-    CV_filtered_rhow_0490p00 = np.nan
-    CV_filtered_rhow_0560p00 = np.nan
-    CV_filtered_rhow_0665p00 = np.nan
-    CV_filtered_AOT_0865p50 = np.nan
-    idx_m = np.nan
-    Z09_MU = np.nan
-    flags_mask_zi = np.nan
-    rhow_0412p50_fq_box_zi = np.nan
-    rhow_0442p50_fq_box_zi = np.nan
-    rhow_0490p00_fq_box_zi = np.nan
-    rhow_0560p00_fq_box_zi = np.nan
-    rhow_0665p00_fq_box_zi = np.nan
-    Lwn_560_CV = np.nan
-    AOT_0865p50_CV = np.nan
-
-    station_name = station_list_main[station_idx]
-#    filename = station_name+'_20V3_20190927_20200110.nc'
-    filename = station_name+'_20V3_20160426_20200206.nc'
+def open_insitu(station):
+    
+    #    filename = station_name+'_20V3_20190927_20200110.nc'
+    filename = station+'_20V3_20160426_20200206.nc'
     # filename = station_name+'_20V3_20180622_20180822.nc'
     filename_insitu = os.path.join(path,filename)
     if not os.path.exists(filename_insitu):
@@ -1188,7 +1159,16 @@ for station_idx in range(len(station_list_main)):
     Lwn_fonQ = nc_f0.variables['Lwn_fonQ'][:]
 
     nc_f0.close()
+    
+    return Time, Level, Julian_day, Exact_wavelengths, Lwn_fonQ
 
+for station_idx in range(len(station_list_main)):  
+
+    station_name = station_list_main[station_idx]
+
+    Time, Level, Julian_day, Exact_wavelengths, Lwn_fonQ = \
+        open_insitu(station_name)
+    
     day_vec    = np.array([float(Time[i].replace(' ',':').split(':')[0]) for i in range(0,len(Time))])
     month_vec  = np.array([float(Time[i].replace(' ',':').split(':')[1]) for i in range(0,len(Time))])
     year_vec   = np.array([float(Time[i].replace(' ',':').split(':')[2]) for i in range(0,len(Time))])
@@ -1213,6 +1193,47 @@ for station_idx in range(len(station_list_main)):
         for cnt, line in enumerate(file):  
             # print('----------------------------')
             # print('line '+str(cnt))
+            
+            # Initialization
+            sat_stop_time = np.nan
+            vza = np.nan
+            sza = np.nan
+            BW06_MU = np.nan
+            flags_mask_ba = np.nan
+            MedianCV = np.nan
+            rhow_0560p00_fq_box_ba = np.nan
+            NGP = np.nan
+            NTP = np.nan
+            CV_filtered_rhow_0412p50 = np.nan
+            CV_filtered_rhow_0442p50 = np.nan
+            CV_filtered_rhow_0490p00 = np.nan
+            CV_filtered_rhow_0560p00 = np.nan
+            CV_filtered_rhow_0665p00 = np.nan
+            CV_filtered_AOT_0865p50 = np.nan
+            rhow_0412p50_fq_box_ba = np.nan
+            rhow_0442p50_fq_box_ba = np.nan
+            rhow_0490p00_fq_box_ba = np.nan
+            rhow_0560p00_fq_box_ba = np.nan
+            rhow_0665p00_fq_box_ba = np.nan
+            mean_filtered_rhow_0412p50 = np.nan
+            mean_filtered_rhow_0442p50 = np.nan
+            mean_filtered_rhow_0490p00 = np.nan
+            mean_filtered_rhow_0560p00 = np.nan
+            mean_filtered_rhow_0665p00 = np.nan
+        
+            idx_m = np.nan
+            Z09_MU = np.nan
+            flags_mask_zi = np.nan
+            rhow_0412p50_fq_box_zi = np.nan
+            rhow_0442p50_fq_box_zi = np.nan
+            rhow_0490p00_fq_box_zi = np.nan
+            rhow_0560p00_fq_box_zi = np.nan
+            rhow_0665p00_fq_box_zi = np.nan
+            Lwn_560_CV = np.nan
+            AOT_0865p50_CV = np.nan
+            
+            insitu_Lwn_fonQ_zi = []
+            insitu_Lwn_fonQ_ba = []
             
             Z09_MU = False
             BW06_MU = False
@@ -1244,6 +1265,19 @@ for station_idx in range(len(station_list_main)):
             dt_hour = [i.total_seconds()/(60*60) for i in time_diff] # time diffence between in situ measurements and sat in hours
             idx_min = np.argmin(np.abs(dt_hour))
             matchup_idx_vec = np.abs(dt_hour) <= delta_time 
+
+            # in situ data
+            # olci_wl_list = [412.5,442.5,490.0,560.0,665.0]
+            if Exact_wavelengths[idx_min,13] != -999:
+                idx_560 = 13
+            elif Exact_wavelengths[idx_min,12] != -999:
+                idx_560 = 12
+            else: 
+                idx_560 = 11
+
+            insitu_Lwn_fonQ_zi = [Lwn_fonQ[idx_min,3],Lwn_fonQ[idx_min,5],Lwn_fonQ[idx_min,6],Lwn_fonQ[idx_min,idx_560],Lwn_fonQ[idx_min,15]]
+            Exact_wavelengths_zi = Exact_wavelengths[idx_min,:]
+            insitu_Lwn_fonQ_zi_all = Lwn_fonQ[idx_min,:]
     
             nday = sum(matchup_idx_vec)
             if nday >=1:
@@ -1427,7 +1461,7 @@ for station_idx in range(len(station_list_main)):
                     #     print('At least one element in sat product is invalid!')
                     # else:
                         mu_Lwn_0412p50_fq_sat_zi.append(rhow_0412p50_fq_box_zi.mean()*F0_0412p50/np.pi)
-                        mu_Lwn_0412p50_fq_ins_zi.append(Lwn_fonQ[idx_min,3]) # 412,
+                        mu_Lwn_0412p50_fq_ins_zi.append(insitu_Lwn_fonQ_zi[olci_wl_list.index(412.5)]) # 412,
                         mu_Lwn_0412p50_fq_ins_zi_station.append(station_name)
                         mu_Lwn_0412p50_fq_sat_zi_stop_time.append(sat_stop_time)
                         mu_Lwn_0412p50_fq_ins_zi_time.append(ins_time[idx_min])
@@ -1438,7 +1472,7 @@ for station_idx in range(len(station_list_main)):
                         # print('At least one element in sat product is invalid!')
                     # else:
                         mu_Lwn_0442p50_fq_sat_zi.append(rhow_0442p50_fq_box_zi.mean()*F0_0442p50/np.pi)
-                        mu_Lwn_0442p50_fq_ins_zi.append(Lwn_fonQ[idx_min,5]) # 441.8
+                        mu_Lwn_0442p50_fq_ins_zi.append(insitu_Lwn_fonQ_zi[olci_wl_list.index(442.5)]) # 441.8
                         mu_Lwn_0442p50_fq_ins_zi_station.append(station_name)
                         mu_Lwn_0442p50_fq_sat_zi_stop_time.append(sat_stop_time)
                         mu_Lwn_0442p50_fq_ins_zi_time.append(ins_time[idx_min])
@@ -1449,7 +1483,7 @@ for station_idx in range(len(station_list_main)):
                         # print('At least one element in sat product is invalid!')
                     # else:
                         mu_Lwn_0490p00_fq_sat_zi.append(rhow_0490p00_fq_box_zi.mean()*F0_0490p00/np.pi)
-                        mu_Lwn_0490p00_fq_ins_zi.append(Lwn_fonQ[idx_min,6]) # 488.5
+                        mu_Lwn_0490p00_fq_ins_zi.append(insitu_Lwn_fonQ_zi[olci_wl_list.index(490.0)]) # 488.5
                         mu_Lwn_0490p00_fq_ins_zi_station.append(station_name)
                         mu_Lwn_0490p00_fq_sat_zi_stop_time.append(sat_stop_time)
                         mu_Lwn_0490p00_fq_ins_zi_time.append(ins_time[idx_min])
@@ -1459,14 +1493,8 @@ for station_idx in range(len(station_list_main)):
                     # if not (rhow_0560p00_fq_box_zi.mask.any() == True or np.isnan(rhow_0560p00_fq_box_zi).any() == True):
                         # print('At least one element in sat product is invalid!')
                     # else:
-                        if Exact_wavelengths[idx_min,13] != -999:
-                            idx_560 = 13
-                        elif Exact_wavelengths[idx_min,12] != -999:
-                            idx_560 = 12
-                        else: 
-                            idx_560 = 11
                         mu_Lwn_0560p00_fq_sat_zi.append(rhow_0560p00_fq_box_zi.mean()*F0_0560p00/np.pi)
-                        mu_Lwn_0560p00_fq_ins_zi.append(Lwn_fonQ[idx_min,idx_560]) # 551,
+                        mu_Lwn_0560p00_fq_ins_zi.append(insitu_Lwn_fonQ_zi[olci_wl_list.index(560.0)]) # 551,
                         mu_Lwn_0560p00_fq_ins_zi_station.append(station_name)
                         mu_Lwn_0560p00_fq_sat_zi_stop_time.append(sat_stop_time)
                         mu_Lwn_0560p00_fq_ins_zi_time.append(ins_time[idx_min])
@@ -1477,7 +1505,7 @@ for station_idx in range(len(station_list_main)):
                         # print('At least one element in sat product is invalid!')
                     # else:
                         mu_Lwn_0665p00_fq_sat_zi.append(rhow_0665p00_fq_box_zi.mean()*F0_0665p00/np.pi)
-                        mu_Lwn_0665p00_fq_ins_zi.append(Lwn_fonQ[idx_min,15]) # 667.9    
+                        mu_Lwn_0665p00_fq_ins_zi.append(insitu_Lwn_fonQ_zi[olci_wl_list.index(665.0)]) # 667.9    
                         mu_Lwn_0665p00_fq_ins_zi_station.append(station_name)
                         mu_Lwn_0665p00_fq_sat_zi_stop_time.append(sat_stop_time)
                         mu_Lwn_0665p00_fq_ins_zi_time.append(ins_time[idx_min])
@@ -1501,7 +1529,20 @@ for station_idx in range(len(station_list_main)):
             dt_hour = [i.total_seconds()/(60*60) for i in time_diff] # time diffence between in situ measurements and sat in hours
             idx_min = np.argmin(np.abs(dt_hour))
             matchup_idx_vec = np.abs(dt_hour) <= delta_time 
-    
+
+            # in situ data
+            # olci_wl_list = [412.5,442.5,490.0,560.0,665.0]
+            if Exact_wavelengths[idx_min,13] != -999:
+                idx_560 = 13
+            elif Exact_wavelengths[idx_min,12] != -999:
+                idx_560 = 12
+            else: 
+                idx_560 = 11
+
+            insitu_Lwn_fonQ_ba     = [Lwn_fonQ[idx_min,3],Lwn_fonQ[idx_min,5],Lwn_fonQ[idx_min,6],Lwn_fonQ[idx_min,idx_560],Lwn_fonQ[idx_min,15]]
+            Exact_wavelengths_ba   = Exact_wavelengths[idx_min,:]
+            insitu_Lwn_fonQ_ba_all = Lwn_fonQ[idx_min,:]
+
             nday = sum(matchup_idx_vec)
             if nday >=1:                
                 print('--Bailey and Werdell 2006')
@@ -1710,7 +1751,7 @@ for station_idx in range(len(station_list_main)):
                     print(f'rej. idx MedianCV: {idx_m}')    
                     idx_medianCV.append(idx_m)
 
-                    # create matchup
+                # create matchup
                 if sza<=75 and vza<=60 and NGP>NTP/2+1 and MedianCV <= 0.15\
                         and (NGP_rhow_0412p50>NTP/2+1)\
                         and (NGP_rhow_0442p50>NTP/2+1)\
@@ -1729,7 +1770,7 @@ for station_idx in range(len(station_list_main)):
                         # print('Exceeded: NGP_rhow_0412p50='+str(NGP_rhow_0412p50))
                     # else:
                         mu_Lwn_0412p50_fq_sat_ba.append(mean_filtered_rhow_0412p50*F0_0412p50/np.pi)
-                        mu_Lwn_0412p50_fq_ins_ba.append(Lwn_fonQ[idx_min,3]) # 412,
+                        mu_Lwn_0412p50_fq_ins_ba.append(insitu_Lwn_fonQ_ba[olci_wl_list.index(412.5)]) # 412,
                         mu_Lwn_0412p50_fq_ins_ba_station.append(station_name)
                         mu_Lwn_0412p50_fq_sat_ba_stop_time.append(sat_stop_time)
                         mu_Lwn_0412p50_fq_ins_ba_time.append(ins_time[idx_min])
@@ -1739,14 +1780,14 @@ for station_idx in range(len(station_list_main)):
                         map_valid_pxs_ba[station_idx,0,:,:] = map_valid_pxs_ba[station_idx,0,:,:] + map_valid_pxs
 
                         number_used_pixels[-1,0] = rhow_0412p50_fq_box_ba.count()
-                        
+
                     # Rrs 0442p50
                     # print('442.5')
                     if NGP_rhow_0442p50>NTP/2+1:
                         # print('Exceeded: NGP_rhow_0442p50='+str(NGP_rhow_0442p50))
                     # else:
                         mu_Lwn_0442p50_fq_sat_ba.append(mean_filtered_rhow_0442p50*F0_0442p50/np.pi)
-                        mu_Lwn_0442p50_fq_ins_ba.append(Lwn_fonQ[idx_min,5]) # 441.8
+                        mu_Lwn_0442p50_fq_ins_ba.append(insitu_Lwn_fonQ_ba[olci_wl_list.index(442.5)]) # 441.8
                         mu_Lwn_0442p50_fq_ins_ba_station.append(station_name)
                         mu_Lwn_0442p50_fq_sat_ba_stop_time.append(sat_stop_time)
                         mu_Lwn_0442p50_fq_ins_ba_time.append(ins_time[idx_min])
@@ -1763,7 +1804,7 @@ for station_idx in range(len(station_list_main)):
                         # print('Exceeded: NGP_rhow_0490p00='+str(NGP_rhow_0490p00))
                     # else:
                         mu_Lwn_0490p00_fq_sat_ba.append(mean_filtered_rhow_0490p00*F0_0490p00/np.pi)
-                        mu_Lwn_0490p00_fq_ins_ba.append(Lwn_fonQ[idx_min,6]) # 488.5
+                        mu_Lwn_0490p00_fq_ins_ba.append(insitu_Lwn_fonQ_ba[olci_wl_list.index(490.0)]) # 488.5
                         mu_Lwn_0490p00_fq_ins_ba_station.append(station_name)
                         mu_Lwn_0490p00_fq_sat_ba_stop_time.append(sat_stop_time)
                         mu_Lwn_0490p00_fq_ins_ba_time.append(ins_time[idx_min])
@@ -1783,14 +1824,9 @@ for station_idx in range(len(station_list_main)):
                     if NGP_rhow_0560p00>NTP/2+1:
                         # print('Exceeded: NGP_rhow_0560p00='+str(NGP_rhow_0560p00))
                     # else:
-                        if Exact_wavelengths[idx_min,13] != -999:
-                            idx_560 = 13
-                        elif Exact_wavelengths[idx_min,12] != -999:
-                            idx_560 = 12
-                        else: 
-                            idx_560 = 11
+
                         mu_Lwn_0560p00_fq_sat_ba.append(mean_filtered_rhow_0560p00*F0_0560p00/np.pi)
-                        mu_Lwn_0560p00_fq_ins_ba.append(Lwn_fonQ[idx_min,idx_560]) # 551,
+                        mu_Lwn_0560p00_fq_ins_ba.append(insitu_Lwn_fonQ_ba[olci_wl_list.index(560.0)]) # 551,
                         mu_Lwn_0560p00_fq_ins_ba_station.append(station_name)
                         mu_Lwn_0560p00_fq_sat_ba_stop_time.append(sat_stop_time)
                         mu_Lwn_0560p00_fq_ins_ba_time.append(ins_time[idx_min])
@@ -1808,7 +1844,7 @@ for station_idx in range(len(station_list_main)):
                         # print('Exceeded: NGP_rhow_0665p00='+str(NGP_rhow_0665p00))
                     # else:
                         mu_Lwn_0665p00_fq_sat_ba.append(mean_filtered_rhow_0665p00*F0_0665p00/np.pi)
-                        mu_Lwn_0665p00_fq_ins_ba.append(Lwn_fonQ[idx_min,15]) # 667.9    
+                        mu_Lwn_0665p00_fq_ins_ba.append(insitu_Lwn_fonQ_ba[olci_wl_list.index(665.0)]) # 667.9    
                         mu_Lwn_0665p00_fq_ins_ba_station.append(station_name)
                         mu_Lwn_0665p00_fq_sat_ba_stop_time.append(sat_stop_time)
                         mu_Lwn_0665p00_fq_ins_ba_time.append(ins_time[idx_min])
@@ -1824,7 +1860,38 @@ for station_idx in range(len(station_list_main)):
                         'rhow_490.0':CV_filtered_rhow_0490p00,'rhow_560.0':CV_filtered_rhow_0560p00,'rhow_665.0':CV_filtered_rhow_0665p00,\
                         'aot_865.5':CV_filtered_AOT_0865p50,'MedianCV':MedianCV,'MedianCV_band_idx':idx_m,'sat_datetime':sat_stop_time},\
                         ignore_index=True)
-    
+                        
+            # create df_matchups
+            try:
+                rhow_0560p00_fq_box_ba_count = rhow_0560p00_fq_box_ba.count()
+            except:
+                rhow_0560p00_fq_box_ba_count = np.nan
+
+            try:
+                rhow_0412p50_fq_box_zi_mean = rhow_0412p50_fq_box_zi.mean()
+            except:
+                rhow_0412p50_fq_box_zi_mean = np.nan        
+
+            try:
+                rhow_0442p50_fq_box_zi_mean = rhow_0442p50_fq_box_zi.mean()
+            except:
+                rhow_0442p50_fq_box_zi_mean = np.nan        
+
+            try:
+                rhow_0490p00_fq_box_zi_mean = rhow_0490p00_fq_box_zi.mean()
+            except:
+                rhow_0490p00_fq_box_zi_mean = np.nan        
+
+            try:
+                rhow_0560p00_fq_box_zi_mean = rhow_0560p00_fq_box_zi.mean()
+            except:
+                rhow_0560p00_fq_box_zi_mean = np.nan        
+
+            try:
+                rhow_0665p00_fq_box_zi_mean = rhow_0665p00_fq_box_zi.mean()
+            except:
+                rhow_0665p00_fq_box_zi_mean = np.nan   
+                                 
             df_matchups = df_matchups.append({'station':station_list_main[station_idx],'sat_datetime':sat_stop_time,'insitu_datetime':ins_time[idx_min],'vza':vza,'sza':sza,\
                      'BW06_MU':BW06_MU,'BW06_l2_mask':flags_mask_ba,\
                      'BW06: rhow_412_box':rhow_0412p50_fq_box_ba,'BW06: rho_412_filt_mean':mean_filtered_rhow_0412p50,\
@@ -1832,18 +1899,24 @@ for station_idx in range(len(station_list_main)):
                      'BW06: rhow_490_box':rhow_0490p00_fq_box_ba,'BW06: rho_490_filt_mean':mean_filtered_rhow_0490p00,\
                      'BW06: rhow_560_box':rhow_0560p00_fq_box_ba,'BW06: rho_560_filt_mean':mean_filtered_rhow_0560p00,\
                      'BW06: rhow_665_box':rhow_0665p00_fq_box_ba,'BW06: rho_665_filt_mean':mean_filtered_rhow_0665p00,\
-                     'BW06: MedianCV':MedianCV,'BW06: Nfilt_560':rhow_0560p00_fq_box_ba.count(),'BW06: NGP':NGP,'BW06: NTP':NTP,\
+                     'BW06: MedianCV':MedianCV,'BW06: Nfilt_560':rhow_0560p00_fq_box_ba_count,'BW06: NGP':NGP,'BW06: NTP':NTP,\
                      'BW06: CV_rhow_412.5':CV_filtered_rhow_0412p50,'BW06: CV_rhow_442.5':CV_filtered_rhow_0442p50,\
                      'BW06: CV_rhow_490.0':CV_filtered_rhow_0490p00,'BW06: CV_rhow_560.0':CV_filtered_rhow_0560p00,\
                      'BW06: CV_rhow_665.0':CV_filtered_rhow_0665p00,'BW06: CV_aot_865.5':CV_filtered_AOT_0865p50,\
                      'BW06: MedianCV_band_idx':idx_m,\
+                     'BW06: insitu_Lwn_fonQ':insitu_Lwn_fonQ_ba,\
+                     'BW06_Exact_wavelengths_ba':Exact_wavelengths_ba,\
+                     'BW06_insitu_Lwn_fonQ_ba_all':insitu_Lwn_fonQ_ba_all,\
                      'Z09_MU':Z09_MU,'Z09_l2_mask':flags_mask_zi,\
-                     'Z09: rhow_412_box':rhow_0412p50_fq_box_zi,'Z09: rho_412_mean':rhow_0412p50_fq_box_zi.mean(),\
-                     'Z09: rhow_442_box':rhow_0442p50_fq_box_zi,'Z09: rho_442_mean':rhow_0442p50_fq_box_zi.mean(),\
-                     'Z09: rhow_490_box':rhow_0490p00_fq_box_zi,'Z09: rho_490_mean':rhow_0490p00_fq_box_zi.mean(),\
-                     'Z09: rhow_560_box':rhow_0560p00_fq_box_zi,'Z09: rho_560_mean':rhow_0560p00_fq_box_zi.mean(),\
-                     'Z09: rhow_665_box':rhow_0665p00_fq_box_zi,'Z09: rho_665_mean':rhow_0665p00_fq_box_zi.mean(),\
-                     'Z09: CV_560':Lwn_560_CV,'Z09: CV_865p5':AOT_0865p50_CV},ignore_index=True)   
+                     'Z09: rhow_412_box':rhow_0412p50_fq_box_zi,'Z09: rho_412_mean':rhow_0412p50_fq_box_zi_mean,\
+                     'Z09: rhow_442_box':rhow_0442p50_fq_box_zi,'Z09: rho_442_mean':rhow_0442p50_fq_box_zi_mean,\
+                     'Z09: rhow_490_box':rhow_0490p00_fq_box_zi,'Z09: rho_490_mean':rhow_0490p00_fq_box_zi_mean,\
+                     'Z09: rhow_560_box':rhow_0560p00_fq_box_zi,'Z09: rho_560_mean':rhow_0560p00_fq_box_zi_mean,\
+                     'Z09: rhow_665_box':rhow_0665p00_fq_box_zi,'Z09: rho_665_mean':rhow_0665p00_fq_box_zi_mean,\
+                     'Z09: CV_560':Lwn_560_CV,'Z09: CV_865p5':AOT_0865p50_CV,\
+                     'Z09: insitu_Lwn_fonQ':insitu_Lwn_fonQ_zi,\
+                     'Z09_Exact_wavelengths_zi':Exact_wavelengths_zi,\
+                     'Z09_insitu_Lwn_fonQ_zi_all':insitu_Lwn_fonQ_zi_all},ignore_index=True)   
 
   
 
@@ -3141,7 +3214,21 @@ for idx in range(3):
         plt.savefig(ofname, dpi=100)
         
         # plt.close()
+#%% mean in situ spectra per station
+for station_idx in range(len(station_list_main)):
+    station = station_list_main[station_idx]
+    Time, Level, Julian_day, Exact_wavelengths, Lwn_fonQ = \
+            open_insitu(station)
+    # mean spectra per station
+    Exact_wavelengths.mask = Exact_wavelengths==-999
+    Exact_wavelengths_mean = Exact_wavelengths.mean(axis=0)
+    Lwn_fonQ.mask = Lwn_fonQ==-999
+    Lwn_fonQ_mean = Lwn_fonQ.mean(axis=0)
+    plt.plot(Exact_wavelengths_mean[~Lwn_fonQ_mean.mask],Lwn_fonQ_mean[~Lwn_fonQ_mean.mask])
 
+plt.xlabel('Wavelength (nm)',fontsize=12)
+plt.ylabel('$L^{PRS}_{WN}$',fontsize=12)
+plt.legend(station_list_main)
 #%%
 # if __name__ == '__main__':
 #     main()   
