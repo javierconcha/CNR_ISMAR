@@ -47,13 +47,19 @@ import matplotlib.pyplot as plt
 plt.rc('xtick',labelsize=12)
 plt.rc('ytick',labelsize=12)
 from scipy import stats
+import pandas as pd   
+
 import common_functions
 
 sys.path.insert(0,'/Users/javier.concha/Desktop/Javier/2019_ROMA/CNR_Research/HYPERNETS_Validation_Protocols/python_scripts')
 
 station_list_main = ['Galata_Platform','Gustav_Dalen_Tower','Helsinki_Lighthouse','Lake_Erie',\
                 'LISCO','Palgrunden','Thornton_C-power','USC_SEAPRISM','USC_SEAPRISM_2',\
-                'Venise','WaveCIS_Site_CSI_6','Gloria']
+                'Venise','WaveCIS_Site_CSI_6']
+    
+station_n = {'Venise':1,'Galata_Platform':2,'Gloria':3,'Helsinki_Lighthouse':4,'Gustav_Dalen_Tower':5,\
+             'Palgrunden':6,'Thornton_C-power':7,'LISCO':8,'Lake_Erie':9,'WaveCIS_Site_CSI_6':10,\
+                 'USC_SEAPRISM':11,'USC_SEAPRISM_2':12}
 
 msi_wl_list = [444,497,560,664]
 
@@ -877,7 +883,7 @@ def plot_all_methods(vl_str,notation_flag,path_out,min_val,max_val):
     # print('count_USC_SEAPRISM_2: '+str(count_USC_SEAPRISM_2))
     # print('count_WaveCIS_Site_CSI_6: '+str(count_WaveCIS_Site_CSI_6))
 
-#%%
+#%% Main Function
 #def main():
 path_main = '/Users/javier.concha/Desktop/Javier/2019_ROMA/CNR_Research/HYPERNETS_Validation_Protocols/python_scripts/'
 path_out = os.path.join(path_main,'Figures')
@@ -1042,16 +1048,16 @@ with open(path_to_list,'r') as file_list:
         
         dt_ba.append(dt_hour[idx_min])
         
-#           104	Lwn(442)=0.285881,0.295781,0.288577,0.269275,0.233640,0.196600
-#   105	Lwn(491)=0.532647,0.578646,0.523528,0.501363,0.397166,0.397819
-#   106	Lwn(530)=0.759344,0.803289,0.810068,0.715048,0.648792,0.641661
-#   107	Lwn(551)=0.855308,0.897261,0.892521,0.827199,0.776998,0.742645
-#   108	Lwn(668)=0.246346,0.269323,0.275534,0.258861,0.244163,0.249685
-        
+        #   104	Lwn(442)=0.285881,0.295781,0.288577,0.269275,0.233640,0.196600
+        #   105	Lwn(491)=0.532647,0.578646,0.523528,0.501363,0.397166,0.397819
+        #   106	Lwn(530)=0.759344,0.803289,0.810068,0.715048,0.648792,0.641661
+        #   107	Lwn(551)=0.855308,0.897261,0.892521,0.827199,0.776998,0.742645
+        #   108	Lwn(668)=0.246346,0.269323,0.275534,0.258861,0.244163,0.249685
+
         Lwn_fq_0442p00 = float(ins_all_lines[104-1][:-1].replace('=',',').split(',')[idx_min+1]) 
         Lwn_fq_0491p00 = float(ins_all_lines[105-1][:-1].replace('=',',').split(',')[idx_min+1]) 
         Lwn_fq_00551p0 = float(ins_all_lines[107-1][:-1].replace('=',',').split(',')[idx_min+1]) 
-        Lwn_fq_0668p00 = float(ins_all_lines[108-1][:-1].replace('=',',').split(',')[idx_min+1]) 
+        Lwn_fq_0668p00 = float(ins_all_lines[108-1][:-1].replace('=',',').split(',')[idx_min+1])
 
         nday = sum(matchup_idx_vec)
         if nday >=1:
@@ -1757,8 +1763,99 @@ for station in station_list_main:
     plt.show()
     
     plt.savefig(os.path.join(path_out,title_str.replace(' ','_')+'.png'))
+
+#%% mean in situ spectra
+msi_wl_list = [413,442,491,530,551,668,870,1018]
+columns = ['station','date','time','wl','spectra']
+df_ins_spectra = pd.DataFrame(columns=columns)
+
+with open(path_to_list,'r') as file_list:
+    for cnt, file_name in enumerate(file_list):
+
+        folder_name = file_name.split('/')[1]
+        station_name = folder_name[:-15]
+        station_idx = station_list_main.index(station_name)
+
+        # in situ data        
+        with open(os.path.join(path_data,'S2A',file_name[2:-1]), 'r') as file:
+            ins_time = []
+            # Date
+            line_num_date = 3-1
+            line_num_time = 4-1
+            ins_all_lines = file.readlines()
+            line_date = ins_all_lines[line_num_date]   
+            line_time = ins_all_lines[line_num_time] 
+            
+            str_list_date = line_date[:-1].replace('=',',').split(',')
+            str_list_time = line_time[:-1].replace('=',',').split(',')
+            
+            n_ins = len(str_list_date)-1
+            for i in range(n_ins):
+                date_and_time_str = str_list_date[1:][i]+' '+str_list_time[1:][i]
+                date_format = "%d/%m/%Y %H:%M:%S"
+
+                Lwn_fQ_413  = float(ins_all_lines[111-1][:-1].replace('=',',').split(',')[i+1])  # 111
+                Lwn_fQ_442  = float(ins_all_lines[112-1][:-1].replace('=',',').split(',')[i+1])  # 112
+                Lwn_fQ_491  = float(ins_all_lines[113-1][:-1].replace('=',',').split(',')[i+1])  # 113
+                Lwn_fQ_530  = float(ins_all_lines[114-1][:-1].replace('=',',').split(',')[i+1])  # 114
+                Lwn_fQ_551  = float(ins_all_lines[115-1][:-1].replace('=',',').split(',')[i+1])  # 115
+                Lwn_fQ_668  = float(ins_all_lines[116-1][:-1].replace('=',',').split(',')[i+1])  # 116
+                Lwn_fQ_870  = float(ins_all_lines[117-1][:-1].replace('=',',').split(',')[i+1])  # 117
+                Lwn_fQ_1018 = float(ins_all_lines[118-1][:-1].replace('=',',').split(',')[i+1])  # 118
+            
+                spectra = [Lwn_fQ_413,Lwn_fQ_442,Lwn_fQ_491,Lwn_fQ_530,Lwn_fQ_551,Lwn_fQ_668,Lwn_fQ_870,Lwn_fQ_1018]
+                new_spectra = [x if x!=-999 else np.nan for x in spectra]
+                spectra = new_spectra
+                # spectra[spectra==-999]=np.nan
+
+                ExactWavelength_413  = float(ins_all_lines[124-1][:-1].replace('=',',').split(',')[i+1]) # 124
+                ExactWavelength_442  = float(ins_all_lines[125-1][:-1].replace('=',',').split(',')[i+1]) # 125
+                ExactWavelength_491  = float(ins_all_lines[126-1][:-1].replace('=',',').split(',')[i+1]) # 126
+                ExactWavelength_530  = float(ins_all_lines[127-1][:-1].replace('=',',').split(',')[i+1]) # 127
+                ExactWavelength_551  = float(ins_all_lines[128-1][:-1].replace('=',',').split(',')[i+1]) # 128
+                ExactWavelength_668  = float(ins_all_lines[129-1][:-1].replace('=',',').split(',')[i+1]) # 129
+                ExactWavelength_870  = float(ins_all_lines[130-1][:-1].replace('=',',').split(',')[i+1]) # 130
+                ExactWavelength_1018 = float(ins_all_lines[131-1][:-1].replace('=',',').split(',')[i+1]) # 131
+
+                wl = [ExactWavelength_413,ExactWavelength_442,ExactWavelength_491,ExactWavelength_530,\
+                        ExactWavelength_551,ExactWavelength_668,ExactWavelength_870,ExactWavelength_1018]
+                
+                df_ins_spectra = df_ins_spectra.append({'station':station_name,'wl':wl,\
+                                                        'date':str_list_date[i+1],'time':str_list_time[i+1],\
+                                                        'spectra':spectra},ignore_index=True)
+#%%                
+station_list = df_ins_spectra['station'].unique().tolist()
+fs = 24
+plt.rc('xtick',labelsize=fs)
+plt.rc('ytick',labelsize=fs)
+for station in station_list:
+    df = df_ins_spectra.loc[(df_ins_spectra['station']==station)]
+    spectra = np.ma.array(df['spectra'].replace(-999,np.nan).tolist()).mean(axis=0)
+    spectra = np.ma.masked_invalid(spectra)
+    wl = np.array(df['wl'].tolist()).mean(axis=0)
     
+    if station in ['Palgrunden','USC_SEAPRISM_2']:
+        plt.figure(figsize=(12,4.0))
+    else:
+        plt.figure(figsize=(12,3.5))
+        
+    plt.plot(wl[~spectra.mask],spectra[~spectra.mask],'k',linewidth=4)
+    plt.xlabel('Wavelength (nm)',fontsize=fs)
+    plt.ylabel('$L^{PRS}_{WN}$',fontsize=fs)
+    plt.xlim([400,1050])
+    plt.ylim([0,3])
+    plt.title(f"{station_n[station]} {station.replace('_',' ')}",x=0.5,y=0.8,fontsize=fs+6)
+    
+    if station not in ['Palgrunden','USC_SEAPRISM_2']:
+        plt.gca().axes.get_xaxis().set_visible(False)
+    else:
+        plt.gcf().subplots_adjust(bottom=0.20)
+    
+    ofname = os.path.join(path_out,'source',f'spectra_msi_{station}.pdf')
+    plt.savefig(ofname)
+    plt.show()
     # plt.close()
+# plt.legend(station_list)    
 #%%
 #if __name__ == '__main__':
 #    main()  

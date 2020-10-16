@@ -60,6 +60,10 @@ color_dict = dict({\
  '865.50':'SlateGray',\
  '885.00':'DarkSlateGray',\
 '1020.50':'Black'})
+    
+station_n = {'Venise':1,'Galata_Platform':2,'Gloria':3,'Helsinki_Lighthouse':4,'Gustav_Dalen_Tower':5,\
+             'Palgrunden':6,'Thornton_C-power':7,'LISCO':8,'Lake_Erie':9,'WaveCIS_Site_CSI_6':10,\
+                 'USC_SEAPRISM':11,'USC_SEAPRISM_2':12}
 
 create_list_flag = 0
 #%% Open in situ in netcdf format from excel_to_nc_AquaAlta_merge_newsite.py by Marco B.
@@ -3215,6 +3219,9 @@ for idx in range(3):
         
         # plt.close()
 #%% mean in situ spectra per station
+fs = 24
+plt.rc('xtick',labelsize=fs)
+plt.rc('ytick',labelsize=fs)
 for station_idx in range(len(station_list_main)):
     station = station_list_main[station_idx]
     Time, Level, Julian_day, Exact_wavelengths, Lwn_fonQ = \
@@ -3224,11 +3231,21 @@ for station_idx in range(len(station_list_main)):
     Exact_wavelengths_mean = Exact_wavelengths.mean(axis=0)
     Lwn_fonQ.mask = Lwn_fonQ==-999
     Lwn_fonQ_mean = Lwn_fonQ.mean(axis=0)
-    plt.plot(Exact_wavelengths_mean[~Lwn_fonQ_mean.mask],Lwn_fonQ_mean[~Lwn_fonQ_mean.mask])
-
-plt.xlabel('Wavelength (nm)',fontsize=12)
-plt.ylabel('$L^{PRS}_{WN}$',fontsize=12)
-plt.legend(station_list_main)
+    
+    plt.figure(figsize=(12,3.5))
+    plt.plot(Exact_wavelengths_mean[~Lwn_fonQ_mean.mask],Lwn_fonQ_mean[~Lwn_fonQ_mean.mask],'k',linewidth=4)
+    # plt.xlabel('Wavelength (nm)',fontsize=fs)
+    plt.ylabel('$L^{PRS}_{WN}$',fontsize=fs)
+    plt.xlim([400,1050])
+    plt.ylim([0,3])
+    plt.gca().axes.get_xaxis().set_visible(False)
+    plt.title(f"{station_n[station]} {station.replace('_',' ')}",x=0.5,y=0.8,fontsize=fs+6)
+    
+    ofname = os.path.join(path_out,'source',f'spectra_olci_{station}.pdf')
+    plt.savefig(ofname)
+    plt.show()
+    # plt.show()
+    # plt.close()
 #%%
 # if __name__ == '__main__':
 #     main()   

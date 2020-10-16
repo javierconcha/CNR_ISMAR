@@ -1,0 +1,88 @@
+\documentclass[preview]{standalone}
+
+\standaloneenv{my}
+
+%%% MY PACKAGES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{graphicx}
+% \usepackage[outdir=./]{epstopdf}
+\usepackage{epstopdf}
+\epstopdfsetup{update} % only regenerate pdf files when eps file is newer
+\usepackage{amsmath,epsfig}
+
+\usepackage{tikz} % for flow charts
+  \usetikzlibrary{shapes,arrows,positioning,shadows,calc}
+  % \usetikzlibrary{external}
+  % \tikzexternalize[prefix=Figures/]
+
+% \usepackage[nostamp]{draftwatermark}
+% \SetWatermarkLightness{0.8}
+% \SetWatermarkScale{4}
+
+\usepackage[percent]{overpic}
+\usepackage{morefloats} % for the error "Too many unprocessed floats"
+
+\usepackage{multirow}
+
+\usepackage{float}
+\usepackage{hyperref}
+%%% END MY PACKAGES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+\tiny
+    \begin{minipage}[c]{0.66\linewidth}
+      \begin{overpic}[trim=0 0 0 0,clip,height=6cm]{./Site_map.pdf} 
+      \end{overpic}
+    \end{minipage}
+    \hspace{-1.2cm}
+    \begin{minipage}[c]{0.16\linewidth}
+      \begin{overpic}[trim=50 0 30 20,clip,height=0.6cm]{./spectra_olci_Venise.pdf}  
+      \end{overpic}
+      \begin{overpic}[trim=50 0 30 20,clip,height=0.6cm]{./spectra_olci_Galata_Platform.pdf}  
+      \end{overpic}
+      \begin{overpic}[trim=50 0 30 20,clip,height=0.6cm]{./spectra_olci_Gloria.pdf}  
+      \end{overpic}
+      \begin{overpic}[trim=50 0 30 20,clip,height=0.6cm]{./spectra_olci_Helsinki_Lighthouse.pdf}  
+      \end{overpic}
+      \begin{overpic}[trim=50 0 30 20,clip,height=0.6cm]{./spectra_olci_Gustav_Dalen_Tower.pdf}  
+      \end{overpic}
+      \begin{overpic}[trim=50 0 30 20,clip,height=0.7cm]{./spectra_msi_Palgrunden.pdf}  
+      \end{overpic}
+    \end{minipage}
+    \hspace{-0.1cm}
+    \begin{minipage}[c]{0.16\linewidth}
+      \begin{overpic}[trim=50 0 30 20,clip,height=0.6cm]{./spectra_msi_Thornton_C-power.pdf}  
+      \end{overpic}
+      \begin{overpic}[trim=50 0 30 20,clip,height=0.6cm]{./spectra_msi_LISCO.pdf}  
+      \end{overpic}
+      \begin{overpic}[trim=50 0 30 20,clip,height=0.6cm]{./spectra_msi_Lake_Erie.pdf}  
+      \end{overpic}
+      \begin{overpic}[trim=50 0 30 20,clip,height=0.6cm]{./spectra_msi_WaveCIS_Site_CSI_6.pdf}  
+      \end{overpic}
+      \begin{overpic}[trim=50 0 30 20,clip,height=0.6cm]{./spectra_msi_USC_SEAPRISM.pdf}  
+      \end{overpic}
+      \begin{overpic}[trim=50 0 30 20,clip,height=0.7cm]{./spectra_msi_USC_SEAPRISM_2.pdf}  
+      \end{overpic}
+    \end{minipage}
+
+\end{document}
+
+spectra_olci_Venise.pdf
+spectra_olci_Galata_Platform.pdf
+spectra_olci_Gloria.pdf
+spectra_olci_Helsinki_Lighthouse.pdf
+spectra_olci_Gustav_Dalen_Tower.pdf
+spectra_msi_Palgrunden.pdf
+spectra_msi_Thornton_C-power.pdf
+spectra_msi_LISCO.pdf
+spectra_msi_Lake_Erie.pdf
+spectra_msi_WaveCIS_Site_CSI_6.pdf
+spectra_msi_USC_SEAPRISM.pdf
+spectra_msi_USC_SEAPRISM_2.pdf
+
+spectra_msi_Galata_Platform.pdf
+spectra_msi_Gustav_Dalen_Tower.pdf
+spectra_msi_Helsinki_Lighthouse.pdf
+spectra_msi_Venise.pdf
+
+
+
