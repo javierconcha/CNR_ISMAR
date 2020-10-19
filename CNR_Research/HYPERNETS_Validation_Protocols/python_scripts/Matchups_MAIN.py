@@ -66,6 +66,8 @@ station_n = {'Venise':1,'Galata_Platform':2,'Gloria':3,'Helsinki_Lighthouse':4,'
                  'USC_SEAPRISM':11,'USC_SEAPRISM_2':12}
 
 create_list_flag = 0
+
+plot_flag = False
 #%% Open in situ in netcdf format from excel_to_nc_AquaAlta_merge_newsite.py by Marco B.
 """
 <class 'netCDF4._netCDF4.Dataset'>
@@ -2267,40 +2269,41 @@ if plot_flag:
     ofname = os.path.join(path_out,'source',ofname)   
     plt.savefig(ofname, dpi=300) 
 #%%  table of validation
-data = {'Protocol':['BW06','Z09','BW06','Z09','BW06','Z09','BW06','Z09','BW06','Z09']}
-df4 = pd.DataFrame(data)
-df4['Wavelength'] = ['412.5','412.5','442.5','442.5','490.0','490.0','560.0','560.0','665.0','665.0']
-df4['N'] = [len(mu_Lwn_0412p50_fq_sat_ba),len(mu_Lwn_0412p50_fq_sat_zi),\
-                len(mu_Lwn_0442p50_fq_sat_ba),len(mu_Lwn_0442p50_fq_sat_zi),\
-                len(mu_Lwn_0490p00_fq_sat_ba),len(mu_Lwn_0490p00_fq_sat_zi),\
-                len(mu_Lwn_0560p00_fq_sat_ba),len(mu_Lwn_0560p00_fq_sat_zi),\
-                len(mu_Lwn_0665p00_fq_sat_ba),len(mu_Lwn_0665p00_fq_sat_zi)]
-df4['MPD'] = [mean_rel_diff_0412p50_ba,mean_rel_diff_0412p50_zi,mean_rel_diff_0442p50_ba,\
-                mean_rel_diff_0442p50_zi,mean_rel_diff_0490p00_ba,mean_rel_diff_0490p00_zi,\
-                mean_rel_diff_0560p00_ba,mean_rel_diff_0560p00_zi,mean_rel_diff_0665p00_ba,\
-                mean_rel_diff_0665p00_zi]
-df4['MAPD'] = [mean_abs_rel_diff_0412p50_ba,mean_abs_rel_diff_0412p50_zi,mean_abs_rel_diff_0442p50_ba,\
-                mean_abs_rel_diff_0442p50_zi,mean_abs_rel_diff_0490p00_ba,mean_abs_rel_diff_0490p00_zi,\
-                mean_abs_rel_diff_0560p00_ba,mean_abs_rel_diff_0560p00_zi,mean_abs_rel_diff_0665p00_ba,\
-                mean_abs_rel_diff_0665p00_zi]     
-df4['MB'] = [mean_bias_0412p50_ba,mean_bias_0412p50_zi,mean_bias_0442p50_ba,\
-                mean_bias_0442p50_zi,mean_bias_0490p00_ba,mean_bias_0490p00_zi,\
-                mean_bias_0560p00_ba,mean_bias_0560p00_zi,mean_bias_0665p00_ba,\
-                mean_bias_0665p00_zi]             
-df4['MAD'] = [mean_abs_error_0412p50_ba,mean_abs_error_0412p50_zi,mean_abs_error_0442p50_ba,\
-                mean_abs_error_0442p50_zi,mean_abs_error_0490p00_ba,mean_abs_error_0490p00_zi,\
-                mean_abs_error_0560p00_ba,mean_abs_error_0560p00_zi,mean_abs_error_0665p00_ba,\
-                mean_abs_error_0665p00_zi]
-df4['RMSD'] = [rmse_val_0412p50_ba,rmse_val_0412p50_zi,rmse_val_0442p50_ba,\
-                rmse_val_0442p50_zi,rmse_val_0490p00_ba,rmse_val_0490p00_zi,\
-                rmse_val_0560p00_ba,rmse_val_0560p00_zi,rmse_val_0665p00_ba,\
-                rmse_val_0665p00_zi]
-df4['r_sqr'] = [r_sqr_0412p50_ba,r_sqr_0412p50_zi,r_sqr_0442p50_ba,\
-                r_sqr_0442p50_zi,r_sqr_0490p00_ba,r_sqr_0490p00_zi,\
-                r_sqr_0560p00_ba,r_sqr_0560p00_zi,r_sqr_0665p00_ba,\
-                r_sqr_0665p00_zi]     
-
-print(tabulate(df4, tablefmt='pipe', headers='keys',showindex=False))
+if plot_flag:
+    data = {'Protocol':['BW06','Z09','BW06','Z09','BW06','Z09','BW06','Z09','BW06','Z09']}
+    df4 = pd.DataFrame(data)
+    df4['Wavelength'] = ['412.5','412.5','442.5','442.5','490.0','490.0','560.0','560.0','665.0','665.0']
+    df4['N'] = [len(mu_Lwn_0412p50_fq_sat_ba),len(mu_Lwn_0412p50_fq_sat_zi),\
+                    len(mu_Lwn_0442p50_fq_sat_ba),len(mu_Lwn_0442p50_fq_sat_zi),\
+                    len(mu_Lwn_0490p00_fq_sat_ba),len(mu_Lwn_0490p00_fq_sat_zi),\
+                    len(mu_Lwn_0560p00_fq_sat_ba),len(mu_Lwn_0560p00_fq_sat_zi),\
+                    len(mu_Lwn_0665p00_fq_sat_ba),len(mu_Lwn_0665p00_fq_sat_zi)]
+    df4['MPD'] = [mean_rel_diff_0412p50_ba,mean_rel_diff_0412p50_zi,mean_rel_diff_0442p50_ba,\
+                    mean_rel_diff_0442p50_zi,mean_rel_diff_0490p00_ba,mean_rel_diff_0490p00_zi,\
+                    mean_rel_diff_0560p00_ba,mean_rel_diff_0560p00_zi,mean_rel_diff_0665p00_ba,\
+                    mean_rel_diff_0665p00_zi]
+    df4['MAPD'] = [mean_abs_rel_diff_0412p50_ba,mean_abs_rel_diff_0412p50_zi,mean_abs_rel_diff_0442p50_ba,\
+                    mean_abs_rel_diff_0442p50_zi,mean_abs_rel_diff_0490p00_ba,mean_abs_rel_diff_0490p00_zi,\
+                    mean_abs_rel_diff_0560p00_ba,mean_abs_rel_diff_0560p00_zi,mean_abs_rel_diff_0665p00_ba,\
+                    mean_abs_rel_diff_0665p00_zi]     
+    df4['MB'] = [mean_bias_0412p50_ba,mean_bias_0412p50_zi,mean_bias_0442p50_ba,\
+                    mean_bias_0442p50_zi,mean_bias_0490p00_ba,mean_bias_0490p00_zi,\
+                    mean_bias_0560p00_ba,mean_bias_0560p00_zi,mean_bias_0665p00_ba,\
+                    mean_bias_0665p00_zi]             
+    df4['MAD'] = [mean_abs_error_0412p50_ba,mean_abs_error_0412p50_zi,mean_abs_error_0442p50_ba,\
+                    mean_abs_error_0442p50_zi,mean_abs_error_0490p00_ba,mean_abs_error_0490p00_zi,\
+                    mean_abs_error_0560p00_ba,mean_abs_error_0560p00_zi,mean_abs_error_0665p00_ba,\
+                    mean_abs_error_0665p00_zi]
+    df4['RMSD'] = [rmse_val_0412p50_ba,rmse_val_0412p50_zi,rmse_val_0442p50_ba,\
+                    rmse_val_0442p50_zi,rmse_val_0490p00_ba,rmse_val_0490p00_zi,\
+                    rmse_val_0560p00_ba,rmse_val_0560p00_zi,rmse_val_0665p00_ba,\
+                    rmse_val_0665p00_zi]
+    df4['r_sqr'] = [r_sqr_0412p50_ba,r_sqr_0412p50_zi,r_sqr_0442p50_ba,\
+                    r_sqr_0442p50_zi,r_sqr_0490p00_ba,r_sqr_0490p00_zi,\
+                    r_sqr_0560p00_ba,r_sqr_0560p00_zi,r_sqr_0665p00_ba,\
+                    r_sqr_0665p00_zi]     
+    
+    print(tabulate(df4, tablefmt='pipe', headers='keys',showindex=False))
 
 #%% plot both methods
 if plot_flag:
@@ -2972,7 +2975,7 @@ if plot_flag:
     kwargs2 = dict(histtype='step')
     bins = [0.0,0.02,0.04,0.06,0.08,0.10,0.12,0.14,0.16,0.18,0.20]
     
-    dataset_name = 'all' # all, all_MUs, common, notBW06_Z09, BW06_notZ09  ((df_matchups['BW06_MU']==True) | (df_matchups['Z09_MU']==True))
+    dataset_name = 'BW06_notZ09' # all, all_MUs, common, notBW06_Z09, BW06_notZ09  ((df_matchups['BW06_MU']==True) | (df_matchups['Z09_MU']==True))
     savefig_flag = False
     for station_idx in range(len(station_list_main)):
         station = station_list_main[station_idx]
@@ -3063,16 +3066,23 @@ if plot_flag:
 # for idx, row in df_matchups.iterrows()[0]:
 #     if row['BW06: MU'] == True:
 #         print(row['BW06: rhow_560_box'])
-if plot_flag:
+
+core_pxs_count_412 = []
+core_pxs_count_442 = []
+core_pxs_count_490 = []
+core_pxs_count_560 = []
+core_pxs_count_665 = []
+
+if True or plot_flag:
     rhow_412_core_incl_cnt = 0
     rhow_442_core_incl_cnt = 0
     rhow_490_core_incl_cnt = 0
     rhow_560_core_incl_cnt = 0
     rhow_665_core_incl_cnt = 0
             
-    # for idx in range(len(df_matchups)): 
-    for idx in range(3):
-        if True and df_matchups.loc[idx,'BW06_MU'] == True or df_matchups.loc[idx,'Z09_MU'] == True:
+    for idx in range(len(df_matchups)): 
+    # for idx in range(3):
+        if df_matchups.loc[idx,'BW06_MU'] == True and df_matchups.loc[idx,'Z09_MU'] == True:
             print('---------------')
             # print(df_matchups.loc[idx,'BW06: rhow_560_box'])
     
@@ -3081,7 +3091,15 @@ if plot_flag:
             rhow_490_core_incl = False
             rhow_560_core_incl = False
             rhow_665_core_incl = False
-    
+            
+            # to know how many pixels of Z09 are included in the calculation of BW09. Only if (df_matchups.loc[idx,'BW06_MU'] == True and df_matchups.loc[idx,'Z09_MU'] == True)
+            core_pxs_count_412.append(df_matchups.loc[idx,'BW06: rhow_412_box'][1:4,1:4].count())
+            core_pxs_count_442.append(df_matchups.loc[idx,'BW06: rhow_442_box'][1:4,1:4].count())
+            core_pxs_count_490.append(df_matchups.loc[idx,'BW06: rhow_490_box'][1:4,1:4].count())
+            core_pxs_count_560.append(df_matchups.loc[idx,'BW06: rhow_560_box'][1:4,1:4].count())
+            core_pxs_count_665.append(df_matchups.loc[idx,'BW06: rhow_665_box'][1:4,1:4].count())
+            
+            # to know how many time the whole core of BW06 is included in the calculation
             if (not df_matchups.loc[idx,'BW06: rhow_412_box'][1:4,1:4].mask.any()) \
                 and (df_matchups.loc[idx,'BW06_MU']==True and (df_matchups.loc[idx,'Z09_MU'])):
                 rhow_412_core_incl = True
@@ -3103,129 +3121,167 @@ if plot_flag:
                 rhow_665_core_incl = True
                 rhow_665_core_incl_cnt += 1
            
-            fig = plt.figure(figsize=(20,8))
-            date_str = str(df_matchups.loc[idx,'sat_datetime'].date())
-            print(df_matchups.loc[idx,"station"])
-            print(date_str)
-            plt.suptitle(f'{date_str}, {df_matchups.loc[idx,"station"]}')
-    
-            # Z09
-            ax0 = plt.subplot(4,5,1)
-            ax0.imshow(df_matchups.loc[idx,'Z09: rhow_412_box'])
-            ax0.set_xlim([-1.5,3.5])
-            ax0.set_ylim([3.5,-1.5])
-            plt.axis('off')
-            plt.title('Z09: rhow_412')
-            ax0.annotate((f'\nCore incl: {str(rhow_412_core_incl)}'), (-1.0,3.0), textcoords='data', size=10)
-    
-            ax0 = plt.subplot(4,5,2)
-            ax0.imshow(df_matchups.loc[idx,'Z09: rhow_442_box'])
-            ax0.set_xlim([-1.5,3.5])
-            ax0.set_ylim([3.5,-1.5])
-            plt.axis('off')
-            plt.title('Z09: rhow_442')
-            ax0.annotate((f'\nCore incl: {str(rhow_442_core_incl)}'), (-1.0,3.0), textcoords='data', size=10)
-    
-            ax0 = plt.subplot(4,5,6)
-            ax0.imshow(df_matchups.loc[idx,'Z09: rhow_490_box'])
-            ax0.set_xlim([-1.5,3.5])
-            ax0.set_ylim([3.5,-1.5])
-            plt.axis('off')
-            plt.title('Z09: rhow_490')
-            ax0.annotate((f'\nCore incl: {str(rhow_490_core_incl)}'), (-1.0,3.0), textcoords='data', size=10)
-    
-            ax0 = plt.subplot(4,5,7)
-            ax0.imshow(df_matchups.loc[idx,'Z09: rhow_560_box'])
-            ax0.set_xlim([-1.5,3.5])
-            ax0.set_ylim([3.5,-1.5])
-            plt.axis('off')
-            plt.title('Z09: rhow_560')
-            ax0.annotate((f'\nCore incl: {str(rhow_560_core_incl)}'), (-1.0,3.0), textcoords='data', size=10)
-    
-            ax0 = plt.subplot(4,5,11)
-            ax0.imshow(df_matchups.loc[idx,'Z09: rhow_665_box'])
-            ax0.set_xlim([-1.5,3.5])
-            ax0.set_ylim([3.5,-1.5])
-            plt.axis('off')
-            plt.title('Z09: rhow_665')
-            ax0.annotate((f'\nCore incl: {str(rhow_665_core_incl)}'), (-1.0,3.0), textcoords='data', size=10)
-    
-            ax0 = plt.subplot(4,5,12)
-            ax0.imshow(df_matchups.loc[idx,'Z09_l2_mask'])
-            ax0.set_xlim([-1.5,3.5])
-            ax0.set_ylim([3.5,-1.5])
-            plt.axis('off')
-            plt.title('Z09: L2 mask')
-    
-            # BW06
-            plt.subplot(4,5,3)
-            plt.imshow(df_matchups.loc[idx,'BW06: rhow_412_box'])
-            plt.axis('off')
-            plt.title('BW06: rhow_412')
+            if plot_flag:
+                fig = plt.figure(figsize=(20,8))
+                date_str = str(df_matchups.loc[idx,'sat_datetime'].date())
+                print(df_matchups.loc[idx,"station"])
+                print(date_str)
+                plt.suptitle(f'{date_str}, {df_matchups.loc[idx,"station"]}')
+        
+                # Z09
+                ax0 = plt.subplot(4,5,1)
+                ax0.imshow(df_matchups.loc[idx,'Z09: rhow_412_box'])
+                ax0.set_xlim([-1.5,3.5])
+                ax0.set_ylim([3.5,-1.5])
+                plt.axis('off')
+                plt.title('Z09: rhow_412')
+                ax0.annotate((f'\nCore incl: {str(rhow_412_core_incl)}'), (-1.0,3.0), textcoords='data', size=10)
+        
+                ax0 = plt.subplot(4,5,2)
+                ax0.imshow(df_matchups.loc[idx,'Z09: rhow_442_box'])
+                ax0.set_xlim([-1.5,3.5])
+                ax0.set_ylim([3.5,-1.5])
+                plt.axis('off')
+                plt.title('Z09: rhow_442')
+                ax0.annotate((f'\nCore incl: {str(rhow_442_core_incl)}'), (-1.0,3.0), textcoords='data', size=10)
+        
+                ax0 = plt.subplot(4,5,6)
+                ax0.imshow(df_matchups.loc[idx,'Z09: rhow_490_box'])
+                ax0.set_xlim([-1.5,3.5])
+                ax0.set_ylim([3.5,-1.5])
+                plt.axis('off')
+                plt.title('Z09: rhow_490')
+                ax0.annotate((f'\nCore incl: {str(rhow_490_core_incl)}'), (-1.0,3.0), textcoords='data', size=10)
+        
+                ax0 = plt.subplot(4,5,7)
+                ax0.imshow(df_matchups.loc[idx,'Z09: rhow_560_box'])
+                ax0.set_xlim([-1.5,3.5])
+                ax0.set_ylim([3.5,-1.5])
+                plt.axis('off')
+                plt.title('Z09: rhow_560')
+                ax0.annotate((f'\nCore incl: {str(rhow_560_core_incl)}'), (-1.0,3.0), textcoords='data', size=10)
+        
+                ax0 = plt.subplot(4,5,11)
+                ax0.imshow(df_matchups.loc[idx,'Z09: rhow_665_box'])
+                ax0.set_xlim([-1.5,3.5])
+                ax0.set_ylim([3.5,-1.5])
+                plt.axis('off')
+                plt.title('Z09: rhow_665')
+                ax0.annotate((f'\nCore incl: {str(rhow_665_core_incl)}'), (-1.0,3.0), textcoords='data', size=10)
+        
+                ax0 = plt.subplot(4,5,12)
+                ax0.imshow(df_matchups.loc[idx,'Z09_l2_mask'])
+                ax0.set_xlim([-1.5,3.5])
+                ax0.set_ylim([3.5,-1.5])
+                plt.axis('off')
+                plt.title('Z09: L2 mask')
+        
+                # BW06
+                plt.subplot(4,5,3)
+                plt.imshow(df_matchups.loc[idx,'BW06: rhow_412_box'])
+                plt.axis('off')
+                plt.title('BW06: rhow_412')
+                    
+                plt.subplot(4,5,4)
+                plt.imshow(df_matchups.loc[idx,'BW06: rhow_442_box'])
+                plt.axis('off')
+                plt.title('BW06: rhow_442')
+                    
+                plt.subplot(4,5,8)
+                plt.imshow(df_matchups.loc[idx,'BW06: rhow_490_box'])
+                plt.axis('off')
+                plt.title('BW06: rhow_490')
+                    
+                plt.subplot(4,5,9)
+                plt.imshow(df_matchups.loc[idx,'BW06: rhow_560_box'])
+                plt.axis('off')
+                plt.title('BW06: rhow_560')
+                    
+                plt.subplot(4,5,13)
+                plt.imshow(df_matchups.loc[idx,'BW06: rhow_665_box'])
+                plt.axis('off')
+                plt.title('BW06: rhow_665')
+                    
+                plt.subplot(4,5,14)
+                plt.imshow(df_matchups.loc[idx,'BW06_l2_mask'])
+                plt.axis('off')
+                plt.title('BW06: L2 mask')
+        
+                ax1 = plt.subplot(2,5,5)
+                ba_MU = zi_MU = 'Rejected'
+                if df_matchups.loc[idx,"BW06_MU"]: ba_MU = 'Passed'
+                if df_matchups.loc[idx,"Z09_MU"]: zi_MU = 'Passed'
+                panel_ba = f'BW06\n{ba_MU}\nNGP: {int(df_matchups.loc[idx,"BW06: NGP"])}\nMedianCV = {df_matchups.loc[idx,"BW06: MedianCV"]:0.3f}\nmean={df_matchups.loc[idx,"BW06: rho_560_filt_mean"]:0.4f}' 
+                panel_zi = f'Z09\n{zi_MU}\nCV_560 = {df_matchups.loc[idx,"Z09: CV_560"]:0.3f}\nCV_865.5 = {df_matchups.loc[idx,"Z09: CV_865p5"]:0.3f}\nmean={df_matchups.loc[idx,"Z09: rho_560_mean"]:0.4f}'
+                Dt = df_matchups.loc[idx,"sat_datetime"]-df_matchups.loc[idx,"insitu_datetime"]
+                panel_str = f'Delta t={abs(Dt).total_seconds()/60/60:0.2f} hours\nvza: {float(df_matchups.loc[idx,"vza"]):0.2f}; sza: {float(df_matchups.loc[idx,"sza"]):0.2f}'
                 
-            plt.subplot(4,5,4)
-            plt.imshow(df_matchups.loc[idx,'BW06: rhow_442_box'])
-            plt.axis('off')
-            plt.title('BW06: rhow_442')
+                # core_incl_str = \
+                # f'\nrhow_412 core incl.: {str(rhow_412_core_incl)}'+\
+                # f'\nrhow_442 core incl.: {str(rhow_442_core_incl)}'+\
+                # f'\nrhow_490 core incl.: {str(rhow_490_core_incl)}'+\
+                # f'\nrhow_560 core incl.: {str(rhow_560_core_incl)}'+\
+                # f'\nrhow_665 core incl.: {str(rhow_665_core_incl)}'
+        
+                ax1.annotate(panel_str, (0.01, 0.95), textcoords='data', size=12)
+                ax1.annotate(panel_ba, (0.01, 0.50), textcoords='data', size=12)
+                ax1.annotate(panel_zi, (0.01, 0.01), textcoords='data', size=12)
+                plt.axis('off')
+        
+                # individual pixels
+                plt.subplot(4,1,4)
+                plt.plot(df_matchups.loc[idx,'BW06: rhow_560_box'].ravel(),'r+')
+                plt.plot([6,7,8,11,12,13,16,17,18],df_matchups.loc[idx,'Z09: rhow_560_box'].ravel(),'bx')
+                plt.plot([0,24],[df_matchups.loc[idx,'BW06: rho_560_filt_mean'],df_matchups.loc[idx,'BW06: rho_560_filt_mean']],'r--')
+                plt.plot([0,24],[df_matchups.loc[idx,'Z09: rho_560_mean'],df_matchups.loc[idx,'Z09: rho_560_mean']],'b--')
+                plt.xlabel('Pixel Number')
+                plt.ylabel(r'$\rho_{W}(560)$')
+                plt.legend([r'BW06: $\rho_{W}(560)$',r'Z09: $\rho_{W}(560)$',r'BW06: filt. mean $\rho_{W}(560)$',r'Z09: mean $\rho_{W}(560)$'],\
+                           ncol=4,bbox_to_anchor=(0.15, 0.93, 1., .4), loc='lower left',frameon=False)
                 
-            plt.subplot(4,5,8)
-            plt.imshow(df_matchups.loc[idx,'BW06: rhow_490_box'])
-            plt.axis('off')
-            plt.title('BW06: rhow_490')
-                
-            plt.subplot(4,5,9)
-            plt.imshow(df_matchups.loc[idx,'BW06: rhow_560_box'])
-            plt.axis('off')
-            plt.title('BW06: rhow_560')
-                
-            plt.subplot(4,5,13)
-            plt.imshow(df_matchups.loc[idx,'BW06: rhow_665_box'])
-            plt.axis('off')
-            plt.title('BW06: rhow_665')
-                
-            plt.subplot(4,5,14)
-            plt.imshow(df_matchups.loc[idx,'BW06_l2_mask'])
-            plt.axis('off')
-            plt.title('BW06: L2 mask')
-    
-            ax1 = plt.subplot(2,5,5)
-            ba_MU = zi_MU = 'Rejected'
-            if df_matchups.loc[idx,"BW06_MU"]: ba_MU = 'Passed'
-            if df_matchups.loc[idx,"Z09_MU"]: zi_MU = 'Passed'
-            panel_ba = f'BW06\n{ba_MU}\nNGP: {int(df_matchups.loc[idx,"BW06: NGP"])}\nMedianCV = {df_matchups.loc[idx,"BW06: MedianCV"]:0.3f}\nmean={df_matchups.loc[idx,"BW06: rho_560_filt_mean"]:0.4f}' 
-            panel_zi = f'Z09\n{zi_MU}\nCV_560 = {df_matchups.loc[idx,"Z09: CV_560"]:0.3f}\nCV_865.5 = {df_matchups.loc[idx,"Z09: CV_865p5"]:0.3f}\nmean={df_matchups.loc[idx,"Z09: rho_560_mean"]:0.4f}'
-            Dt = df_matchups.loc[idx,"sat_datetime"]-df_matchups.loc[idx,"insitu_datetime"]
-            panel_str = f'Delta t={abs(Dt).total_seconds()/60/60:0.2f} hours\nvza: {float(df_matchups.loc[idx,"vza"]):0.2f}; sza: {float(df_matchups.loc[idx,"sza"]):0.2f}'
-            
-            # core_incl_str = \
-            # f'\nrhow_412 core incl.: {str(rhow_412_core_incl)}'+\
-            # f'\nrhow_442 core incl.: {str(rhow_442_core_incl)}'+\
-            # f'\nrhow_490 core incl.: {str(rhow_490_core_incl)}'+\
-            # f'\nrhow_560 core incl.: {str(rhow_560_core_incl)}'+\
-            # f'\nrhow_665 core incl.: {str(rhow_665_core_incl)}'
-    
-            ax1.annotate(panel_str, (0.01, 0.95), textcoords='data', size=12)
-            ax1.annotate(panel_ba, (0.01, 0.50), textcoords='data', size=12)
-            ax1.annotate(panel_zi, (0.01, 0.01), textcoords='data', size=12)
-            plt.axis('off')
-    
-            # individual pixels
-            plt.subplot(4,1,4)
-            plt.plot(df_matchups.loc[idx,'BW06: rhow_560_box'].ravel(),'r+')
-            plt.plot([6,7,8,11,12,13,16,17,18],df_matchups.loc[idx,'Z09: rhow_560_box'].ravel(),'bx')
-            plt.plot([0,24],[df_matchups.loc[idx,'BW06: rho_560_filt_mean'],df_matchups.loc[idx,'BW06: rho_560_filt_mean']],'r--')
-            plt.plot([0,24],[df_matchups.loc[idx,'Z09: rho_560_mean'],df_matchups.loc[idx,'Z09: rho_560_mean']],'b--')
-            plt.xlabel('Pixel Number')
-            plt.ylabel(r'$\rho_{W}(560)$')
-            plt.legend([r'BW06: $\rho_{W}(560)$',r'Z09: $\rho_{W}(560)$',r'BW06: filt. mean $\rho_{W}(560)$',r'Z09: mean $\rho_{W}(560)$'],\
-                       ncol=4,bbox_to_anchor=(0.15, 0.93, 1., .4), loc='lower left',frameon=False)
-            
-            ofname = f'MU_report_{df_matchups.loc[idx,"station"]}_{date_str}.png'
-    
-            ofname = os.path.join(path_out,ofname)
-            plt.savefig(ofname, dpi=100)
+                ofname = f'MU_report_{df_matchups.loc[idx,"station"]}_{date_str}.png'
+        
+                ofname = os.path.join(path_out,ofname)
+                plt.savefig(ofname, dpi=100)
             
             # plt.close()
+#%% histogram of how many pixels of Z09 are included in the calculation of BW06  
+bins = [0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5]
+kwargs2 = dict(histtype='step')         
+if True or plot_flag:
+    fig,axs = plt.subplots(2,3, facecolor='w',figsize=(20,8))
+    counts, bins2 = np.histogram(core_pxs_count_412,bins=bins)
+    axs[0,0].hist(bins2[:-1], bins2, weights=100*counts/counts.sum(),color='blue', **kwargs2)
+    axs[0,0].set_title(412,x=0.5,y=0.9)
+    axs[0,0].set_xlabel('Number of pixels')
+    axs[0,0].set_ylabel('Frequency (%)')   
+
+    counts, bins2 = np.histogram(core_pxs_count_442,bins=bins)
+    axs[0,1].hist(bins2[:-1], bins2, weights=100*counts/counts.sum(),color='blue', **kwargs2)
+    axs[0,1].set_title(442,x=0.5,y=0.9)
+    axs[0,1].set_xlabel('Number of pixels')
+    axs[0,1].set_ylabel('Frequency (%)') 
+
+    counts, bins2 = np.histogram(core_pxs_count_490,bins=bins)
+    axs[0,2].hist(bins2[:-1], bins2, weights=100*counts/counts.sum(),color='blue', **kwargs2)
+    axs[0,2].set_title(490,x=0.5,y=0.9)
+    axs[0,2].set_xlabel('Number of pixels')
+    axs[0,2].set_ylabel('Frequency (%)') 
+
+    counts, bins2 = np.histogram(core_pxs_count_560,bins=bins)
+    axs[1,0].hist(bins2[:-1], bins2, weights=100*counts/counts.sum(),color='blue', **kwargs2)
+    axs[1,0].set_title(560,x=0.5,y=0.9)
+    axs[1,0].set_xlabel('Number of pixels')
+    axs[1,0].set_ylabel('Frequency (%)') 
+
+    counts, bins2 = np.histogram(core_pxs_count_665,bins=bins)
+    axs[1,1].hist(bins2[:-1], bins2, weights=100*counts/counts.sum(),color='blue', **kwargs2)
+    axs[1,1].set_title(665,x=0.5,y=0.9)
+    axs[1,1].set_xlabel('Number of pixels')
+    axs[1,1].set_ylabel('Frequency (%)')    
+
+    axs[1,2].axis('off')
+
 #%% mean in situ spectra per station
 if plot_flag:
     fs = 24
