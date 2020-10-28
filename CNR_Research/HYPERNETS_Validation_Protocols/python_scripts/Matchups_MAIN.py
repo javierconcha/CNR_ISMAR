@@ -1477,7 +1477,7 @@ for station_idx in range(len(station_list_main)):
 
                 # create matchup
                 if (sza<=70 and vza<=56) and (not flags_mask_zi.any()) and (Lwn_560_CV <= 0.2 and AOT_0865p50_CV <= 0.2): # if any of the pixels if flagged, Fails validation criteria because all have to be valid in Zibordi 2018
-                    dt_mu_zi.append(dt_hour[idx_min])
+                    # dt_mu_zi.append(dt_hour[idx_min])
                     mu_cnt_zi += 1    
                     # if any is invalid, do not calculated matchup
                     if not ((rhow_0412p50_fq_box_zi.mask.any() or np.isnan(rhow_0412p50_fq_box_zi).any())\
@@ -1487,6 +1487,7 @@ for station_idx in range(len(station_list_main)):
                         or (rhow_0665p00_fq_box_zi.mask.any() or np.isnan(rhow_0665p00_fq_box_zi).any())):
 
                         mu_cnt2_zi += 1
+                        dt_mu_zi.append(dt_hour[idx_min])
                         Z09_MU = True
                     # Rrs 0412p50
                     # print('412.5')
@@ -2970,21 +2971,37 @@ if plot_flag:
 
 #%% histograms of both delta time: zi and ba
 # delta time  => time_diff = ins_time - sat_stop_time
-if plot_flag:
+if True or plot_flag:
     kwargs2 = dict(histtype='step')
-    fig, ax1=plt.subplots(1,1,sharey=True, facecolor='w',figsize=(8,6))
+    bins_Dt = [-180,-165,-150,-135,-120,-105,-90,-75,-60,-45,-30,-15,0,15,30,45,60,75,90,105,120,135,150,165,180]
     
-    # hist, bins = np.histogram(np.array(dt_mu_zi)*60)
+    fig, ax1=plt.subplots(1,1,sharey=True, facecolor='w',figsize=(8,6))
     # ax1.bar(bins[:-1], 100*hist.astype(np.float32) / hist.sum(), width=(bins[1]-bins[0]), color='red')
     # hist, bins = np.histogram(np.array(dt_mu_ba)*60)
-    # ax1.bar(bins[:-1], 100*hist.astype(np.float32) / hist.sum(), width=(bins[1]-bins[0]), color='black')
-    bins_Dt = [-180,-165,-150,-135,-120,-105,-90,-75,-60,-45,-30,-15,0,15,30,45,60,75,90,105,120,135,150.65,180]
-    
+    # ax1.bar(bins[:-1], 100*hist.astype(np.float32) / hist.sum(), width=(bins[1]-bins[0]), color='black') 
     counts_zi, bins_zi = np.histogram(np.array(dt_mu_zi)*60,bins=bins_Dt)
     ax1.hist(bins_zi[:-1], bins_zi, weights=100*counts_zi/counts_zi.sum(),color='red', **kwargs2)
     
     counts_ba, bins_ba = np.histogram(np.array(dt_mu_ba)*60,bins=bins_Dt)
     ax1.hist(bins_ba[:-1], bins_ba, weights=100*counts_ba/counts_ba.sum(),color='black', **kwargs2)
+    
+    x0, x1 = ax1.get_xlim()
+    ax1.set_xlim([x0,x0+1*(x1-x0)])
+    
+    ax1.set_ylabel('Frequency (%)',fontsize=12)
+    ax1.set_xlabel('Delta time (minutes)',fontsize=12)
+    plt.xticks([-180,-150,-120,-90,-60,-30,0,30,60,90,120,150,180])
+    plt.legend(['Z09','BW06'],fontsize=12)
+    
+    fig, ax1=plt.subplots(1,1,sharey=True, facecolor='w',figsize=(8,6))
+    # ax1.bar(bins[:-1], 100*hist.astype(np.float32) / hist.sum(), width=(bins[1]-bins[0]), color='red')
+    # hist, bins = np.histogram(np.array(dt_mu_ba)*60)
+    # ax1.bar(bins[:-1], 100*hist.astype(np.float32) / hist.sum(), width=(bins[1]-bins[0]), color='black') 
+    counts_zi, bins_zi = np.histogram(np.array(dt_mu_zi)*60,bins=bins_Dt)
+    ax1.hist(bins_zi[:-1], bins_zi, weights=counts_zi,color='red', **kwargs2)
+    
+    counts_ba, bins_ba = np.histogram(np.array(dt_mu_ba)*60,bins=bins_Dt)
+    ax1.hist(bins_ba[:-1], bins_ba, weights=counts_ba,color='black', **kwargs2)
     
     x0, x1 = ax1.get_xlim()
     ax1.set_xlim([x0,x0+1*(x1-x0)])
