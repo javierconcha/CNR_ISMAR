@@ -25,6 +25,7 @@ import numpy as np
 import numpy.ma as ma
 import subprocess
 import matplotlib.pyplot as plt
+import matplotlib.lines as mlines
 plt.rc('xtick',labelsize=12)
 plt.rc('ytick',labelsize=12)
 import sys
@@ -64,6 +65,15 @@ color_dict = dict({\
 station_n = {'Venise':1,'Galata_Platform':2,'Gloria':3,'Helsinki_Lighthouse':4,'Gustav_Dalen_Tower':5,\
              'Palgrunden':6,'Thornton_C-power':7,'LISCO':8,'Lake_Erie':9,'WaveCIS_Site_CSI_6':10,\
                  'USC_SEAPRISM':11,'USC_SEAPRISM_2':12}
+ 
+plot_lims = dict({\
+ '412.5':[-3.00,5.0],\
+ '442.5':[-3.00,6.2],\
+ '490.0':[-2.00,8.0],\
+ '560.0':[-0.50,6.0],\
+ '665.0':[-0.60,4.0]})
+
+olci_band_list  = ['412.50', '442.50', '490.00', '560.00', '665.00']
 
 create_list_flag = 0
 
@@ -452,13 +462,14 @@ def plot_both_methods(wl_str,notation_flag,path_out,min_val,max_val):
     count_ba = len(ins_ba_station)
 
     diff = []
+    diff_rel = []
     sat_same_zi = []
     sat_same_ba = []
     ins_same_zi = []
     ins_same_ba = []
     ins_same_station = []
 
-    #%% time series with two methods
+    #% time series with two methods
     plt.figure(figsize=(16,4))
     for cnt, line in enumerate(ins_zi_station):
         if ins_zi_station[cnt] == 'Venise':
@@ -503,8 +514,10 @@ def plot_both_methods(wl_str,notation_flag,path_out,min_val,max_val):
 
             plt.plot([ins_ba_time[idx[0][0]],sat_ba_stop_time[idx[0][0]]],\
                 [ins_ba[idx[0][0]],sat_ba[idx[0][0]]],mrk_style_ins[1],linestyle='dotted')
-
-            diff.append(sat_zi[cnt]-sat_ba[idx[0][0]])
+            
+            diff_tmp = sat_zi[cnt]-sat_ba[idx[0][0]]
+            diff.append(diff_tmp)
+            diff_rel.append(100*diff_tmp/sat_zi[cnt])
 
             # same dataset
             sat_same_zi.append(sat_zi[cnt])
@@ -566,7 +579,7 @@ def plot_both_methods(wl_str,notation_flag,path_out,min_val,max_val):
 
     plt.show()
 
-    #%% histograms of both dataset: zi and ba
+    #% histograms of both dataset: zi and ba
     kwargs2 = dict(bins='auto', histtype='step')
     fig, ax1=plt.subplots(1,1,sharey=True, facecolor='w')
     ax1.hist(sat_zi,color='red', **kwargs2)
@@ -620,7 +633,7 @@ def plot_both_methods(wl_str,notation_flag,path_out,min_val,max_val):
             len(sat_ba))
     print(str_table)
     
-    #%% histograms of same dataset: zi and ba
+    #% histograms of same dataset: zi and ba
     kwargs2 = dict(bins='auto', histtype='step')
     fig, ax1=plt.subplots(1,1,sharey=True, facecolor='w')
     ax1.hist(sat_same_zi,color='red', **kwargs2)
@@ -673,10 +686,10 @@ def plot_both_methods(wl_str,notation_flag,path_out,min_val,max_val):
             np.nanmean(sat_same_ba),
             len(sat_same_ba))
     print(str_table)
-    #%% # normality test
+    #% # normality test
     # plot_normality(np.array(diff),wl_str)
     
-    #%% histogram of the difference
+    #% histogram of the difference
     kwargs2 = dict(bins='auto', histtype='step')
     fig, ax1=plt.subplots(1,1,sharey=True, facecolor='w')
     ax1.hist(diff, **kwargs2)
@@ -699,6 +712,17 @@ def plot_both_methods(wl_str,notation_flag,path_out,min_val,max_val):
             np.nanmean(diff),
             len(diff))
     print(str_table)
+    
+    # diff_rel
+    str_table2 = 'diff_rel & {} & {:,.2f} & {:,.2f} & {:,.2f} & {:,.4f} & {:,.4f} & {:,.0f}'\
+    .format(str3,
+            np.nanmin(diff_rel),
+            np.nanmax(diff_rel),
+            np.nanstd(diff_rel),
+            np.nanmedian(diff_rel),
+            np.nanmean(diff_rel),
+            len(diff_rel))
+    print(str_table2)
 
     bottom, top = ax1.get_ylim()
     left, right = ax1.get_xlim()
@@ -1204,6 +1228,8 @@ for station_idx in range(len(station_list_main)):
             sat_stop_time = np.nan
             vza = np.nan
             sza = np.nan
+            ws0 = np.nan
+            ws1 = np.nan
             BW06_MU = np.nan
             flags_mask_ba = np.nan
             MedianCV = np.nan
@@ -1263,7 +1289,8 @@ for station_idx in range(len(station_list_main)):
             AOT_0865p50 = nc_f1.variables['AOT_0865p50'][:]
             sza = nc_f1.variables['sza_value'][:]
             vza = nc_f1.variables['vza_value'][:]
-
+            ws0 = nc_f1.variables['ws0_value'][:].tolist()
+            ws1 = nc_f1.variables['ws1_value'][:].tolist()
             #############################################################################                
             # Zibordi et al. 2009 #######################################################
             delta_time = 2# float in hours       
@@ -1898,7 +1925,9 @@ for station_idx in range(len(station_list_main)):
             except:
                 rhow_0665p00_fq_box_zi_mean = np.nan   
                                  
-            df_matchups = df_matchups.append({'station':station_list_main[station_idx],'sat_datetime':sat_stop_time,'insitu_datetime':ins_time[idx_min],'vza':vza,'sza':sza,\
+            df_matchups = df_matchups.append({'station':station_list_main[station_idx],\
+                     'sat_datetime':sat_stop_time,'insitu_datetime':ins_time[idx_min],\
+                     'vza':vza,'sza':sza,'ws0':ws0,'ws1':ws1,\
                      'BW06_MU':BW06_MU,'BW06_l2_mask':flags_mask_ba,\
                      'BW06: rhow_412_box':rhow_0412p50_fq_box_ba,'BW06: rho_412_filt_mean':mean_filtered_rhow_0412p50,\
                      'BW06: rhow_442_box':rhow_0442p50_fq_box_ba,'BW06: rho_442_filt_mean':mean_filtered_rhow_0442p50,\
@@ -2306,19 +2335,82 @@ if plot_flag:
     print(tabulate(df4, tablefmt='pipe', headers='keys',showindex=False))
 
 #%% plot both methods
-if plot_flag:
-    sat_same_zi_412p5 = sat_same_ba_412p5 = ins_same_zi_412p5 = ins_same_ba_412p5 = ins_same_station_412p5 = []
-    sat_same_zi_442p5 = sat_same_ba_442p5 = ins_same_zi_442p5 = ins_same_ba_442p5 = ins_same_station_442p5 = []
-    sat_same_zi_490p0 = sat_same_ba_490p0 = ins_same_zi_490p0 = ins_same_ba_490p0 = ins_same_station_490p0 = []
-    sat_same_zi_560p0 = sat_same_ba_560p0 = ins_same_zi_560p0 = ins_same_ba_560p0 = ins_same_station_560p0 = []
-    sat_same_zi_665p0 = sat_same_ba_665p0 = ins_same_zi_665p0 = ins_same_ba_665p0 = ins_same_station_665p0 = []
-    notation_flag = 0 # to display percentage difference in the plot
-    sat_same_zi_412p5, sat_same_ba_412p5, ins_same_zi_412p5, ins_same_ba_412p5, ins_same_station_412p5 = plot_both_methods('412.5',notation_flag,path_out,min_val=-3.00,max_val=5.0)
-    sat_same_zi_442p5, sat_same_ba_442p5, ins_same_zi_442p5, ins_same_ba_442p5, ins_same_station_442p5 = plot_both_methods('442.5',notation_flag,path_out,min_val=-3.00,max_val=6.2)
-    sat_same_zi_490p0, sat_same_ba_490p0, ins_same_zi_490p0, ins_same_ba_490p0, ins_same_station_490p0 = plot_both_methods('490.0',notation_flag,path_out,min_val=-2.00,max_val=8.0)
-    sat_same_zi_560p0, sat_same_ba_560p0, ins_same_zi_560p0, ins_same_ba_560p0, ins_same_station_560p0 = plot_both_methods('560.0',notation_flag,path_out,min_val=-0.50,max_val=6.0)
-    sat_same_zi_665p0, sat_same_ba_665p0, ins_same_zi_665p0, ins_same_ba_665p0, ins_same_station_665p0 = plot_both_methods('665.0',notation_flag,path_out,min_val=-0.60,max_val=4.0)
+# if True or plot_flag:
+#     sat_same_zi_412p5 = sat_same_ba_412p5 = ins_same_zi_412p5 = ins_same_ba_412p5 = ins_same_station_412p5 = []
+#     sat_same_zi_442p5 = sat_same_ba_442p5 = ins_same_zi_442p5 = ins_same_ba_442p5 = ins_same_station_442p5 = []
+#     sat_same_zi_490p0 = sat_same_ba_490p0 = ins_same_zi_490p0 = ins_same_ba_490p0 = ins_same_station_490p0 = []
+#     sat_same_zi_560p0 = sat_same_ba_560p0 = ins_same_zi_560p0 = ins_same_ba_560p0 = ins_same_station_560p0 = []
+#     sat_same_zi_665p0 = sat_same_ba_665p0 = ins_same_zi_665p0 = ins_same_ba_665p0 = ins_same_station_665p0 = []
+#     notation_flag = 0 # to display percentage difference in the plot
+#     sat_same_zi_412p5, sat_same_ba_412p5, ins_same_zi_412p5, ins_same_ba_412p5, ins_same_station_412p5 = plot_both_methods('412.5',notation_flag,path_out,min_val=-3.00,max_val=5.0)
+#     sat_same_zi_442p5, sat_same_ba_442p5, ins_same_zi_442p5, ins_same_ba_442p5, ins_same_station_442p5 = plot_both_methods('442.5',notation_flag,path_out,min_val=-3.00,max_val=6.2)
+#     sat_same_zi_490p0, sat_same_ba_490p0, ins_same_zi_490p0, ins_same_ba_490p0, ins_same_station_490p0 = plot_both_methods('490.0',notation_flag,path_out,min_val=-2.00,max_val=8.0)
+#     sat_same_zi_560p0, sat_same_ba_560p0, ins_same_zi_560p0, ins_same_ba_560p0, ins_same_station_560p0 = plot_both_methods('560.0',notation_flag,path_out,min_val=-0.50,max_val=6.0)
+#     sat_same_zi_665p0, sat_same_ba_665p0, ins_same_zi_665p0, ins_same_ba_665p0, ins_same_station_665p0 = plot_both_methods('665.0',notation_flag,path_out,min_val=-0.60,max_val=4.0)
+#%% stats for the common MUs
+def calc_matchup_stat(ins_data,sat_data):
+    # replace nan in y (sat data)
+    x = np.array(ins_data)
+    y = np.array(sat_data)
 
+    x = x[~np.isnan(y)] # it is assumed that only sat data could be nan
+    y = y[~np.isnan(y)]
+    # stats
+    N = len(x)
+    
+    # Generated linear fit
+    slope, intercept, r_value, p_value, std_err = stats.linregress(x,y)
+    r_sqr = r_value**2
+    
+    ref_obs = np.asarray(x)
+    sat_obs = np.asarray(y)
+    rmse_val = rmse(sat_obs,ref_obs)
+
+    diff = sat_obs-ref_obs 
+    rel_diff = 100*diff/ref_obs
+
+    # the mean of absolute (unsigned) percent differences (MAPD)
+    mean_abs_rel_diff = np.mean(np.abs(rel_diff))
+    
+    # the mean of relative (signed) percent differences (MPD)
+    mean_rel_diff = np.mean(rel_diff)
+   
+    # mean bias (MB)
+    mean_bias = np.mean(diff)
+
+    # mean absolute error (MAE or MAD)
+    mean_abs_error = np.mean(np.abs(diff))
+    return N, rmse_val, mean_abs_rel_diff, mean_rel_diff, mean_bias, mean_abs_error, r_sqr
+
+columns = ['Protocol','Wavelength','N','RMSD','MAPD','MPD','MB','MAD','r_sqr']
+df_stat_common = pd.DataFrame(columns=columns)
+
+notation_flag = 0 # to display percentage difference in the plot
+if True or plot_flag:
+    for wave in olci_wl_list:
+        sat_same_zi, sat_same_ba, ins_same_zi, ins_same_ba, ins_same_station \
+        = plot_both_methods(f'{wave:.1f}',notation_flag,path_out,min_val=plot_lims[f'{wave:.1f}'][0],max_val=plot_lims[f'{wave:.1f}'][1])
+    
+        # BW06
+        N, rmse_val, mean_abs_rel_diff, mean_rel_diff, mean_bias, mean_abs_error, r_sqr = calc_matchup_stat(ins_same_ba,sat_same_ba)
+        df_stat_common = df_stat_common.append({\
+            'Protocol':'BW06','Wavelength':wave,'N':N,'RMSD':rmse_val,'MAPD':mean_abs_rel_diff,'MPD':mean_rel_diff,'MB':mean_bias,'MAD':mean_abs_error,'r_sqr':r_sqr,\
+            },ignore_index=True)
+    
+        # Z09
+        N, rmse_val, mean_abs_rel_diff, mean_rel_diff, mean_bias, mean_abs_error, r_sqr = calc_matchup_stat(ins_same_zi,sat_same_zi)
+        df_stat_common = df_stat_common.append({\
+            'Protocol':'Z09','Wavelength':wave,'N':N,'RMSD':rmse_val,'MAPD':mean_abs_rel_diff,'MPD':mean_rel_diff,'MB':mean_bias,'MAD':mean_abs_error,'r_sqr':r_sqr,\
+            },ignore_index=True)
+    
+        # BW06 vs Z09
+        N, rmse_val, mean_abs_rel_diff, mean_rel_diff, mean_bias, mean_abs_error, r_sqr = calc_matchup_stat(sat_same_ba,sat_same_zi)
+        df_stat_common = df_stat_common.append({\
+            'Protocol':'BW06 vs Z09','Wavelength':wave,'N':N,'RMSD':rmse_val,'MAPD':mean_abs_rel_diff,'MPD':mean_rel_diff,'MB':mean_bias,'MAD':mean_abs_error,'r_sqr':r_sqr,\
+            },ignore_index=True)
+        
+    pd.set_option('precision', 4)
+    print(df_stat_common.to_latex(index=False))
 #%% plots for the common matchups
 # prot_name = 'zi_same'
 # sensor_name = 'OLCI'
@@ -3073,7 +3165,7 @@ core_pxs_count_490 = []
 core_pxs_count_560 = []
 core_pxs_count_665 = []
 
-if True or plot_flag:
+if plot_flag:
     rhow_412_core_incl_cnt = 0
     rhow_442_core_incl_cnt = 0
     rhow_490_core_incl_cnt = 0
@@ -3248,7 +3340,7 @@ if True or plot_flag:
 #%% histogram of how many pixels of Z09 are included in the calculation of BW06  
 bins = [0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5]
 kwargs2 = dict(histtype='step')         
-if True or plot_flag:
+if plot_flag:
     fig,axs = plt.subplots(2,3, facecolor='w',figsize=(20,8))
     counts, bins2 = np.histogram(core_pxs_count_412,bins=bins)
     axs[0,0].hist(bins2[:-1], bins2, weights=100*counts/counts.sum(),color='blue', **kwargs2)
@@ -3311,6 +3403,76 @@ if plot_flag:
         plt.show()
         # plt.show()
         # plt.close()
+#%% wind speed
+kwargs2 = dict(histtype='step') 
+dataset_list = ['all','all_MUs','common'] # all, all_MUs, common, notBW06_Z09, BW06_notZ09  ((df_matchups['BW06_MU']==True) | (df_matchups['Z09_MU']==True))
+
+for dataset_name in dataset_list:
+    for station in station_list_main:
+        if dataset_name == 'all':
+            df = df_matchups.loc[(df_matchups['station']==station)]
+        elif dataset_name == 'all_MUs':
+            df = df_matchups.loc[(df_matchups['station']==station) & ((df_matchups['BW06_MU'] == True) | (df_matchups['Z09_MU'] == True))]
+        elif dataset_name == 'common':
+            df = df_matchups.loc[(df_matchups['station']==station) & ((df_matchups['BW06_MU'] == True) & (df_matchups['Z09_MU'] == True))]
+        
+        df.reset_index(inplace=True)
+        
+        ws0 = df['ws0']
+        ws0 = np.array([np.array(xi) for xi in ws0])
+        ws1 = df['ws1']
+        ws1 = np.array([np.array(xi) for xi in ws1])
+        ws_mag = np.sqrt(ws0*ws0 + ws1*ws1)
+        
+        cv_560 = df['Z09: CV_560']
+        MedianCV = df['BW06: MedianCV']
+        
+        
+        fig = plt.figure(figsize = (20,10))
+        
+        plt.subplot(1,3,1)
+        counts, bins2 = np.histogram(ws_mag)
+        plt.hist(bins2[:-1], bins2, weights=100*counts/counts.sum(),color='blue', **kwargs2)
+        plt.xlabel('Wind Speed Magnitude (m/s)')
+        plt.ylabel('Frequency (%)')
+        
+        plt.subplot(1,3,2)
+        for idx in df.index:
+            if df.loc[idx,'BW06_MU'] == True:
+                plt.plot(ws_mag[idx],cv_560[idx],'ro',mfc='none',markersize=8)
+            if df.loc[idx,'Z09_MU'] == True:
+                plt.plot(ws_mag[idx],cv_560[idx],'bo')
+            if df.loc[idx,'BW06_MU'] == False and df.loc[idx,'Z09_MU'] == False:
+                plt.plot(ws_mag[idx],cv_560[idx],'kx')
+        plt.xlabel('Wind Speed Magnitude (m/s)')
+        plt.ylabel('Z09: cv_560')
+        plt.ylim([0,1])
+        
+        ax = plt.subplot(1,3,3)
+        for idx in df.index:
+            if df.loc[idx,'BW06_MU'] == True:
+                plt.plot(ws_mag[idx],MedianCV[idx],'ro',mfc='none',markersize=8)
+            if df.loc[idx,'Z09_MU'] == True:
+                plt.plot(ws_mag[idx],MedianCV[idx],'bo')
+            if df.loc[idx,'BW06_MU'] == False and df.loc[idx,'Z09_MU'] == False:
+                plt.plot(ws_mag[idx],MedianCV[idx],'kx')
+        plt.xlabel('Wind Speed Magnitude (m/s)')
+        plt.ylabel('BW06: MedianCV')
+        plt.ylim([0,1])
+       
+        plt.suptitle(f"{station}; {dataset_name}; Potential={ws_mag.shape[0]}")
+        
+        legend_BW06    = mlines.Line2D([], [], ls='None', ms=8, marker='o', c='white',mec='r', label='BW06')
+        legend_Z09     = mlines.Line2D([], [], ls='None', ms=8, marker='o', c='b',mec='None', label='Z09')
+        legend_none    = mlines.Line2D([], [], ls='None', ms=8, marker='x', c='k', label='None')
+           
+
+        leg1 = ax.legend(handles=[legend_BW06,legend_Z09,legend_none],\
+                loc='upper center',bbox_to_anchor=(0.5, 1.0),ncol=3,frameon=False,fontsize=10)                             
+        
+        ofname = os.path.join(path_out,'source',f'windspeed_{station}_{dataset_name}.pdf')
+        plt.savefig(ofname)
+        
 #%%
 # if __name__ == '__main__':
 #     main()   
