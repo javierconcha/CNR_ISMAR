@@ -63,6 +63,8 @@ station_n = {'Venise':1,'Galata_Platform':2,'Gloria':3,'Helsinki_Lighthouse':4,'
 
 msi_wl_list = [444,497,560,664]
 
+plot_flag = False
+
 def get_lat_lon_ins(station_name):
     if station_name == 'Galata_Platform': # Black Sea
         Latitude=43.044624
@@ -1504,358 +1506,391 @@ with open(path_to_list,'r') as file_list:
                   
 
 #%% plots  
-prot_name = 'ba' 
-sensor_name = 'MSI'
-rmse_val_0444p00_ba, mean_abs_rel_diff_0444p00_ba, mean_rel_diff_0444p00_ba, mean_bias_0444p00_ba, mean_abs_error_0444p00_ba, r_sqr_0444p00_ba \
-    = plot_scatter(\
-    matchups_Lwn_0444p00_fq_ins_ba,matchups_Lwn_0444p00_fq_sat_ba,'444.0',path_out,prot_name,sensor_name,\
-    matchups_Lwn_0444p00_fq_ins_ba_station,min_val=-0.50,max_val=3.50) 
-rmse_val_0497p00_ba, mean_abs_rel_diff_0497p00_ba, mean_rel_diff_0497p00_ba, mean_bias_0497p00_ba, mean_abs_error_0497p00_ba, r_sqr_0497p00_ba \
-    = plot_scatter(\
-    matchups_Lwn_0497p00_fq_ins_ba,matchups_Lwn_0497p00_fq_sat_ba,'497.0',path_out,prot_name,sensor_name,\
-    matchups_Lwn_0497p00_fq_ins_ba_station,min_val= 0.00,max_val=4.00) 
-rmse_val_0560p00_ba, mean_abs_rel_diff_0560p00_ba, mean_rel_diff_0560p00_ba, mean_bias_0560p00_ba, mean_abs_error_0560p00_ba, r_sqr_0560p00_ba \
-    = plot_scatter(\
-    matchups_Lwn_0560p00_fq_ins_ba,matchups_Lwn_0560p00_fq_sat_ba,'560.0',path_out,prot_name,sensor_name,\
-    matchups_Lwn_0560p00_fq_ins_ba_station,min_val= 0.00,max_val=4.00) 
-rmse_val_0664p00_ba, mean_abs_rel_diff_0664p00_ba, mean_rel_diff_0664p00_ba, mean_bias_0664p00_ba, mean_abs_error_0664p00_ba, r_sqr_0664p00_ba \
-    = plot_scatter(\
-    matchups_Lwn_0664p00_fq_ins_ba,matchups_Lwn_0664p00_fq_sat_ba,'664.0',path_out,prot_name,sensor_name,\
-    matchups_Lwn_0664p00_fq_ins_ba_station,min_val=-0.20,max_val=1.50) 
-
-#% plots  
-prot_name = 'pa' 
-sensor_name = 'MSI'
-rmse_val_0444p00_pa, mean_abs_rel_diff_0444p00_pa, mean_rel_diff_0444p00_pa, mean_bias_0444p00_pa, mean_abs_error_0444p00_pa, r_sqr_0444p00_pa \
-    = plot_scatter(\
-    matchups_Lwn_0444p00_fq_ins_pa,matchups_Lwn_0444p00_fq_sat_pa,'444.0',path_out,prot_name,sensor_name,\
-    matchups_Lwn_0444p00_fq_ins_pa_station,min_val=-0.50,max_val=3.50) 
-rmse_val_0497p00_pa, mean_abs_rel_diff_0497p00_pa, mean_rel_diff_0497p00_pa, mean_bias_0497p00_pa, mean_abs_error_0497p00_pa, r_sqr_0497p00_pa \
-    = plot_scatter(\
-    matchups_Lwn_0497p00_fq_ins_pa,matchups_Lwn_0497p00_fq_sat_pa,'497.0',path_out,prot_name,sensor_name,\
-    matchups_Lwn_0497p00_fq_ins_pa_station,min_val= 0.00,max_val=4.00) 
-rmse_val_0560p00_pa, mean_abs_rel_diff_0560p00_pa, mean_rel_diff_0560p00_pa, mean_bias_0560p00_pa, mean_abs_error_0560p00_pa, r_sqr_0560p00_pa \
-    = plot_scatter(\
-    matchups_Lwn_0560p00_fq_ins_pa,matchups_Lwn_0560p00_fq_sat_pa,'560.0',path_out,prot_name,sensor_name,\
-    matchups_Lwn_0560p00_fq_ins_pa_station,min_val= 0.00,max_val=4.00) 
-rmse_val_0664p00_pa, mean_abs_rel_diff_0664p00_pa, mean_rel_diff_0664p00_pa, mean_bias_0664p00_pa, mean_abs_error_0664p00_pa, r_sqr_0664p00_pa \
-    = plot_scatter(\
-    matchups_Lwn_0664p00_fq_ins_pa,matchups_Lwn_0664p00_fq_sat_pa,'664.0',path_out,prot_name,sensor_name,\
-    matchups_Lwn_0664p00_fq_ins_pa_station,min_val=-0.20,max_val=1.50) 
-
-#% plots  
-prot_name = 'va' 
-sensor_name = 'MSI'
-rmse_val_0444p00_va, mean_abs_rel_diff_0444p00_va, mean_rel_diff_0444p00_va, mean_bias_0444p00_va, mean_abs_error_0444p00_va, r_sqr_0444p00_va \
-    = plot_scatter(\
-    matchups_Lwn_0444p00_fq_ins_va,matchups_Lwn_0444p00_fq_sat_va,'444.0',path_out,prot_name,sensor_name,\
-    matchups_Lwn_0444p00_fq_ins_va_station,min_val=-0.50,max_val=3.50) 
-rmse_val_0497p00_va, mean_abs_rel_diff_0497p00_va, mean_rel_diff_0497p00_va, mean_bias_0497p00_va, mean_abs_error_0497p00_va, r_sqr_0497p00_va \
-    = plot_scatter(\
-    matchups_Lwn_0497p00_fq_ins_va,matchups_Lwn_0497p00_fq_sat_va,'497.0',path_out,prot_name,sensor_name,\
-    matchups_Lwn_0497p00_fq_ins_va_station,min_val= 0.00,max_val=4.00) 
-rmse_val_0560p00_va, mean_abs_rel_diff_0560p00_va, mean_rel_diff_0560p00_va, mean_bias_0560p00_va, mean_abs_error_0560p00_va, r_sqr_0560p00_va \
-    = plot_scatter(\
-    matchups_Lwn_0560p00_fq_ins_va,matchups_Lwn_0560p00_fq_sat_va,'560.0',path_out,prot_name,sensor_name,\
-    matchups_Lwn_0560p00_fq_ins_va_station,min_val= 0.00,max_val=4.00) 
-rmse_val_0664p00_va, mean_abs_rel_diff_0664p00_va, mean_rel_diff_0664p00_va, mean_bias_0664p00_va, mean_abs_error_0664p00_va, r_sqr_0664p00_va \
-    = plot_scatter(\
-    matchups_Lwn_0664p00_fq_ins_va,matchups_Lwn_0664p00_fq_sat_va,'664.0',path_out,prot_name,sensor_name,\
-    matchups_Lwn_0664p00_fq_ins_va_station,min_val=-0.20,max_val=1.50) 
-
-
-#%%
-# rmse
-rmse_ba = [rmse_val_0444p00_ba,rmse_val_0497p00_ba,rmse_val_0560p00_ba,rmse_val_0664p00_ba]
-rmse_pa = [rmse_val_0444p00_pa,rmse_val_0497p00_pa,rmse_val_0560p00_pa,rmse_val_0664p00_pa]
-rmse_va = [rmse_val_0444p00_va,rmse_val_0497p00_va,rmse_val_0560p00_va,rmse_val_0664p00_va]
-wv = [444.0,497.0,560.0,664.0]
-plt.figure()
-plt.plot(wv,rmse_ba,'-o')
-plt.plot(wv,rmse_pa,'-o')
-plt.plot(wv,rmse_va,'-o')
-plt.xlabel('Wavelength [nm]',fontsize=12)
-plt.ylabel('RMSD',fontsize=12)
-plt.show()
-
-ofname = 'S2A_rmse.pdf'
-ofname = os.path.join(path_out,'source',ofname)   
-plt.savefig(ofname, dpi=300)
-
-# mean_abs_rel_diff
-mean_abs_rel_diff_ba = [mean_abs_rel_diff_0444p00_ba,mean_abs_rel_diff_0497p00_ba,\
-    mean_abs_rel_diff_0560p00_ba,mean_abs_rel_diff_0664p00_ba]
-mean_abs_rel_diff_pa = [mean_abs_rel_diff_0444p00_pa,mean_abs_rel_diff_0497p00_pa,\
-    mean_abs_rel_diff_0560p00_pa,mean_abs_rel_diff_0664p00_pa]
-mean_abs_rel_diff_va = [mean_abs_rel_diff_0444p00_va,mean_abs_rel_diff_0497p00_va,\
-    mean_abs_rel_diff_0560p00_va,mean_abs_rel_diff_0664p00_va]    
-wv = [444.0,497.0,560.0,664.0]
-plt.figure()
-plt.plot(wv,mean_abs_rel_diff_ba,'-o')
-plt.plot(wv,mean_abs_rel_diff_pa,'-o')
-plt.plot(wv,mean_abs_rel_diff_va,'-o')
-plt.xlabel('Wavelength [nm]',fontsize=12)
-plt.ylabel('MAPD [%]',fontsize=12)
-# plt.legend(['Bailey and Werdell','Pahlevan','Vanhellemont'])
-plt.show()
-
-ofname = 'S2A_mean_abs_rel_diff.pdf'
-ofname = os.path.join(path_out,'source',ofname)   
-plt.savefig(ofname, dpi=300)
-
-# mean_rel_diff
-mean_rel_diff_ba = [mean_rel_diff_0444p00_ba,mean_rel_diff_0497p00_ba,\
-    mean_rel_diff_0560p00_ba,mean_rel_diff_0664p00_ba]
-mean_rel_diff_pa = [mean_rel_diff_0444p00_pa,mean_rel_diff_0497p00_pa,\
-    mean_rel_diff_0560p00_pa,mean_rel_diff_0664p00_pa]
-mean_rel_diff_va = [mean_rel_diff_0444p00_va,mean_rel_diff_0497p00_va,\
-    mean_rel_diff_0560p00_va,mean_rel_diff_0664p00_va]    
-wv = [444.0,497.0,560.0,664.0]
-plt.figure()
-plt.plot(wv,mean_rel_diff_ba,'-o')
-plt.plot(wv,mean_rel_diff_pa,'-o')
-plt.plot(wv,mean_rel_diff_va,'-o')
-plt.xlabel('Wavelength [nm]',fontsize=12)
-plt.ylabel('MPD [%]',fontsize=12)
-# plt.legend(['Bailey and Werdell','Pahlevan','Vanhellemont'])
-plt.show()    
-
-ofname = 'S2A_mean_rel_diff.pdf'
-ofname = os.path.join(path_out,'source',ofname)   
-plt.savefig(ofname, dpi=300)
-
-# r_sqr
-r_sqr_ba = [r_sqr_0444p00_ba,r_sqr_0497p00_ba,\
-    r_sqr_0560p00_ba,r_sqr_0664p00_ba]
-r_sqr_pa = [r_sqr_0444p00_pa,r_sqr_0497p00_pa,\
-    r_sqr_0560p00_pa,r_sqr_0664p00_pa]
-r_sqr_va = [r_sqr_0444p00_va,r_sqr_0497p00_va,\
-    r_sqr_0560p00_va,r_sqr_0664p00_va]    
-wv = [444.0,497.0,560.0,664.0]
-plt.figure()
-plt.plot(wv,r_sqr_ba,'-o')
-plt.plot(wv,r_sqr_pa,'-o')
-plt.plot(wv,r_sqr_va,'-o')
-plt.xlabel('Wavelength [nm]',fontsize=12)
-plt.ylabel('$r^2$',fontsize=12)
-# plt.legend(['Bailey and Werdell','Pahlevan','Vanhellemont'])
-plt.show()    
-
-ofname = 'S2A_r_sqr.pdf'
-ofname = os.path.join(path_out,'source',ofname)   
-plt.savefig(ofname, dpi=300)  
-
-# mean_bias
-mean_bias_ba = [mean_bias_0444p00_ba,mean_bias_0497p00_ba,\
-    mean_bias_0560p00_ba,mean_bias_0664p00_ba]
-mean_bias_pa = [mean_bias_0444p00_pa,mean_bias_0497p00_pa,\
-    mean_bias_0560p00_pa,mean_bias_0664p00_pa]
-mean_bias_va = [mean_bias_0444p00_va,mean_bias_0497p00_va,\
-    mean_bias_0560p00_va,mean_bias_0664p00_va]    
-wv = [444.0,497.0,560.0,664.0]
-plt.figure()
-plt.plot(wv,mean_bias_ba,'-o')
-plt.plot(wv,mean_bias_pa,'-o')
-plt.plot(wv,mean_bias_va,'-o')
-plt.xlabel('Wavelength [nm]',fontsize=12)
-plt.ylabel('MB',fontsize=12)
-# plt.legend(['Bailey and Werdell','Pahlevan','Vanhellemont'])
-plt.show()    
-
-ofname = 'S2A_mean_bias.pdf'
-ofname = os.path.join(path_out,'source',ofname)   
-plt.savefig(ofname, dpi=300)  
-
-# mean_abs_error or MAD
-mean_abs_error_ba = [mean_abs_error_0444p00_ba,mean_abs_error_0497p00_ba,\
-    mean_abs_error_0560p00_ba,mean_abs_error_0664p00_ba]
-mean_abs_error_pa = [mean_abs_error_0444p00_pa,mean_abs_error_0497p00_pa,\
-    mean_abs_error_0560p00_pa,mean_abs_error_0664p00_pa]
-mean_abs_error_va = [mean_abs_error_0444p00_va,mean_abs_error_0497p00_va,\
-    mean_abs_error_0560p00_va,mean_abs_error_0664p00_va]    
-wv = [444.0,497.0,560.0,664.0]
-plt.figure()
-plt.plot(wv,mean_abs_error_ba,'-o')
-plt.plot(wv,mean_abs_error_pa,'-o')
-plt.plot(wv,mean_abs_error_va,'-o')
-plt.xlabel('Wavelength [nm]',fontsize=12)
-plt.ylabel('MAD',fontsize=12)
-plt.legend(['BW06','IPK19','V19'])
-# plt.legend(['Bailey and Werdell','Pahlevan','Vanhellemont'])
-plt.show()    
-
-ofname = 'S2A_mean_abs_error.pdf'
-ofname = os.path.join(path_out,'source',ofname)   
-plt.savefig(ofname, dpi=300)  
+if plot_flag:
+    prot_name = 'ba' 
+    sensor_name = 'MSI'
+    rmse_val_0444p00_ba, mean_abs_rel_diff_0444p00_ba, mean_rel_diff_0444p00_ba, mean_bias_0444p00_ba, mean_abs_error_0444p00_ba, r_sqr_0444p00_ba \
+        = plot_scatter(\
+        matchups_Lwn_0444p00_fq_ins_ba,matchups_Lwn_0444p00_fq_sat_ba,'444.0',path_out,prot_name,sensor_name,\
+        matchups_Lwn_0444p00_fq_ins_ba_station,min_val=-0.50,max_val=3.50) 
+    rmse_val_0497p00_ba, mean_abs_rel_diff_0497p00_ba, mean_rel_diff_0497p00_ba, mean_bias_0497p00_ba, mean_abs_error_0497p00_ba, r_sqr_0497p00_ba \
+        = plot_scatter(\
+        matchups_Lwn_0497p00_fq_ins_ba,matchups_Lwn_0497p00_fq_sat_ba,'497.0',path_out,prot_name,sensor_name,\
+        matchups_Lwn_0497p00_fq_ins_ba_station,min_val= 0.00,max_val=4.00) 
+    rmse_val_0560p00_ba, mean_abs_rel_diff_0560p00_ba, mean_rel_diff_0560p00_ba, mean_bias_0560p00_ba, mean_abs_error_0560p00_ba, r_sqr_0560p00_ba \
+        = plot_scatter(\
+        matchups_Lwn_0560p00_fq_ins_ba,matchups_Lwn_0560p00_fq_sat_ba,'560.0',path_out,prot_name,sensor_name,\
+        matchups_Lwn_0560p00_fq_ins_ba_station,min_val= 0.00,max_val=4.00) 
+    rmse_val_0664p00_ba, mean_abs_rel_diff_0664p00_ba, mean_rel_diff_0664p00_ba, mean_bias_0664p00_ba, mean_abs_error_0664p00_ba, r_sqr_0664p00_ba \
+        = plot_scatter(\
+        matchups_Lwn_0664p00_fq_ins_ba,matchups_Lwn_0664p00_fq_sat_ba,'664.0',path_out,prot_name,sensor_name,\
+        matchups_Lwn_0664p00_fq_ins_ba_station,min_val=-0.20,max_val=1.50) 
+    
+    #% plots  
+    prot_name = 'pa' 
+    sensor_name = 'MSI'
+    rmse_val_0444p00_pa, mean_abs_rel_diff_0444p00_pa, mean_rel_diff_0444p00_pa, mean_bias_0444p00_pa, mean_abs_error_0444p00_pa, r_sqr_0444p00_pa \
+        = plot_scatter(\
+        matchups_Lwn_0444p00_fq_ins_pa,matchups_Lwn_0444p00_fq_sat_pa,'444.0',path_out,prot_name,sensor_name,\
+        matchups_Lwn_0444p00_fq_ins_pa_station,min_val=-0.50,max_val=3.50) 
+    rmse_val_0497p00_pa, mean_abs_rel_diff_0497p00_pa, mean_rel_diff_0497p00_pa, mean_bias_0497p00_pa, mean_abs_error_0497p00_pa, r_sqr_0497p00_pa \
+        = plot_scatter(\
+        matchups_Lwn_0497p00_fq_ins_pa,matchups_Lwn_0497p00_fq_sat_pa,'497.0',path_out,prot_name,sensor_name,\
+        matchups_Lwn_0497p00_fq_ins_pa_station,min_val= 0.00,max_val=4.00) 
+    rmse_val_0560p00_pa, mean_abs_rel_diff_0560p00_pa, mean_rel_diff_0560p00_pa, mean_bias_0560p00_pa, mean_abs_error_0560p00_pa, r_sqr_0560p00_pa \
+        = plot_scatter(\
+        matchups_Lwn_0560p00_fq_ins_pa,matchups_Lwn_0560p00_fq_sat_pa,'560.0',path_out,prot_name,sensor_name,\
+        matchups_Lwn_0560p00_fq_ins_pa_station,min_val= 0.00,max_val=4.00) 
+    rmse_val_0664p00_pa, mean_abs_rel_diff_0664p00_pa, mean_rel_diff_0664p00_pa, mean_bias_0664p00_pa, mean_abs_error_0664p00_pa, r_sqr_0664p00_pa \
+        = plot_scatter(\
+        matchups_Lwn_0664p00_fq_ins_pa,matchups_Lwn_0664p00_fq_sat_pa,'664.0',path_out,prot_name,sensor_name,\
+        matchups_Lwn_0664p00_fq_ins_pa_station,min_val=-0.20,max_val=1.50) 
+    
+    #% plots  
+    prot_name = 'va' 
+    sensor_name = 'MSI'
+    rmse_val_0444p00_va, mean_abs_rel_diff_0444p00_va, mean_rel_diff_0444p00_va, mean_bias_0444p00_va, mean_abs_error_0444p00_va, r_sqr_0444p00_va \
+        = plot_scatter(\
+        matchups_Lwn_0444p00_fq_ins_va,matchups_Lwn_0444p00_fq_sat_va,'444.0',path_out,prot_name,sensor_name,\
+        matchups_Lwn_0444p00_fq_ins_va_station,min_val=-0.50,max_val=3.50) 
+    rmse_val_0497p00_va, mean_abs_rel_diff_0497p00_va, mean_rel_diff_0497p00_va, mean_bias_0497p00_va, mean_abs_error_0497p00_va, r_sqr_0497p00_va \
+        = plot_scatter(\
+        matchups_Lwn_0497p00_fq_ins_va,matchups_Lwn_0497p00_fq_sat_va,'497.0',path_out,prot_name,sensor_name,\
+        matchups_Lwn_0497p00_fq_ins_va_station,min_val= 0.00,max_val=4.00) 
+    rmse_val_0560p00_va, mean_abs_rel_diff_0560p00_va, mean_rel_diff_0560p00_va, mean_bias_0560p00_va, mean_abs_error_0560p00_va, r_sqr_0560p00_va \
+        = plot_scatter(\
+        matchups_Lwn_0560p00_fq_ins_va,matchups_Lwn_0560p00_fq_sat_va,'560.0',path_out,prot_name,sensor_name,\
+        matchups_Lwn_0560p00_fq_ins_va_station,min_val= 0.00,max_val=4.00) 
+    rmse_val_0664p00_va, mean_abs_rel_diff_0664p00_va, mean_rel_diff_0664p00_va, mean_bias_0664p00_va, mean_abs_error_0664p00_va, r_sqr_0664p00_va \
+        = plot_scatter(\
+        matchups_Lwn_0664p00_fq_ins_va,matchups_Lwn_0664p00_fq_sat_va,'664.0',path_out,prot_name,sensor_name,\
+        matchups_Lwn_0664p00_fq_ins_va_station,min_val=-0.20,max_val=1.50) 
+    
+    
+    #%%
+    # rmse
+    rmse_ba = [rmse_val_0444p00_ba,rmse_val_0497p00_ba,rmse_val_0560p00_ba,rmse_val_0664p00_ba]
+    rmse_pa = [rmse_val_0444p00_pa,rmse_val_0497p00_pa,rmse_val_0560p00_pa,rmse_val_0664p00_pa]
+    rmse_va = [rmse_val_0444p00_va,rmse_val_0497p00_va,rmse_val_0560p00_va,rmse_val_0664p00_va]
+    wv = [444.0,497.0,560.0,664.0]
+    plt.figure()
+    plt.plot(wv,rmse_ba,'-o')
+    plt.plot(wv,rmse_pa,'-o')
+    plt.plot(wv,rmse_va,'-o')
+    plt.xlabel('Wavelength [nm]',fontsize=12)
+    plt.ylabel('RMSD',fontsize=12)
+    plt.show()
+    
+    ofname = 'S2A_rmse.pdf'
+    ofname = os.path.join(path_out,'source',ofname)   
+    plt.savefig(ofname, dpi=300)
+    
+    # mean_abs_rel_diff
+    mean_abs_rel_diff_ba = [mean_abs_rel_diff_0444p00_ba,mean_abs_rel_diff_0497p00_ba,\
+        mean_abs_rel_diff_0560p00_ba,mean_abs_rel_diff_0664p00_ba]
+    mean_abs_rel_diff_pa = [mean_abs_rel_diff_0444p00_pa,mean_abs_rel_diff_0497p00_pa,\
+        mean_abs_rel_diff_0560p00_pa,mean_abs_rel_diff_0664p00_pa]
+    mean_abs_rel_diff_va = [mean_abs_rel_diff_0444p00_va,mean_abs_rel_diff_0497p00_va,\
+        mean_abs_rel_diff_0560p00_va,mean_abs_rel_diff_0664p00_va]    
+    wv = [444.0,497.0,560.0,664.0]
+    plt.figure()
+    plt.plot(wv,mean_abs_rel_diff_ba,'-o')
+    plt.plot(wv,mean_abs_rel_diff_pa,'-o')
+    plt.plot(wv,mean_abs_rel_diff_va,'-o')
+    plt.xlabel('Wavelength [nm]',fontsize=12)
+    plt.ylabel('MAPD [%]',fontsize=12)
+    # plt.legend(['Bailey and Werdell','Pahlevan','Vanhellemont'])
+    plt.show()
+    
+    ofname = 'S2A_mean_abs_rel_diff.pdf'
+    ofname = os.path.join(path_out,'source',ofname)   
+    plt.savefig(ofname, dpi=300)
+    
+    # mean_rel_diff
+    mean_rel_diff_ba = [mean_rel_diff_0444p00_ba,mean_rel_diff_0497p00_ba,\
+        mean_rel_diff_0560p00_ba,mean_rel_diff_0664p00_ba]
+    mean_rel_diff_pa = [mean_rel_diff_0444p00_pa,mean_rel_diff_0497p00_pa,\
+        mean_rel_diff_0560p00_pa,mean_rel_diff_0664p00_pa]
+    mean_rel_diff_va = [mean_rel_diff_0444p00_va,mean_rel_diff_0497p00_va,\
+        mean_rel_diff_0560p00_va,mean_rel_diff_0664p00_va]    
+    wv = [444.0,497.0,560.0,664.0]
+    plt.figure()
+    plt.plot(wv,mean_rel_diff_ba,'-o')
+    plt.plot(wv,mean_rel_diff_pa,'-o')
+    plt.plot(wv,mean_rel_diff_va,'-o')
+    plt.xlabel('Wavelength [nm]',fontsize=12)
+    plt.ylabel('MPD [%]',fontsize=12)
+    # plt.legend(['Bailey and Werdell','Pahlevan','Vanhellemont'])
+    plt.show()    
+    
+    ofname = 'S2A_mean_rel_diff.pdf'
+    ofname = os.path.join(path_out,'source',ofname)   
+    plt.savefig(ofname, dpi=300)
+    
+    # r_sqr
+    r_sqr_ba = [r_sqr_0444p00_ba,r_sqr_0497p00_ba,\
+        r_sqr_0560p00_ba,r_sqr_0664p00_ba]
+    r_sqr_pa = [r_sqr_0444p00_pa,r_sqr_0497p00_pa,\
+        r_sqr_0560p00_pa,r_sqr_0664p00_pa]
+    r_sqr_va = [r_sqr_0444p00_va,r_sqr_0497p00_va,\
+        r_sqr_0560p00_va,r_sqr_0664p00_va]    
+    wv = [444.0,497.0,560.0,664.0]
+    plt.figure()
+    plt.plot(wv,r_sqr_ba,'-o')
+    plt.plot(wv,r_sqr_pa,'-o')
+    plt.plot(wv,r_sqr_va,'-o')
+    plt.xlabel('Wavelength [nm]',fontsize=12)
+    plt.ylabel('$r^2$',fontsize=12)
+    # plt.legend(['Bailey and Werdell','Pahlevan','Vanhellemont'])
+    plt.show()    
+    
+    ofname = 'S2A_r_sqr.pdf'
+    ofname = os.path.join(path_out,'source',ofname)   
+    plt.savefig(ofname, dpi=300)  
+    
+    # mean_bias
+    mean_bias_ba = [mean_bias_0444p00_ba,mean_bias_0497p00_ba,\
+        mean_bias_0560p00_ba,mean_bias_0664p00_ba]
+    mean_bias_pa = [mean_bias_0444p00_pa,mean_bias_0497p00_pa,\
+        mean_bias_0560p00_pa,mean_bias_0664p00_pa]
+    mean_bias_va = [mean_bias_0444p00_va,mean_bias_0497p00_va,\
+        mean_bias_0560p00_va,mean_bias_0664p00_va]    
+    wv = [444.0,497.0,560.0,664.0]
+    plt.figure()
+    plt.plot(wv,mean_bias_ba,'-o')
+    plt.plot(wv,mean_bias_pa,'-o')
+    plt.plot(wv,mean_bias_va,'-o')
+    plt.xlabel('Wavelength [nm]',fontsize=12)
+    plt.ylabel('MB',fontsize=12)
+    # plt.legend(['Bailey and Werdell','Pahlevan','Vanhellemont'])
+    plt.show()    
+    
+    ofname = 'S2A_mean_bias.pdf'
+    ofname = os.path.join(path_out,'source',ofname)   
+    plt.savefig(ofname, dpi=300)  
+    
+    # mean_abs_error or MAD
+    mean_abs_error_ba = [mean_abs_error_0444p00_ba,mean_abs_error_0497p00_ba,\
+        mean_abs_error_0560p00_ba,mean_abs_error_0664p00_ba]
+    mean_abs_error_pa = [mean_abs_error_0444p00_pa,mean_abs_error_0497p00_pa,\
+        mean_abs_error_0560p00_pa,mean_abs_error_0664p00_pa]
+    mean_abs_error_va = [mean_abs_error_0444p00_va,mean_abs_error_0497p00_va,\
+        mean_abs_error_0560p00_va,mean_abs_error_0664p00_va]    
+    wv = [444.0,497.0,560.0,664.0]
+    plt.figure()
+    plt.plot(wv,mean_abs_error_ba,'-o')
+    plt.plot(wv,mean_abs_error_pa,'-o')
+    plt.plot(wv,mean_abs_error_va,'-o')
+    plt.xlabel('Wavelength [nm]',fontsize=12)
+    plt.ylabel('MAD',fontsize=12)
+    plt.legend(['BW06','IPK19','V19'])
+    # plt.legend(['Bailey and Werdell','Pahlevan','Vanhellemont'])
+    plt.show()    
+    
+    ofname = 'S2A_mean_abs_error.pdf'
+    ofname = os.path.join(path_out,'source',ofname)   
+    plt.savefig(ofname, dpi=300)  
 
 #            print(ins_time)
 #%% all approaches comparison
-notation_flag = 0 # to display percentage difference in the plot
-plot_all_methods('444.0',notation_flag,path_out,min_val=-2.00,max_val=4.0)
-plot_all_methods('497.0',notation_flag,path_out,min_val=-1.00,max_val=8.0)
-plot_all_methods('560.0',notation_flag,path_out,min_val=-1.00,max_val=6.0)
-plot_all_methods('664.0',notation_flag,path_out,min_val=-0.60,max_val=2.0)                 
+if plot_flag:
+    notation_flag = 0 # to display percentage difference in the plot
+    plot_all_methods('444.0',notation_flag,path_out,min_val=-2.00,max_val=4.0)
+    plot_all_methods('497.0',notation_flag,path_out,min_val=-1.00,max_val=8.0)
+    plot_all_methods('560.0',notation_flag,path_out,min_val=-1.00,max_val=6.0)
+    plot_all_methods('664.0',notation_flag,path_out,min_val=-0.60,max_val=2.0)                 
 #%% maps valid pixels
-for station in station_list_main:
-    station_idx = station_list_main.index(station)
-    fig = plt.figure()
-    plt.subplot(2,4,1)
-    plt.imshow(map_valid_pxs_ba[station_idx,0,:,:],interpolation='none')
-    plt.colorbar()
-    plt.title('BW06: 444 nm')
-
-    plt.subplot(2,4,2)
-    plt.imshow(map_valid_pxs_ba[station_idx,1,:,:],interpolation='none')
-    plt.colorbar()
-    plt.title('BW06: 497 nm')
-
-    plt.subplot(2,4,3)
-    plt.imshow(map_valid_pxs_ba[station_idx,2,:,:],interpolation='none')
-    plt.colorbar()
-    plt.title('BW06: 560 nm')
-
-    plt.subplot(2,4,4)
-    plt.imshow(map_valid_pxs_ba[station_idx,3,:,:],interpolation='none')
-    plt.colorbar()
-    plt.title('BW06: 664 nm')
-
-    plt.subplot(2,4,5)
-    if map_valid_pxs_pa[station_idx,0,:,:].sum() > 0:
-        minval = np.min(map_valid_pxs_pa[station_idx,0,np.nonzero(map_valid_pxs_pa[station_idx,0,:,:])])
-    else:
-        minval = 0
-    plt.imshow(map_valid_pxs_pa[station_idx,0,:,:],interpolation='none',vmin=minval)
-    plt.colorbar()
-    plt.title('IPK19: 444 nm')
-
-    plt.subplot(2,4,6)
-    if map_valid_pxs_pa[station_idx,1,:,:].sum() > 0:
-        minval = np.min(map_valid_pxs_pa[station_idx,1,np.nonzero(map_valid_pxs_pa[station_idx,1,:,:])])
-    else:
-        minval = 0
-    plt.imshow(map_valid_pxs_pa[station_idx,1,:,:],interpolation='none',vmin=minval)
-    plt.colorbar()
-    plt.title('IPK19: 497 nm')
-
-    plt.subplot(2,4,7)
-    if map_valid_pxs_pa[station_idx,2,:,:].sum() > 0:
-        minval = np.min(map_valid_pxs_pa[station_idx,2,np.nonzero(map_valid_pxs_pa[station_idx,2,:,:])])
-    else:
-        minval = 0
-    plt.imshow(map_valid_pxs_pa[station_idx,2,:,:],interpolation='none',vmin=minval)
-    plt.colorbar()
-    plt.title('IPK19: 560 nm')
-
-    plt.subplot(2,4,8)
-    if map_valid_pxs_pa[station_idx,3,:,:].sum() > 0:
-        minval = np.min(map_valid_pxs_pa[station_idx,3,np.nonzero(map_valid_pxs_pa[station_idx,3,:,:])])
-    else:
-        minval = 0
-    plt.imshow(map_valid_pxs_pa[station_idx,3,:,:],interpolation='none',vmin=minval)
-    plt.colorbar()
-    plt.title('IPK19: 664 nm')
+if plot_flag:
+    for station in station_list_main:
+        station_idx = station_list_main.index(station)
+        fig = plt.figure()
+        plt.subplot(2,4,1)
+        plt.imshow(map_valid_pxs_ba[station_idx,0,:,:],interpolation='none')
+        plt.colorbar()
+        plt.title('BW06: 444 nm')
     
-    title_str = f'MSI Valid Pixels Maps - {station}'
-    fig.suptitle(title_str)
+        plt.subplot(2,4,2)
+        plt.imshow(map_valid_pxs_ba[station_idx,1,:,:],interpolation='none')
+        plt.colorbar()
+        plt.title('BW06: 497 nm')
     
-    mng = plt.get_current_fig_manager()
-    mng.full_screen_toggle()
-    plt.show()
+        plt.subplot(2,4,3)
+        plt.imshow(map_valid_pxs_ba[station_idx,2,:,:],interpolation='none')
+        plt.colorbar()
+        plt.title('BW06: 560 nm')
     
-    plt.savefig(os.path.join(path_out,title_str.replace(' ','_')+'.png'))
+        plt.subplot(2,4,4)
+        plt.imshow(map_valid_pxs_ba[station_idx,3,:,:],interpolation='none')
+        plt.colorbar()
+        plt.title('BW06: 664 nm')
+    
+        plt.subplot(2,4,5)
+        if map_valid_pxs_pa[station_idx,0,:,:].sum() > 0:
+            minval = np.min(map_valid_pxs_pa[station_idx,0,np.nonzero(map_valid_pxs_pa[station_idx,0,:,:])])
+        else:
+            minval = 0
+        plt.imshow(map_valid_pxs_pa[station_idx,0,:,:],interpolation='none',vmin=minval)
+        plt.colorbar()
+        plt.title('IPK19: 444 nm')
+    
+        plt.subplot(2,4,6)
+        if map_valid_pxs_pa[station_idx,1,:,:].sum() > 0:
+            minval = np.min(map_valid_pxs_pa[station_idx,1,np.nonzero(map_valid_pxs_pa[station_idx,1,:,:])])
+        else:
+            minval = 0
+        plt.imshow(map_valid_pxs_pa[station_idx,1,:,:],interpolation='none',vmin=minval)
+        plt.colorbar()
+        plt.title('IPK19: 497 nm')
+    
+        plt.subplot(2,4,7)
+        if map_valid_pxs_pa[station_idx,2,:,:].sum() > 0:
+            minval = np.min(map_valid_pxs_pa[station_idx,2,np.nonzero(map_valid_pxs_pa[station_idx,2,:,:])])
+        else:
+            minval = 0
+        plt.imshow(map_valid_pxs_pa[station_idx,2,:,:],interpolation='none',vmin=minval)
+        plt.colorbar()
+        plt.title('IPK19: 560 nm')
+    
+        plt.subplot(2,4,8)
+        if map_valid_pxs_pa[station_idx,3,:,:].sum() > 0:
+            minval = np.min(map_valid_pxs_pa[station_idx,3,np.nonzero(map_valid_pxs_pa[station_idx,3,:,:])])
+        else:
+            minval = 0
+        plt.imshow(map_valid_pxs_pa[station_idx,3,:,:],interpolation='none',vmin=minval)
+        plt.colorbar()
+        plt.title('IPK19: 664 nm')
+        
+        title_str = f'MSI Valid Pixels Maps - {station}'
+        fig.suptitle(title_str)
+        
+        mng = plt.get_current_fig_manager()
+        mng.full_screen_toggle()
+        plt.show()
+        
+        plt.savefig(os.path.join(path_out,title_str.replace(' ','_')+'.png'))
 
 #%% mean in situ spectra
 msi_wl_list = [413,442,491,530,551,668,870,1018]
 columns = ['station','date','time','wl','spectra']
 df_ins_spectra = pd.DataFrame(columns=columns)
-
-with open(path_to_list,'r') as file_list:
-    for cnt, file_name in enumerate(file_list):
-
-        folder_name = file_name.split('/')[1]
-        station_name = folder_name[:-15]
-        station_idx = station_list_main.index(station_name)
-
-        # in situ data        
-        with open(os.path.join(path_data,'S2A',file_name[2:-1]), 'r') as file:
-            ins_time = []
-            # Date
-            line_num_date = 3-1
-            line_num_time = 4-1
-            ins_all_lines = file.readlines()
-            line_date = ins_all_lines[line_num_date]   
-            line_time = ins_all_lines[line_num_time] 
-            
-            str_list_date = line_date[:-1].replace('=',',').split(',')
-            str_list_time = line_time[:-1].replace('=',',').split(',')
-            
-            n_ins = len(str_list_date)-1
-            for i in range(n_ins):
-                date_and_time_str = str_list_date[1:][i]+' '+str_list_time[1:][i]
-                date_format = "%d/%m/%Y %H:%M:%S"
-
-                Lwn_fQ_413  = float(ins_all_lines[111-1][:-1].replace('=',',').split(',')[i+1])  # 111
-                Lwn_fQ_442  = float(ins_all_lines[112-1][:-1].replace('=',',').split(',')[i+1])  # 112
-                Lwn_fQ_491  = float(ins_all_lines[113-1][:-1].replace('=',',').split(',')[i+1])  # 113
-                Lwn_fQ_530  = float(ins_all_lines[114-1][:-1].replace('=',',').split(',')[i+1])  # 114
-                Lwn_fQ_551  = float(ins_all_lines[115-1][:-1].replace('=',',').split(',')[i+1])  # 115
-                Lwn_fQ_668  = float(ins_all_lines[116-1][:-1].replace('=',',').split(',')[i+1])  # 116
-                Lwn_fQ_870  = float(ins_all_lines[117-1][:-1].replace('=',',').split(',')[i+1])  # 117
-                Lwn_fQ_1018 = float(ins_all_lines[118-1][:-1].replace('=',',').split(',')[i+1])  # 118
-            
-                spectra = [Lwn_fQ_413,Lwn_fQ_442,Lwn_fQ_491,Lwn_fQ_530,Lwn_fQ_551,Lwn_fQ_668,Lwn_fQ_870,Lwn_fQ_1018]
-                new_spectra = [x if x!=-999 else np.nan for x in spectra]
-                spectra = new_spectra
-                # spectra[spectra==-999]=np.nan
-
-                ExactWavelength_413  = float(ins_all_lines[124-1][:-1].replace('=',',').split(',')[i+1]) # 124
-                ExactWavelength_442  = float(ins_all_lines[125-1][:-1].replace('=',',').split(',')[i+1]) # 125
-                ExactWavelength_491  = float(ins_all_lines[126-1][:-1].replace('=',',').split(',')[i+1]) # 126
-                ExactWavelength_530  = float(ins_all_lines[127-1][:-1].replace('=',',').split(',')[i+1]) # 127
-                ExactWavelength_551  = float(ins_all_lines[128-1][:-1].replace('=',',').split(',')[i+1]) # 128
-                ExactWavelength_668  = float(ins_all_lines[129-1][:-1].replace('=',',').split(',')[i+1]) # 129
-                ExactWavelength_870  = float(ins_all_lines[130-1][:-1].replace('=',',').split(',')[i+1]) # 130
-                ExactWavelength_1018 = float(ins_all_lines[131-1][:-1].replace('=',',').split(',')[i+1]) # 131
-
-                wl = [ExactWavelength_413,ExactWavelength_442,ExactWavelength_491,ExactWavelength_530,\
-                        ExactWavelength_551,ExactWavelength_668,ExactWavelength_870,ExactWavelength_1018]
+if True or plot_flag:
+    with open(path_to_list,'r') as file_list:
+        for cnt, file_name in enumerate(file_list):
+    
+            folder_name = file_name.split('/')[1]
+            station_name = folder_name[:-15]
+            station_idx = station_list_main.index(station_name)
+    
+            # in situ data        
+            with open(os.path.join(path_data,'S2A',file_name[2:-1]), 'r') as file:
+                ins_time = []
+                # Date
+                line_num_date = 3-1
+                line_num_time = 4-1
+                ins_all_lines = file.readlines()
+                line_date = ins_all_lines[line_num_date]   
+                line_time = ins_all_lines[line_num_time] 
                 
-                df_ins_spectra = df_ins_spectra.append({'station':station_name,'wl':wl,\
-                                                        'date':str_list_date[i+1],'time':str_list_time[i+1],\
-                                                        'spectra':spectra},ignore_index=True)
-#%%                
-station_list = df_ins_spectra['station'].unique().tolist()
-fs = 24
-plt.rc('xtick',labelsize=fs)
-plt.rc('ytick',labelsize=fs)
-for station in station_list:
-    df = df_ins_spectra.loc[(df_ins_spectra['station']==station)]
-    spectra = np.ma.array(df['spectra'].replace(-999,np.nan).tolist()).mean(axis=0)
-    spectra = np.ma.masked_invalid(spectra)
-    wl = np.array(df['wl'].tolist()).mean(axis=0)
+                str_list_date = line_date[:-1].replace('=',',').split(',')
+                str_list_time = line_time[:-1].replace('=',',').split(',')
+                
+                n_ins = len(str_list_date)-1
+                for i in range(n_ins):
+                    date_and_time_str = str_list_date[1:][i]+' '+str_list_time[1:][i]
+                    date_format = "%d/%m/%Y %H:%M:%S"
     
-    if station in ['Palgrunden','USC_SEAPRISM_2']:
-        plt.figure(figsize=(12,4.0))
+                    Lwn_fQ_413  = float(ins_all_lines[111-1][:-1].replace('=',',').split(',')[i+1])  # 111
+                    Lwn_fQ_442  = float(ins_all_lines[112-1][:-1].replace('=',',').split(',')[i+1])  # 112
+                    Lwn_fQ_491  = float(ins_all_lines[113-1][:-1].replace('=',',').split(',')[i+1])  # 113
+                    Lwn_fQ_530  = float(ins_all_lines[114-1][:-1].replace('=',',').split(',')[i+1])  # 114
+                    Lwn_fQ_551  = float(ins_all_lines[115-1][:-1].replace('=',',').split(',')[i+1])  # 115
+                    Lwn_fQ_668  = float(ins_all_lines[116-1][:-1].replace('=',',').split(',')[i+1])  # 116
+                    Lwn_fQ_870  = float(ins_all_lines[117-1][:-1].replace('=',',').split(',')[i+1])  # 117
+                    Lwn_fQ_1018 = float(ins_all_lines[118-1][:-1].replace('=',',').split(',')[i+1])  # 118
+                
+                    spectra = [Lwn_fQ_413,Lwn_fQ_442,Lwn_fQ_491,Lwn_fQ_530,Lwn_fQ_551,Lwn_fQ_668,Lwn_fQ_870,Lwn_fQ_1018]
+                    new_spectra = [x if x!=-999 else np.nan for x in spectra]
+                    spectra = new_spectra
+    
+                    ExactWavelength_413  = float(ins_all_lines[124-1][:-1].replace('=',',').split(',')[i+1]) # 124
+                    ExactWavelength_442  = float(ins_all_lines[125-1][:-1].replace('=',',').split(',')[i+1]) # 125
+                    ExactWavelength_491  = float(ins_all_lines[126-1][:-1].replace('=',',').split(',')[i+1]) # 126
+                    ExactWavelength_530  = float(ins_all_lines[127-1][:-1].replace('=',',').split(',')[i+1]) # 127
+                    ExactWavelength_551  = float(ins_all_lines[128-1][:-1].replace('=',',').split(',')[i+1]) # 128
+                    ExactWavelength_668  = float(ins_all_lines[129-1][:-1].replace('=',',').split(',')[i+1]) # 129
+                    ExactWavelength_870  = float(ins_all_lines[130-1][:-1].replace('=',',').split(',')[i+1]) # 130
+                    ExactWavelength_1018 = float(ins_all_lines[131-1][:-1].replace('=',',').split(',')[i+1]) # 131
+    
+                    wl = [ExactWavelength_413,ExactWavelength_442,ExactWavelength_491,ExactWavelength_530,\
+                            ExactWavelength_551,ExactWavelength_668,ExactWavelength_870,ExactWavelength_1018]
+                    
+                    df_ins_spectra = df_ins_spectra.append({'station':station_name,'wl':wl,\
+                                                            'date':str_list_date[i+1],'time':str_list_time[i+1],\
+                                                            'spectra':spectra},ignore_index=True)
+#%%
+import matplotlib.pyplot as plt
+# plt.style.use('ggplot') # this was just used for the examples
+def percentile_plot(x, y, percentiles, color='r', plot_mean=True, plot_median=False, line_color='k', **kwargs):
+    # calculate the lower and upper percentile groups, skipping 50 percentile
+    perc1 = np.percentile(y, percentiles[0:int(len(percentiles)/2)], axis=0)
+    perc2 = np.percentile(y, percentiles[int(len(percentiles)/2):], axis=0)
+
+    if 'alpha' in kwargs:
+        alpha = kwargs.pop('alpha')
     else:
-        plt.figure(figsize=(12,3.5))
+        alpha = 1/len(percentiles)
+    # fill lower and upper percentile groups
+    for p1, p2 in zip(perc1, perc2):
+        plt.fill_between(x, p1, p2, alpha=alpha, color=color, edgecolor=None)
+
+    if plot_mean:
+        plt.plot(x, np.mean(y, axis=0), color=line_color)
+
+    if plot_median:
+        plt.plot(x, np.median(y, axis=0), color=line_color)
+    
+    return plt.gca()
+
+if True or plot_flag:                
+    station_list = df_ins_spectra['station'].unique().tolist()
+    fs = 24
+    plt.rc('xtick',labelsize=fs)
+    plt.rc('ytick',labelsize=fs)
+    for station in station_list:
+        df = df_ins_spectra.loc[(df_ins_spectra['station']==station)]
+        y = np.ma.array(df['spectra'].replace(-999.0,np.nan).tolist())
+        # spectra = np.ma.masked_invalid(spectra)
+        x = np.array(df['wl'].tolist()).mean(axis=0)
         
-    plt.plot(wl[~spectra.mask],spectra[~spectra.mask],'k',linewidth=4)
-    plt.xlabel('Wavelength (nm)',fontsize=fs)
-    plt.ylabel('$L^{PRS}_{WN}$',fontsize=fs)
-    plt.xlim([400,1050])
-    plt.ylim([0,3])
-    plt.title(f"{station_n[station]} {station.replace('_',' ')}",x=0.5,y=0.8,fontsize=fs+6)
-    
-    if station not in ['Palgrunden','USC_SEAPRISM_2']:
-        plt.gca().axes.get_xaxis().set_visible(False)
-    else:
-        plt.gcf().subplots_adjust(bottom=0.20)
-    
-    ofname = os.path.join(path_out,'source',f'spectra_msi_{station}.pdf')
-    plt.savefig(ofname)
-    plt.show()
-    # plt.close()
-# plt.legend(station_list)    
+        if station in ['Palgrunden','USC_SEAPRISM_2']:
+            plt.figure(figsize=(12,4.0))
+        else:
+            plt.figure(figsize=(12,3.5))
+            
+        if station == 'Palgrunden':
+            x = x[np.isfinite(y[0])]
+            y = y[:,np.isfinite(y[0])]
+            
+            
+            
+        percentiles =[5,25,75,95]
+        percentile_plot(x,y,percentiles , plot_median=False, plot_mean=True, color='g', line_color='navy')
+        plt.xlabel('Wavelength (nm)',fontsize=fs)
+        plt.ylabel('$L^{PRS}_{WN}$',fontsize=fs)
+        plt.xlim([400,700])
+        plt.ylim([0,4])
+        plt.title(f"{station_n[station]} {station.replace('_',' ')}",x=0.5,y=0.8,fontsize=fs+6)
+        
+        if station not in ['Palgrunden','USC_SEAPRISM_2']:
+            plt.gca().axes.get_xaxis().set_visible(False)
+        else:
+            plt.gcf().subplots_adjust(bottom=0.20)
+        
+        ofname = os.path.join(path_out,'source',f'spectra_msi_{station}.pdf')
+        plt.savefig(ofname)
+        plt.show()
+        # plt.close()
+    # plt.legend(station_list)    
 #%%
 #if __name__ == '__main__':
 #    main()  

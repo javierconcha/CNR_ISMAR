@@ -65,6 +65,10 @@ color_dict = dict({\
 station_n = {'Venise':1,'Galata_Platform':2,'Gloria':3,'Helsinki_Lighthouse':4,'Gustav_Dalen_Tower':5,\
              'Palgrunden':6,'Thornton_C-power':7,'LISCO':8,'Lake_Erie':9,'WaveCIS_Site_CSI_6':10,\
                  'USC_SEAPRISM':11,'USC_SEAPRISM_2':12}
+    
+station_list_ALL = ['Galata_Platform','Gustav_Dalen_Tower','Gloria','Helsinki_Lighthouse','Venise',\
+                'LISCO','Palgrunden','Thornton_C-power','USC_SEAPRISM','USC_SEAPRISM_2',\
+                'WaveCIS_Site_CSI_6','Lake_Erie']
  
 plot_lims = dict({\
  '412.5':[-3.00,5.0],\
@@ -110,6 +114,28 @@ root group (NETCDF4 data model, file format HDF5):
         float32 O3(Time)
 """
 #%%
+def open_insitu(station):
+    
+    #    filename = station_name+'_20V3_20190927_20200110.nc'
+    filename = station+'_20V3_20160426_20200206.nc'
+    # filename = station_name+'_20V3_20180622_20180822.nc'
+    filename_insitu = os.path.join(path,filename)
+    if not os.path.exists(filename_insitu):
+        print('File does not exist')
+        
+    nc_f0 = Dataset(filename_insitu,'r')
+
+    Time = nc_f0.variables['Time'][:]
+    Level = nc_f0.variables['Level'][:]
+    Julian_day = nc_f0.variables['Julian_day'][:]
+    Exact_wavelengths = nc_f0.variables['Exact_wavelengths'][:]
+    Lwn_fonQ = nc_f0.variables['Lwn_fonQ'][:]
+
+    nc_f0.close()
+    
+    return Time, Level, Julian_day, Exact_wavelengths, Lwn_fonQ
+
+
 def create_OLCI_list(path_main,Time,year_vec,month_vec,doy_vec,day_vec):
     #% build L2 filename based on date and see if it exist
     """
@@ -761,6 +787,20 @@ def plot_both_methods(wl_str,notation_flag,path_out,min_val,max_val):
 
     #%   scatter plot with both methods
     plt.figure()
+    
+    for cnt, line in enumerate(ins_ba_station):
+            if ins_ba_station[cnt] == 'Venise':
+                mrk_style = 'xr'
+            elif ins_ba_station[cnt] == 'Gloria':
+                mrk_style = 'xg'
+            elif ins_ba_station[cnt] == 'Galata_Platform':
+                mrk_style = 'xb'
+            elif ins_ba_station[cnt] == 'Helsinki_Lighthouse':
+                mrk_style = 'xm'
+            elif ins_ba_station[cnt] == 'Gustav_Dalen_Tower':
+                mrk_style = 'xc'
+            plt.plot(ins_ba[cnt], sat_ba[cnt],mrk_style,alpha=0.5)
+    
     for cnt, line in enumerate(ins_zi_station):
             if ins_zi_station[cnt] == 'Venise':
                 mrk_style = '+r'
@@ -789,20 +829,35 @@ def plot_both_methods(wl_str,notation_flag,path_out,min_val,max_val):
                 if notation_flag:
                     plt.text(ins_zi[cnt], sat_zi[cnt],str1)
             else:
-                plt.plot(ins_zi[cnt], sat_zi[cnt],mrk_style)
+                plt.plot(ins_zi[cnt], sat_zi[cnt],mrk_style,alpha=0.5) # for not common matchups
+
+    # for cnt, line in enumerate(ins_same_station):
+    #     if ins_same_station[cnt] == 'Venise':
+    #         mrk_style = '+r'
+    #     elif ins_same_station[cnt] == 'Gloria':
+    #         mrk_style = '+g'
+    #     elif ins_same_station[cnt] == 'Galata_Platform':
+    #         mrk_style = '+b'
+    #     elif ins_same_station[cnt] == 'Helsinki_Lighthouse':
+    #         mrk_style = '+m'
+    #     elif ins_same_station[cnt] == 'Gustav_Dalen_Tower':
+    #             mrk_style = '+c'
                 
-    for cnt, line in enumerate(ins_ba_station):
-            if ins_ba_station[cnt] == 'Venise':
-                mrk_style = 'xr'
-            elif ins_ba_station[cnt] == 'Gloria':
-                mrk_style = 'xg'
-            elif ins_ba_station[cnt] == 'Galata_Platform':
-                mrk_style = 'xb'
-            elif ins_ba_station[cnt] == 'Helsinki_Lighthouse':
-                mrk_style = 'xm'
-            elif ins_ba_station[cnt] == 'Gustav_Dalen_Tower':
-                mrk_style = 'xc'
-            plt.plot(ins_ba[cnt], sat_ba[cnt],mrk_style)
+    #     plt.plot(ins_same_zi[cnt], sat_same_zi[cnt],mrk_style)
+                
+    for cnt, line in enumerate(ins_same_station): # to plot also BW06 without transparency
+        if ins_same_station[cnt] == 'Venise':
+            mrk_style = 'xr'
+        elif ins_same_station[cnt] == 'Gloria':
+            mrk_style = 'xg'
+        elif ins_same_station[cnt] == 'Galata_Platform':
+            mrk_style = 'xb'
+        elif ins_same_station[cnt] == 'Helsinki_Lighthouse':
+            mrk_style = 'xm'
+        elif ins_same_station[cnt] == 'Gustav_Dalen_Tower':
+            mrk_style = 'xc'
+        
+        plt.plot(ins_same_ba[cnt], sat_same_ba[cnt],mrk_style)
 
     plt.axis([min_val, max_val, min_val, max_val])
     plt.gca().set_aspect('equal', adjustable='box')
@@ -1171,27 +1226,6 @@ df_CVs_zi = pd.DataFrame(columns=columns)
 data_masked_Gloria = []
 data_masked_Gloria_value = []
 
-def open_insitu(station):
-    
-    #    filename = station_name+'_20V3_20190927_20200110.nc'
-    filename = station+'_20V3_20160426_20200206.nc'
-    # filename = station_name+'_20V3_20180622_20180822.nc'
-    filename_insitu = os.path.join(path,filename)
-    if not os.path.exists(filename_insitu):
-        print('File does not exist')
-        
-    nc_f0 = Dataset(filename_insitu,'r')
-
-    Time = nc_f0.variables['Time'][:]
-    Level = nc_f0.variables['Level'][:]
-    Julian_day = nc_f0.variables['Julian_day'][:]
-    Exact_wavelengths = nc_f0.variables['Exact_wavelengths'][:]
-    Lwn_fonQ = nc_f0.variables['Lwn_fonQ'][:]
-
-    nc_f0.close()
-    
-    return Time, Level, Julian_day, Exact_wavelengths, Lwn_fonQ
-
 for station_idx in range(len(station_list_main)):  
 
     station_name = station_list_main[station_idx]
@@ -1230,7 +1264,6 @@ for station_idx in range(len(station_list_main)):
             sza = np.nan
             ws0 = np.nan
             ws1 = np.nan
-            BW06_MU = np.nan
             flags_mask_ba = np.nan
             MedianCV = np.nan
             rhow_0560p00_fq_box_ba = np.nan
@@ -1267,6 +1300,7 @@ for station_idx in range(len(station_list_main)):
             insitu_Lwn_fonQ_zi = []
             insitu_Lwn_fonQ_ba = []
             
+            
             Z09_MU = False
             BW06_MU = False
             
@@ -1298,6 +1332,8 @@ for station_idx in range(len(station_list_main)):
             dt_hour = [i.total_seconds()/(60*60) for i in time_diff] # time diffence between in situ measurements and sat in hours
             idx_min = np.argmin(np.abs(dt_hour))
             matchup_idx_vec = np.abs(dt_hour) <= delta_time 
+            time_diff_zi = dt_hour[idx_min]
+            ins_time_zi = ins_time[idx_min]
 
             # in situ data
             # olci_wl_list = [412.5,442.5,490.0,560.0,665.0]
@@ -1562,8 +1598,9 @@ for station_idx in range(len(station_list_main)):
             time_diff = ins_time - sat_stop_time
             dt_hour = [i.total_seconds()/(60*60) for i in time_diff] # time diffence between in situ measurements and sat in hours
             idx_min = np.argmin(np.abs(dt_hour))
-            matchup_idx_vec = np.abs(dt_hour) <= delta_time 
-
+            matchup_idx_vec = np.abs(dt_hour) <= delta_time
+            time_diff_ba = dt_hour[idx_min]
+            ins_time_ba = ins_time[idx_min]
             # in situ data
             # olci_wl_list = [412.5,442.5,490.0,560.0,665.0]
             if Exact_wavelengths[idx_min,13] != -999:
@@ -1929,6 +1966,7 @@ for station_idx in range(len(station_list_main)):
             df_matchups = df_matchups.append({'station':station_list_main[station_idx],\
                      'sat_datetime':sat_stop_time,'insitu_datetime':ins_time[idx_min],\
                      'vza':vza,'sza':sza,'ws0':ws0,'ws1':ws1,\
+                     'Bw06: dt':time_diff_ba,'BW06: insitu_time':ins_time_ba,\
                      'BW06_MU':BW06_MU,'BW06_l2_mask':flags_mask_ba,\
                      'BW06: rhow_412_box':rhow_0412p50_fq_box_ba,'BW06: rho_412_filt_mean':mean_filtered_rhow_0412p50,\
                      'BW06: rhow_442_box':rhow_0442p50_fq_box_ba,'BW06: rho_442_filt_mean':mean_filtered_rhow_0442p50,\
@@ -1943,6 +1981,7 @@ for station_idx in range(len(station_list_main)):
                      'BW06: insitu_Lwn_fonQ':insitu_Lwn_fonQ_ba,\
                      'BW06_Exact_wavelengths_ba':Exact_wavelengths_ba,\
                      'BW06_insitu_Lwn_fonQ_ba_all':insitu_Lwn_fonQ_ba_all,\
+                     'Z09: dt':time_diff_zi,'Z09: insitu_time':ins_time_zi,\
                      'Z09_MU':Z09_MU,'Z09_l2_mask':flags_mask_zi,\
                      'Z09: rhow_412_box':rhow_0412p50_fq_box_zi,'Z09: rho_412_mean':rhow_0412p50_fq_box_zi_mean,\
                      'Z09: rhow_442_box':rhow_0442p50_fq_box_zi,'Z09: rho_442_mean':rhow_0442p50_fq_box_zi_mean,\
@@ -2387,7 +2426,7 @@ columns = ['Protocol','Wavelength','N','RMSD','MAPD','MPD','MB','MAD','r_sqr']
 df_stat_common = pd.DataFrame(columns=columns)
 
 notation_flag = 0 # to display percentage difference in the plot
-if True or plot_flag:
+if plot_flag:
     for wave in olci_wl_list:
         sat_same_zi, sat_same_ba, ins_same_zi, ins_same_ba, ins_same_station \
         = plot_both_methods(f'{wave:.1f}',notation_flag,path_out,min_val=plot_lims[f'{wave:.1f}'][0],max_val=plot_lims[f'{wave:.1f}'][1])
@@ -2971,19 +3010,23 @@ if plot_flag:
 
 #%% histograms of both delta time: zi and ba
 # delta time  => time_diff = ins_time - sat_stop_time
-if True or plot_flag:
+if plot_flag:
     kwargs2 = dict(histtype='step')
-    bins_Dt = [-180,-165,-150,-135,-120,-105,-90,-75,-60,-45,-30,-15,0,15,30,45,60,75,90,105,120,135,150,165,180]
+    Dtlim = 180
+    Dtstep = 15
+    bins_Dt = range(-Dtlim,Dtlim+Dtstep,Dtstep)
     
     fig, ax1=plt.subplots(1,1,sharey=True, facecolor='w',figsize=(8,6))
     # ax1.bar(bins[:-1], 100*hist.astype(np.float32) / hist.sum(), width=(bins[1]-bins[0]), color='red')
     # hist, bins = np.histogram(np.array(dt_mu_ba)*60)
     # ax1.bar(bins[:-1], 100*hist.astype(np.float32) / hist.sum(), width=(bins[1]-bins[0]), color='black') 
     counts_zi, bins_zi = np.histogram(np.array(dt_mu_zi)*60,bins=bins_Dt)
-    ax1.hist(bins_zi[:-1], bins_zi, weights=100*counts_zi/counts_zi.sum(),color='red', **kwargs2)
+    weights_zi = 100*counts_zi/counts_zi.sum()
+    ax1.hist(bins_zi[:-1], bins_zi, weights=weights_zi,color='red', **kwargs2)
     
     counts_ba, bins_ba = np.histogram(np.array(dt_mu_ba)*60,bins=bins_Dt)
-    ax1.hist(bins_ba[:-1], bins_ba, weights=100*counts_ba/counts_ba.sum(),color='black', **kwargs2)
+    weights_ba = 100*counts_ba/counts_ba.sum()
+    ax1.hist(bins_ba[:-1], bins_ba, weights=weights_ba,color='black', **kwargs2)
     
     x0, x1 = ax1.get_xlim()
     ax1.set_xlim([x0,x0+1*(x1-x0)])
@@ -3006,10 +3049,37 @@ if True or plot_flag:
     x0, x1 = ax1.get_xlim()
     ax1.set_xlim([x0,x0+1*(x1-x0)])
     
-    ax1.set_ylabel('Frequency (%)',fontsize=12)
+    ax1.set_ylabel('Frequency (counts)',fontsize=12)
     ax1.set_xlabel('Delta time (minutes)',fontsize=12)
     plt.xticks([-180,-150,-120,-90,-60,-30,0,30,60,90,120,150,180])
     plt.legend(['Z09','BW06'],fontsize=12)
+
+    Dt_bins_arr = np.array(bins_Dt)
+    
+    rule = (Dt_bins_arr>=-30) & (Dt_bins_arr<30)
+    print(f'zi: -30<Dt<30 = {weights_zi[rule[:-1]].sum():.2f}% (N={counts_zi[rule[:-1]].sum()})')
+    print(f'ba: -30<Dt<30 = {weights_ba[rule[:-1]].sum():.2f}% (N={counts_ba[rule[:-1]].sum()})')
+    
+    rule = (Dt_bins_arr>=-60) & (Dt_bins_arr<60)
+    print(f'zi: -60<Dt<60 = {weights_zi[rule[:-1]].sum():.2f}% (N={counts_zi[rule[:-1]].sum()})')
+    print(f'ba: -60<Dt<60 = {weights_ba[rule[:-1]].sum():.2f}% (N={counts_ba[rule[:-1]].sum()})')
+    
+    rule = (Dt_bins_arr>=-120) & (Dt_bins_arr<120)
+    print(f'zi: -120<Dt<120 = {weights_zi[rule[:-1]].sum():.2f}% (N={counts_zi[rule[:-1]].sum()})')
+    print(f'ba: -120<Dt<120 = {weights_ba[rule[:-1]].sum():.2f}% (N={counts_ba[rule[:-1]].sum()})')
+    
+    rule = (Dt_bins_arr>=-180) & (Dt_bins_arr<180)
+    print(f'zi: -180<Dt<180 = {weights_zi[rule[:-1]].sum():.2f}% (N={counts_zi[rule[:-1]].sum()})')
+    print(f'ba: -180<Dt<180 = {weights_ba[rule[:-1]].sum():.2f}% (N={counts_ba[rule[:-1]].sum()})')
+    
+    rule = (Dt_bins_arr>=-180) & (Dt_bins_arr<-120) # lower extreme for BW06
+    print(f'zi: -180<=Dt<-120 = {weights_zi[rule[:-1]].sum():.2f}% (N={counts_zi[rule[:-1]].sum()})')
+    print(f'ba: -180<=Dt<-120 = {weights_ba[rule[:-1]].sum():.2f}% (N={counts_ba[rule[:-1]].sum()})')  
+
+    rule = (Dt_bins_arr>=120) & (Dt_bins_arr<180) # upper extreme for BW06
+    print(f'zi: 120<Dt<180 = {weights_zi[rule[:-1]].sum():.2f}% (N={counts_zi[rule[:-1]].sum()})')
+    print(f'ba: 120<Dt<180 = {weights_ba[rule[:-1]].sum():.2f}% (N={counts_ba[rule[:-1]].sum()})')    
+    
 # plt.title(f'{station.replace("_"," ")} Station')
 #%% maps valid pixels
 if plot_flag:
@@ -3208,7 +3278,7 @@ if plot_flag:
             core_pxs_count_560.append(df_matchups.loc[idx,'BW06: rhow_560_box'][1:4,1:4].count())
             core_pxs_count_665.append(df_matchups.loc[idx,'BW06: rhow_665_box'][1:4,1:4].count())
             
-            # to know how many time the whole core of BW06 is included in the calculation
+            # to know how many time the whole core of BW06 (Z09) is included in the calculation
             if (not df_matchups.loc[idx,'BW06: rhow_412_box'][1:4,1:4].mask.any()) \
                 and (df_matchups.loc[idx,'BW06_MU']==True and (df_matchups.loc[idx,'Z09_MU'])):
                 rhow_412_core_incl = True
@@ -3392,104 +3462,183 @@ if plot_flag:
     axs[1,2].axis('off')
 
 #%% mean in situ spectra per station
-if plot_flag:
+def percentile_plot(x, y, percentiles, color='r', plot_mean=True, plot_median=False, line_color='k', **kwargs):
+    # calculate the lower and upper percentile groups, skipping 50 percentile
+    perc1 = np.percentile(y, percentiles[0:int(len(percentiles)/2)], axis=0)
+    perc2 = np.percentile(y, percentiles[int(len(percentiles)/2):], axis=0)
+
+    if 'alpha' in kwargs:
+        alpha = kwargs.pop('alpha')
+    else:
+        alpha = 1/len(percentiles)
+    # fill lower and upper percentile groups
+    for p1, p2 in zip(perc1, perc2):
+        plt.fill_between(x, p1, p2, alpha=alpha, color=color, edgecolor=None)
+
+    if plot_mean:
+        plt.plot(x, np.mean(y, axis=0), color=line_color)
+
+    if plot_median:
+        plt.plot(x, np.median(y, axis=0), color=line_color)
+    
+    return plt.gca()
+
+if True or plot_flag:
     fs = 24
+    # plt.style.use('ggplot') # this was just used for the examples
     plt.rc('xtick',labelsize=fs)
     plt.rc('ytick',labelsize=fs)
-    for station_idx in range(len(station_list_main)):
-        station = station_list_main[station_idx]
+    for station_idx in range(len(station_list_ALL)):
+        station = station_list_ALL[station_idx]
         Time, Level, Julian_day, Exact_wavelengths, Lwn_fonQ = \
                 open_insitu(station)
-        # mean spectra per station
-        Exact_wavelengths.mask = Exact_wavelengths==-999
+
+        Exact_wavelengths[Exact_wavelengths==-999.0] = np.nan
         Exact_wavelengths_mean = Exact_wavelengths.mean(axis=0)
-        Lwn_fonQ.mask = Lwn_fonQ==-999
-        Lwn_fonQ_mean = Lwn_fonQ.mean(axis=0)
+        x = Exact_wavelengths_mean[np.isfinite(Exact_wavelengths_mean)]
+        print('---------')
+        print(station)
+        print(x)
+        print(f'N: {y.shape[0]}')
         
-        plt.figure(figsize=(12,3.5))
-        plt.plot(Exact_wavelengths_mean[~Lwn_fonQ_mean.mask],Lwn_fonQ_mean[~Lwn_fonQ_mean.mask],'k',linewidth=4)
-        # plt.xlabel('Wavelength (nm)',fontsize=fs)
+        Lwn_fonQ[Lwn_fonQ==-999.0] = np.nan
+        y = Lwn_fonQ[:,np.isfinite(Exact_wavelengths_mean)]
+        
+        if station in ['Palgrunden','USC_SEAPRISM_2']:
+            plt.figure(figsize=(12,4.0))
+        else:
+            plt.figure(figsize=(12,3.5))
+            
+        percentiles =[5,25,75,95]
+        percentile_plot(x,y,percentiles , plot_median=False, plot_mean=True, color='g', line_color='navy')
         plt.ylabel('$L^{PRS}_{WN}$',fontsize=fs)
-        plt.xlim([400,1050])
+        plt.xlim([400,700])
         plt.ylim([0,3])
-        plt.gca().axes.get_xaxis().set_visible(False)
-        plt.title(f"{station_n[station]} {station.replace('_',' ')}",x=0.5,y=0.8,fontsize=fs+6)
+
+        if station not in ['Palgrunden','USC_SEAPRISM_2']:
+            plt.gca().axes.get_xaxis().set_visible(False)
+        else:
+            plt.gcf().subplots_adjust(bottom=0.20)
         
+        plt.title(f"{station_n[station]} {station.replace('_',' ')}",x=0.5,y=0.8,fontsize=fs+6)
+              
         ofname = os.path.join(path_out,'source',f'spectra_olci_{station}.pdf')
         plt.savefig(ofname)
         plt.show()
-        # plt.show()
         # plt.close()
 #%% wind speed
-kwargs2 = dict(histtype='step') 
-dataset_list = ['all','all_MUs','common'] # all, all_MUs, common, notBW06_Z09, BW06_notZ09  ((df_matchups['BW06_MU']==True) | (df_matchups['Z09_MU']==True))
-
-for dataset_name in dataset_list:
-    for station in station_list_main:
-        if dataset_name == 'all':
-            df = df_matchups.loc[(df_matchups['station']==station)]
-        elif dataset_name == 'all_MUs':
-            df = df_matchups.loc[(df_matchups['station']==station) & ((df_matchups['BW06_MU'] == True) | (df_matchups['Z09_MU'] == True))]
-        elif dataset_name == 'common':
-            df = df_matchups.loc[(df_matchups['station']==station) & ((df_matchups['BW06_MU'] == True) & (df_matchups['Z09_MU'] == True))]
-        
-        df.reset_index(inplace=True)
-        
-        ws0 = df['ws0']
-        ws0 = np.array([np.array(xi) for xi in ws0])
-        ws1 = df['ws1']
-        ws1 = np.array([np.array(xi) for xi in ws1])
-        ws_mag = np.sqrt(ws0*ws0 + ws1*ws1)
-        
-        cv_560 = df['Z09: CV_560']
-        MedianCV = df['BW06: MedianCV']
-        
-        
-        fig = plt.figure(figsize = (20,10))
-        
-        plt.subplot(1,3,1)
-        counts, bins2 = np.histogram(ws_mag)
-        plt.hist(bins2[:-1], bins2, weights=100*counts/counts.sum(),color='blue', **kwargs2)
-        plt.xlabel('Wind Speed Magnitude (m/s)')
-        plt.ylabel('Frequency (%)')
-        
-        plt.subplot(1,3,2)
-        for idx in df.index:
-            if df.loc[idx,'BW06_MU'] == True:
-                plt.plot(ws_mag[idx],cv_560[idx],'ro',mfc='none',markersize=8)
-            if df.loc[idx,'Z09_MU'] == True:
-                plt.plot(ws_mag[idx],cv_560[idx],'bo')
-            if df.loc[idx,'BW06_MU'] == False and df.loc[idx,'Z09_MU'] == False:
-                plt.plot(ws_mag[idx],cv_560[idx],'kx')
-        plt.xlabel('Wind Speed Magnitude (m/s)')
-        plt.ylabel('Z09: cv_560')
-        plt.ylim([0,1])
-        
-        ax = plt.subplot(1,3,3)
-        for idx in df.index:
-            if df.loc[idx,'BW06_MU'] == True:
-                plt.plot(ws_mag[idx],MedianCV[idx],'ro',mfc='none',markersize=8)
-            if df.loc[idx,'Z09_MU'] == True:
-                plt.plot(ws_mag[idx],MedianCV[idx],'bo')
-            if df.loc[idx,'BW06_MU'] == False and df.loc[idx,'Z09_MU'] == False:
-                plt.plot(ws_mag[idx],MedianCV[idx],'kx')
-        plt.xlabel('Wind Speed Magnitude (m/s)')
-        plt.ylabel('BW06: MedianCV')
-        plt.ylim([0,1])
-       
-        plt.suptitle(f"{station}; {dataset_name}; Potential={ws_mag.shape[0]}")
-        
-        legend_BW06    = mlines.Line2D([], [], ls='None', ms=8, marker='o', c='white',mec='r', label='BW06')
-        legend_Z09     = mlines.Line2D([], [], ls='None', ms=8, marker='o', c='b',mec='None', label='Z09')
-        legend_none    = mlines.Line2D([], [], ls='None', ms=8, marker='x', c='k', label='None')
+if plot_flag:
+    kwargs2 = dict(histtype='step') 
+    dataset_list = ['all','all_MUs','common'] # all, all_MUs, common, notBW06_Z09, BW06_notZ09  ((df_matchups['BW06_MU']==True) | (df_matchups['Z09_MU']==True))
+    
+    for dataset_name in dataset_list:
+        for station in station_list_main:
+            if dataset_name == 'all':
+                df = df_matchups.loc[(df_matchups['station']==station)]
+            elif dataset_name == 'all_MUs':
+                df = df_matchups.loc[(df_matchups['station']==station) & ((df_matchups['BW06_MU'] == True) | (df_matchups['Z09_MU'] == True))]
+            elif dataset_name == 'common':
+                df = df_matchups.loc[(df_matchups['station']==station) & ((df_matchups['BW06_MU'] == True) & (df_matchups['Z09_MU'] == True))]
+            
+            df.reset_index(inplace=True)
+            
+            ws0 = df['ws0']
+            ws0 = np.array([np.array(xi) for xi in ws0])
+            ws1 = df['ws1']
+            ws1 = np.array([np.array(xi) for xi in ws1])
+            ws_mag = np.sqrt(ws0*ws0 + ws1*ws1)
+            
+            cv_560 = df['Z09: CV_560']
+            MedianCV = df['BW06: MedianCV']
+            
+            
+            fig = plt.figure(figsize = (20,10))
+            
+            plt.subplot(1,3,1)
+            counts, bins2 = np.histogram(ws_mag)
+            plt.hist(bins2[:-1], bins2, weights=100*counts/counts.sum(),color='blue', **kwargs2)
+            plt.xlabel('Wind Speed Magnitude (m/s)')
+            plt.ylabel('Frequency (%)')
+            
+            plt.subplot(1,3,2)
+            for idx in df.index:
+                if df.loc[idx,'BW06_MU'] == True:
+                    plt.plot(ws_mag[idx],cv_560[idx],'ro',mfc='none',markersize=8)
+                if df.loc[idx,'Z09_MU'] == True:
+                    plt.plot(ws_mag[idx],cv_560[idx],'bo')
+                if df.loc[idx,'BW06_MU'] == False and df.loc[idx,'Z09_MU'] == False:
+                    plt.plot(ws_mag[idx],cv_560[idx],'kx')
+            plt.xlabel('Wind Speed Magnitude (m/s)')
+            plt.ylabel('Z09: cv_560')
+            plt.ylim([0,1])
+            
+            ax = plt.subplot(1,3,3)
+            for idx in df.index:
+                if df.loc[idx,'BW06_MU'] == True:
+                    plt.plot(ws_mag[idx],MedianCV[idx],'ro',mfc='none',markersize=8)
+                if df.loc[idx,'Z09_MU'] == True:
+                    plt.plot(ws_mag[idx],MedianCV[idx],'bo')
+                if df.loc[idx,'BW06_MU'] == False and df.loc[idx,'Z09_MU'] == False:
+                    plt.plot(ws_mag[idx],MedianCV[idx],'kx')
+            plt.xlabel('Wind Speed Magnitude (m/s)')
+            plt.ylabel('BW06: MedianCV')
+            plt.ylim([0,1])
            
+            plt.suptitle(f"{station}; {dataset_name}; Potential={ws_mag.shape[0]}")
+            
+            legend_BW06    = mlines.Line2D([], [], ls='None', ms=8, marker='o', c='white',mec='r', label='BW06')
+            legend_Z09     = mlines.Line2D([], [], ls='None', ms=8, marker='o', c='b',mec='None', label='Z09')
+            legend_none    = mlines.Line2D([], [], ls='None', ms=8, marker='x', c='k', label='None')
+               
+    
+            leg1 = ax.legend(handles=[legend_BW06,legend_Z09,legend_none],\
+                    loc='upper center',bbox_to_anchor=(0.5, 1.0),ncol=3,frameon=False,fontsize=10)                             
+            
+            ofname = os.path.join(path_out,'source',f'windspeed_{station}_{dataset_name}.pdf')
+            plt.savefig(ofname)
+#%% For those few match-ups where Z09 excluded the data, but BW06 did not, what were the most common causes?
+# True = rejection
+df = df_matchups.loc[((df_matchups['BW06_MU']==True) & (df_matchups['Z09_MU']==False))]
+count_cv_higher = ((df['Z09: CV_560']>0.20) | (df['Z09: CV_865p5']>0.20)) & ~((df['Z09: CV_560'].isnull())|(df['Z09: CV_865p5'].isnull()))
+print('-------\nZ09: CV_560 or CV_865 > 0.20:')
+print(count_cv_higher.value_counts())
 
-        leg1 = ax.legend(handles=[legend_BW06,legend_Z09,legend_none],\
-                loc='upper center',bbox_to_anchor=(0.5, 1.0),ncol=3,frameon=False,fontsize=10)                             
-        
-        ofname = os.path.join(path_out,'source',f'windspeed_{station}_{dataset_name}.pdf')
-        plt.savefig(ofname)
-        
+count_gdt = np.abs(df['Z09: dt'])>2.0# greater delta time
+print('-------\nZ09: Dt > 2 hours')
+print(count_gdt.value_counts())
+
+df_box_zi = df['Z09: rhow_560_box']
+print('-------\nZ09: box NaN:')
+print(df_box_zi.isnull().value_counts())
+
+box_cnt_list = []
+for box in df_box_zi.to_list():
+    if type(box)==np.ma.core.MaskedArray and box.count()==9:
+        box_cnt_list.append(False)
+    else:
+        box_cnt_list.append(True)
+
+print('-------\nZ09: less than 9 pixels:')
+print(np.array(box_cnt_list).sum())
+
+print('-------\nZ09: sza>70:')
+print((df['sza']>70).sum())
+
+print('-------\nZ09: vza>56:')
+print((df['vza']>56).sum())
+    
+print('-------\nAll rejections:')
+print((count_cv_higher|count_gdt|df_box_zi.isnull()|np.array(box_cnt_list)|df['sza']>70).value_counts())
+
+columns = ['CV','Dt','All Valid','sza']
+df_BW06_notZ09 = pd.DataFrame(columns=columns)
+df_BW06_notZ09['CV'] = count_cv_higher
+df_BW06_notZ09['Dt'] = count_gdt
+df_BW06_notZ09['All Valid'] = np.array(box_cnt_list)
+df_BW06_notZ09['sza'] = df['sza']>70
+
+
+df_BW06_notZ09.astype(float).transpose().to_csv(os.path.join(path_out,'BW06_notZ09.csv'))
 #%%
 # if __name__ == '__main__':
 #     main()   
