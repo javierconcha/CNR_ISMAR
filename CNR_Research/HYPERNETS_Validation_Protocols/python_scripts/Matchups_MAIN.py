@@ -800,6 +800,7 @@ def plot_both_methods(wl_str,notation_flag,path_out,min_val,max_val):
             elif ins_ba_station[cnt] == 'Gustav_Dalen_Tower':
                 mrk_style = 'xc'
             plt.plot(ins_ba[cnt], sat_ba[cnt],mrk_style,alpha=0.5)
+            
     
     for cnt, line in enumerate(ins_zi_station):
             if ins_zi_station[cnt] == 'Venise':
@@ -3496,18 +3497,21 @@ if True or plot_flag:
         Exact_wavelengths[Exact_wavelengths==-999.0] = np.nan
         Exact_wavelengths_mean = Exact_wavelengths.mean(axis=0)
         x = Exact_wavelengths_mean[np.isfinite(Exact_wavelengths_mean)]
+        
+        
+        Lwn_fonQ[Lwn_fonQ==-999.0] = np.nan
+        y = Lwn_fonQ[:,np.isfinite(Exact_wavelengths_mean)]
+        
         print('---------')
         print(station)
         print(x)
         print(f'N: {y.shape[0]}')
         
-        Lwn_fonQ[Lwn_fonQ==-999.0] = np.nan
-        y = Lwn_fonQ[:,np.isfinite(Exact_wavelengths_mean)]
-        
+        # plotting
         if station in ['Palgrunden','USC_SEAPRISM_2']:
-            plt.figure(figsize=(12,4.0))
+            plt.figure(figsize=(10,4.0))
         else:
-            plt.figure(figsize=(12,3.5))
+            plt.figure(figsize=(10,3.5))
             
         percentiles =[5,25,75,95]
         percentile_plot(x,y,percentiles , plot_median=False, plot_mean=True, color='g', line_color='navy')
@@ -3520,7 +3524,7 @@ if True or plot_flag:
         else:
             plt.gcf().subplots_adjust(bottom=0.20)
         
-        plt.title(f"{station_n[station]} {station.replace('_',' ')}",x=0.5,y=0.8,fontsize=fs+6)
+        plt.title(f"{station_n[station]} {station.replace('_',' ')}; N={y.shape[0]}",x=0.5,y=0.8,fontsize=fs+6)
               
         ofname = os.path.join(path_out,'source',f'spectra_olci_{station}.pdf')
         plt.savefig(ofname)
