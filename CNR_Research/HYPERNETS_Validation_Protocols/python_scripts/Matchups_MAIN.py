@@ -446,9 +446,28 @@ def plot_scatter(x,y,str1,path_out,prot_name,sensor_name,station_vec,min_val,max
         rmse_val_Helsinki_Lighthouse, mean_abs_rel_diff_Helsinki_Lighthouse, mean_rel_diff_Helsinki_Lighthouse, mean_bias_Helsinki_Lighthouse, mean_abs_error_Helsinki_Lighthouse, r_value_Helsinki_Lighthouse**2,\
         rmse_val_Gustav_Dalen_Tower, mean_abs_rel_diff_Gustav_Dalen_Tower, mean_rel_diff_Gustav_Dalen_Tower, mean_bias_Gustav_Dalen_Tower, mean_abs_error_Gustav_Dalen_Tower, r_value_Gustav_Dalen_Tower**2
 #%%
+#  to find outliers. Warning: Change if dataset changes!
+MAPD_dict =\
+{'412.5':{'BW06':105.9,'Z09':105.7},
+ '442.5':{'BW06':61.2 ,'Z09':59.4 },
+ '490.0':{'BW06':30.1 ,'Z09':25.2 },
+ '560.0':{'BW06':19.0 ,'Z09':14.6 },
+ '665.0':{'BW06':69.4 ,'Z09':46.2 }}
+
+MAD_dict =\
+{'412.5':{'BW06':0.39,'Z09' :0.33},
+ '442.5':{'BW06':0.34,'Z09' :0.26}, 
+ '490.0':{'BW06':0.28,'Z09' :0.19},
+ '560.0':{'BW06':0.20,'Z09' :0.14}, 
+ '665.0':{'BW06':0.09,'Z09' :0.06}}
+
+mult = 2.5
+
 def plot_both_methods(wl_str,notation_flag,path_out,min_val,max_val):
 
     np.warnings.filterwarnings('ignore')
+
+    sensor_name = 'OLCI'
 
     print('=====================================')
     print(wl_str)
@@ -494,7 +513,7 @@ def plot_both_methods(wl_str,notation_flag,path_out,min_val,max_val):
     ins_same_zi = []
     ins_same_ba = []
     ins_same_station = []
-
+    
     #% time series with two methods
     plt.figure(figsize=(16,4))
     for cnt, line in enumerate(ins_zi_station):
@@ -591,7 +610,6 @@ def plot_both_methods(wl_str,notation_flag,path_out,min_val,max_val):
                 [ins_ba[cnt],sat_ba[cnt]],mrk_style_ins[1],linestyle='dotted')
 
     plt.xlabel('Time',fontsize=12)
-    sensor_name = 'OLCI'
     plt.ylabel('$L^{'+sensor_name+'}_{WN}$',fontsize=12)
     # zero line
     xmin, xmax = plt.gca().get_xlim()
@@ -713,7 +731,7 @@ def plot_both_methods(wl_str,notation_flag,path_out,min_val,max_val):
             len(sat_same_ba))
     print(str_table)
     #% # normality test
-    # plot_normality(np.array(diff),wl_str)
+    plot_normality(np.array(diff),wl_str)
     
     #% histogram of the difference
     kwargs2 = dict(bins='auto', histtype='step')
@@ -801,6 +819,11 @@ def plot_both_methods(wl_str,notation_flag,path_out,min_val,max_val):
                 mrk_style = 'xc'
             plt.plot(ins_ba[cnt], sat_ba[cnt],mrk_style,alpha=0.5)
             
+            # outliers
+            AD = np.abs(sat_ba[cnt]-ins_ba[cnt]) # in absolute units, i.e. radiance]
+            APD = 100*AD/ins_ba[cnt]#
+            if mult*MAPD_dict[wl_str]['BW06']<APD and mult*MAD_dict[wl_str]['BW06']<AD:
+                plt.plot(ins_ba[cnt], sat_ba[cnt],'o',color=mrk_style[-1], mfc='none',alpha=0.5)
     
     for cnt, line in enumerate(ins_zi_station):
             if ins_zi_station[cnt] == 'Venise':
@@ -823,14 +846,26 @@ def plot_both_methods(wl_str,notation_flag,path_out,min_val,max_val):
                 plt.plot(ins_zi[cnt], sat_zi[cnt],mrk_style)
                 plt.plot([ins_zi[cnt],ins_ba[idx[0][0]]],\
                     [sat_zi[cnt],sat_ba[idx[0][0]]],mrk_style[1])
+
+                # outliers
+                AD = np.abs(sat_zi[cnt]-ins_zi[cnt]) # in absolute units, i.e. radiance]
+                APD = 100*AD/ins_zi[cnt] # in percentage        
+                if mult*MAPD_dict[wl_str]['Z09']<APD and mult*MAD_dict[wl_str]['Z09']<AD:
+                    plt.plot(ins_zi[cnt], sat_zi[cnt],'o',color=mrk_style[-1], mfc='none')
                 
-                percent_change = 100*np.abs(sat_zi[cnt]-sat_ba[idx[0][0]])/max([sat_zi[cnt],sat_ba[idx[0][0]]])
-                str1 = '{:,.2f}%'.format(percent_change)
-                # print(str1)
-                if notation_flag:
-                    plt.text(ins_zi[cnt], sat_zi[cnt],str1)
+                # percent_change = 100*np.abs(sat_zi[cnt]-sat_ba[idx[0][0]])/max([sat_zi[cnt],sat_ba[idx[0][0]]])
+                # str1 = '{:,.2f}%'.format(percent_change)
+                # # print(str1)
+                # if notation_flag:
+                #     plt.text(ins_zi[cnt], sat_zi[cnt],str1)
             else:
                 plt.plot(ins_zi[cnt], sat_zi[cnt],mrk_style,alpha=0.5) # for not common matchups
+                
+                # outliers
+                AD = np.abs(sat_zi[cnt]-ins_zi[cnt]) # in absolute units, i.e. radiance]
+                APD = 100*AD/ins_zi[cnt] # in percentage        
+                if mult*MAPD_dict[wl_str]['Z09']<APD and mult*MAD_dict[wl_str]['Z09']<AD:
+                    plt.plot(ins_zi[cnt], sat_zi[cnt],'o',color=mrk_style[-1], mfc='none',alpha=0.5)
 
     # for cnt, line in enumerate(ins_same_station):
     #     if ins_same_station[cnt] == 'Venise':
@@ -2376,18 +2411,18 @@ if plot_flag:
     print(tabulate(df4, tablefmt='pipe', headers='keys',showindex=False))
 
 #%% plot both methods
-# if True or plot_flag:
-#     sat_same_zi_412p5 = sat_same_ba_412p5 = ins_same_zi_412p5 = ins_same_ba_412p5 = ins_same_station_412p5 = []
-#     sat_same_zi_442p5 = sat_same_ba_442p5 = ins_same_zi_442p5 = ins_same_ba_442p5 = ins_same_station_442p5 = []
-#     sat_same_zi_490p0 = sat_same_ba_490p0 = ins_same_zi_490p0 = ins_same_ba_490p0 = ins_same_station_490p0 = []
-#     sat_same_zi_560p0 = sat_same_ba_560p0 = ins_same_zi_560p0 = ins_same_ba_560p0 = ins_same_station_560p0 = []
-#     sat_same_zi_665p0 = sat_same_ba_665p0 = ins_same_zi_665p0 = ins_same_ba_665p0 = ins_same_station_665p0 = []
-#     notation_flag = 0 # to display percentage difference in the plot
-#     sat_same_zi_412p5, sat_same_ba_412p5, ins_same_zi_412p5, ins_same_ba_412p5, ins_same_station_412p5 = plot_both_methods('412.5',notation_flag,path_out,min_val=-3.00,max_val=5.0)
-#     sat_same_zi_442p5, sat_same_ba_442p5, ins_same_zi_442p5, ins_same_ba_442p5, ins_same_station_442p5 = plot_both_methods('442.5',notation_flag,path_out,min_val=-3.00,max_val=6.2)
-#     sat_same_zi_490p0, sat_same_ba_490p0, ins_same_zi_490p0, ins_same_ba_490p0, ins_same_station_490p0 = plot_both_methods('490.0',notation_flag,path_out,min_val=-2.00,max_val=8.0)
-#     sat_same_zi_560p0, sat_same_ba_560p0, ins_same_zi_560p0, ins_same_ba_560p0, ins_same_station_560p0 = plot_both_methods('560.0',notation_flag,path_out,min_val=-0.50,max_val=6.0)
-#     sat_same_zi_665p0, sat_same_ba_665p0, ins_same_zi_665p0, ins_same_ba_665p0, ins_same_station_665p0 = plot_both_methods('665.0',notation_flag,path_out,min_val=-0.60,max_val=4.0)
+if True or plot_flag:
+    sat_same_zi_412p5 = sat_same_ba_412p5 = ins_same_zi_412p5 = ins_same_ba_412p5 = ins_same_station_412p5 = []
+    sat_same_zi_442p5 = sat_same_ba_442p5 = ins_same_zi_442p5 = ins_same_ba_442p5 = ins_same_station_442p5 = []
+    sat_same_zi_490p0 = sat_same_ba_490p0 = ins_same_zi_490p0 = ins_same_ba_490p0 = ins_same_station_490p0 = []
+    sat_same_zi_560p0 = sat_same_ba_560p0 = ins_same_zi_560p0 = ins_same_ba_560p0 = ins_same_station_560p0 = []
+    sat_same_zi_665p0 = sat_same_ba_665p0 = ins_same_zi_665p0 = ins_same_ba_665p0 = ins_same_station_665p0 = []
+    notation_flag = 0 # to display percentage difference in the plot
+    sat_same_zi_412p5, sat_same_ba_412p5, ins_same_zi_412p5, ins_same_ba_412p5, ins_same_station_412p5 = plot_both_methods('412.5',notation_flag,path_out,min_val=-3.00,max_val=5.0)
+    sat_same_zi_442p5, sat_same_ba_442p5, ins_same_zi_442p5, ins_same_ba_442p5, ins_same_station_442p5 = plot_both_methods('442.5',notation_flag,path_out,min_val=-3.00,max_val=6.2)
+    sat_same_zi_490p0, sat_same_ba_490p0, ins_same_zi_490p0, ins_same_ba_490p0, ins_same_station_490p0 = plot_both_methods('490.0',notation_flag,path_out,min_val=-2.00,max_val=8.0)
+    sat_same_zi_560p0, sat_same_ba_560p0, ins_same_zi_560p0, ins_same_ba_560p0, ins_same_station_560p0 = plot_both_methods('560.0',notation_flag,path_out,min_val=-0.50,max_val=6.0)
+    sat_same_zi_665p0, sat_same_ba_665p0, ins_same_zi_665p0, ins_same_ba_665p0, ins_same_station_665p0 = plot_both_methods('665.0',notation_flag,path_out,min_val=-0.60,max_val=4.0)
 #%% stats for the common MUs
 def calc_matchup_stat(ins_data,sat_data):
     # replace nan in y (sat data)
