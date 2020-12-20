@@ -2002,7 +2002,7 @@ for station_idx in range(len(station_list_main)):
             df_matchups = df_matchups.append({'station':station_list_main[station_idx],\
                      'sat_datetime':sat_stop_time,'insitu_datetime':ins_time[idx_min],\
                      'vza':vza,'sza':sza,'ws0':ws0,'ws1':ws1,\
-                     'Bw06: dt':time_diff_ba,'BW06: insitu_time':ins_time_ba,\
+                     'BW06: dt':time_diff_ba,'BW06: insitu_time':ins_time_ba,\
                      'BW06_MU':BW06_MU,'BW06_l2_mask':flags_mask_ba,\
                      'BW06: rhow_412_box':rhow_0412p50_fq_box_ba,'BW06: rho_412_filt_mean':mean_filtered_rhow_0412p50,\
                      'BW06: rhow_442_box':rhow_0442p50_fq_box_ba,'BW06: rho_442_filt_mean':mean_filtered_rhow_0442p50,\
@@ -2041,7 +2041,7 @@ for station_idx in range(len(station_list_main)):
 
 
 #%% plots 
-if plot_flag:  
+if True or plot_flag:  
     prot_name = 'zi'
     sensor_name = 'OLCI'
     rmse_val_0412p50_zi, mean_abs_rel_diff_0412p50_zi, mean_rel_diff_0412p50_zi, mean_bias_0412p50_zi, mean_abs_error_0412p50_zi, r_sqr_0412p50_zi,\
@@ -2143,7 +2143,7 @@ if plot_flag:
         mu_Lwn_0665p00_fq_ins_ba,mu_Lwn_0665p00_fq_sat_ba,'665.0',path_out,prot_name,sensor_name,\
         mu_Lwn_0665p00_fq_ins_ba_station,min_val=-0.60,max_val=4.0)
     
-    #%%
+    #%
     # rmse
     rmse_zi = [rmse_val_0412p50_zi,rmse_val_0442p50_zi,rmse_val_0490p00_zi,rmse_val_0560p00_zi,rmse_val_0665p00_zi] 
     rmse_ba = [rmse_val_0412p50_ba,rmse_val_0442p50_ba,rmse_val_0490p00_ba,rmse_val_0560p00_ba,rmse_val_0665p00_ba]
@@ -2374,7 +2374,7 @@ if plot_flag:
     ofname = os.path.join(path_out,'source',ofname)   
     plt.savefig(ofname, dpi=300) 
 #%%  table of validation
-if plot_flag:
+if True or plot_flag:
     data = {'Protocol':['BW06','Z09','BW06','Z09','BW06','Z09','BW06','Z09','BW06','Z09']}
     df4 = pd.DataFrame(data)
     df4['Wavelength'] = ['412.5','412.5','442.5','442.5','490.0','490.0','560.0','560.0','665.0','665.0']
@@ -2409,9 +2409,12 @@ if plot_flag:
                     r_sqr_0665p00_zi]     
     
     print(tabulate(df4, tablefmt='pipe', headers='keys',showindex=False))
+    
+    # Table 6
+    df4.to_latex(os.path.join(path_out,'source','valmetrics.tex'),index=False,float_format="{:0.2f}".format)
 
 #%% plot both methods
-if True or plot_flag:
+if plot_flag:
     sat_same_zi_412p5 = sat_same_ba_412p5 = ins_same_zi_412p5 = ins_same_ba_412p5 = ins_same_station_412p5 = []
     sat_same_zi_442p5 = sat_same_ba_442p5 = ins_same_zi_442p5 = ins_same_ba_442p5 = ins_same_station_442p5 = []
     sat_same_zi_490p0 = sat_same_ba_490p0 = ins_same_zi_490p0 = ins_same_ba_490p0 = ins_same_station_490p0 = []
@@ -2462,7 +2465,8 @@ columns = ['Protocol','Wavelength','N','RMSD','MAPD','MPD','MB','MAD','r_sqr']
 df_stat_common = pd.DataFrame(columns=columns)
 
 notation_flag = 0 # to display percentage difference in the plot
-if plot_flag:
+% stats for the common MUs
+if True or plot_flag:
     for wave in olci_wl_list:
         sat_same_zi, sat_same_ba, ins_same_zi, ins_same_ba, ins_same_station \
         = plot_both_methods(f'{wave:.1f}',notation_flag,path_out,min_val=plot_lims[f'{wave:.1f}'][0],max_val=plot_lims[f'{wave:.1f}'][1])
@@ -3046,7 +3050,7 @@ if plot_flag:
 
 #%% histograms of both delta time: zi and ba
 # delta time  => time_diff = ins_time - sat_stop_time
-if plot_flag:
+if  plot_flag:
     kwargs2 = dict(histtype='step')
     Dtlim = 180
     Dtstep = 15
@@ -3068,10 +3072,11 @@ if plot_flag:
     ax1.set_xlim([x0,x0+1*(x1-x0)])
     
     ax1.set_ylabel('Frequency (%)',fontsize=12)
-    ax1.set_xlabel('Delta time (minutes)',fontsize=12)
+    ax1.set_xlabel('Delta time $\delta_t$  (minutes)',fontsize=12)
     plt.xticks([-180,-150,-120,-90,-60,-30,0,30,60,90,120,150,180])
     plt.legend(['Z09','BW06'],fontsize=12)
     
+    # Figure 2
     fig, ax1=plt.subplots(1,1,sharey=True, facecolor='w',figsize=(8,6))
     # ax1.bar(bins[:-1], 100*hist.astype(np.float32) / hist.sum(), width=(bins[1]-bins[0]), color='red')
     # hist, bins = np.histogram(np.array(dt_mu_ba)*60)
@@ -3086,7 +3091,7 @@ if plot_flag:
     ax1.set_xlim([x0,x0+1*(x1-x0)])
     
     ax1.set_ylabel('Frequency (counts)',fontsize=12)
-    ax1.set_xlabel('Delta time (minutes)',fontsize=12)
+    ax1.set_xlabel('Delta time $\delta_t$ (minutes)',fontsize=12)
     plt.xticks([-180,-150,-120,-90,-60,-30,0,30,60,90,120,150,180])
     plt.legend(['Z09','BW06'],fontsize=12)
 
@@ -3190,73 +3195,101 @@ if plot_flag:
     kwargs2 = dict(histtype='step')
     bins = [0.0,0.02,0.04,0.06,0.08,0.10,0.12,0.14,0.16,0.18,0.20]
     
-    dataset_name = 'BW06_notZ09' # all, all_MUs, common, notBW06_Z09, BW06_notZ09  ((df_matchups['BW06_MU']==True) | (df_matchups['Z09_MU']==True))
+    dataset_list = ['all_MUs','common'] # all, all_MUs, common, notBW06_Z09, BW06_notZ09  ((df_matchups['BW06_MU']==True) | (df_matchups['Z09_MU']==True))
     savefig_flag = False
-    for station_idx in range(len(station_list_main)):
-        station = station_list_main[station_idx]
-        if dataset_name == 'BW06_notZ09':
-            df = df_matchups.loc[(df_matchups['station']==station) & ((df_matchups['BW06_MU']==True) & (df_matchups['Z09_MU']==False))]
-        elif dataset_name == 'notBW06_Z09':
-            df = df_matchups.loc[(df_matchups['station']==station) & ((df_matchups['BW06_MU']==False) & (df_matchups['Z09_MU']==True))]
-        elif dataset_name == 'all_MUs':
-            df = df_matchups.loc[(df_matchups['station']==station) & ((df_matchups['BW06_MU']==True) | (df_matchups['Z09_MU']==True))]
-        elif dataset_name == 'common':
-            df = df_matchups.loc[(df_matchups['station']==station) & ((df_matchups['BW06_MU']==True) & (df_matchups['Z09_MU']==True))]
-        elif dataset_name == 'all':
-            df = df_matchups.loc[(df_matchups['station']==station)]        
+    
+    columns = ['station','dataset','BW06: MedianCV','BW06: rhow_560.0', 'Z09: Lwn_560.0', 'Z09: aot_865.5']
+    df_CV = pd.DataFrame(columns=columns)  
+    for dataset_name in dataset_list:
+        for station_idx in range(len(station_list_main)):
+            station = station_list_main[station_idx]
+            if dataset_name == 'BW06_notZ09':
+                df = df_matchups.loc[(df_matchups['station']==station) & ((df_matchups['BW06_MU']==True) & (df_matchups['Z09_MU']==False))]
+            elif dataset_name == 'notBW06_Z09':
+                df = df_matchups.loc[(df_matchups['station']==station) & ((df_matchups['BW06_MU']==False) & (df_matchups['Z09_MU']==True))]
+            elif dataset_name == 'all_MUs':
+                df_ba = df_matchups.loc[(df_matchups['station']==station) & ((df_matchups['BW06_MU']==True))]
+                df_zi = df_matchups.loc[(df_matchups['station']==station) & ((df_matchups['Z09_MU']==True))]
+            elif dataset_name == 'common':
+                df = df_matchups.loc[(df_matchups['station']==station) & ((df_matchups['BW06_MU']==True) & (df_matchups['Z09_MU']==True))]
+            elif dataset_name == 'all':
+                df = df_matchups.loc[(df_matchups['station']==station)]        
             
-        plt.figure(figsize=(20,8))
-        for band in CVs_ba_bands_list:
-            plt.plot(df['sat_datetime'],df['BW06: CV_'+band],c=color_dict[f'{float(band[-5:]):.2f}'],linestyle='none',marker='.')
-        plt.plot(df['sat_datetime'],df['BW06: MedianCV'],'k')
-        
-        plt.plot(df['sat_datetime'],df['Z09: CV_560'],c=color_dict[f'{float(560.0):.2f}'],linestyle='-',marker='o',fillstyle='none')
-        plt.plot(df['sat_datetime'],df['Z09: CV_865p5'],c=color_dict[f'{float(865.5):.2f}'],linestyle='-',marker='o',fillstyle='none')
-        plt.ylim([-0.2,0.2])
-        legend_items =['BW06: rhow_412.5','BW06: rhow_442.5','BW06: rhow_490.0','BW06: rhow_560.0','BW06: rhow_665.0','BW06: aot_865.5',\
-                    'BW06: MedianCV','Z09: Lwn_560.0','Z09: aot_865.5']
-        plt.legend(legend_items)
-        plt.title(f'{station_list_main[station_idx]}; Dataset: {dataset_name}')
-        plt.xlabel('time')
-        plt.ylabel('CV')
-        if savefig_flag:
-            plt.savefig(os.path.join(path_out,f'CVs_ba_zi_timeseriet_{station_list_main[station_idx]}_{dataset_name}.png'))
-            plt.close()
-     
-        fig, ax1=plt.subplots(1,1,sharey=True, facecolor='w',figsize=(8,6))
-        counts, bins2 = np.histogram(df['BW06: MedianCV'],bins=bins)
-        ax1.hist(bins2[:-1], bins2, weights=100*counts/counts.sum(),color='red', **kwargs2)
-        str1 = f'BW06: MedianCV (N={counts.sum()})'
-        counts, bins2 = np.histogram(df['Z09: CV_560'],bins=bins)
-        ax1.hist(bins2[:-1], bins2, weights=100*counts/counts.sum(),color='green', **kwargs2)
-        counts, bins2 = np.histogram(df['Z09: CV_865p5'],bins=bins)
-        str2 = f'Z09: Lwn_560.0 (N={counts.sum()})'
-        ax1.hist(bins2[:-1], bins2, weights=100*counts/counts.sum(),color='blue', **kwargs2)
-        str3 = f'Z09: aot_865.5 (N={counts.sum()})'
-        plt.title(f'{station_list_main[station_idx]}; Dataset: {dataset_name}')
-        plt.legend([str1,str2,str3])
-        plt.xlim([0,0.2])
-        plt.xlabel('CV')
-        plt.ylabel('Frequency (%)',fontsize=12)
-        if savefig_flag:
-            plt.savefig(os.path.join(path_out,f'CVs_ba_zi_hist_{station_list_main[station_idx]}_{dataset_name}.png'))
-            plt.close()
-        
-        fig, ax1=plt.subplots(1,1,sharey=True, facecolor='w',figsize=(8,6))
-        counts, bins2 = np.histogram(df['BW06: CV_rhow_560.0'],bins=bins)
-        ax1.hist(bins2[:-1], bins2, weights=100*counts/counts.sum(),color='red', **kwargs2)
-        str1 = f'BW06: rhow_560.0 (N={counts.sum()})'
-        counts, bins2 = np.histogram(df['Z09: CV_560'],bins=bins)
-        ax1.hist(bins2[:-1], bins2, weights=100*counts/counts.sum(),color='green', **kwargs2)
-        str2 = f'Z09: Lwn_560.0 (N={counts.sum()})'
-        plt.title(f'{station_list_main[station_idx]}; Dataset: {dataset_name}')
-        plt.legend([str1,str2])  
-        plt.xlim([0,0.2])
-        plt.xlabel('CV')
-        plt.ylabel('Frequency (%)',fontsize=12)
-        if savefig_flag:
-            plt.savefig(os.path.join(path_out,f'CVs_ba_zi_560_hist_{station_list_main[station_idx]}_{dataset_name}.png'))           
-            plt.close()
+            if plot_flag:
+                # time series
+                plt.figure(figsize=(20,8))
+                for band in CVs_ba_bands_list:
+                    plt.plot(df['sat_datetime'],df['BW06: CV_'+band],c=color_dict[f'{float(band[-5:]):.2f}'],linestyle='none',marker='.')
+                plt.plot(df['sat_datetime'],df['BW06: MedianCV'],'k')
+                
+                plt.plot(df['sat_datetime'],df['Z09: CV_560'],c=color_dict[f'{float(560.0):.2f}'],linestyle='-',marker='o',fillstyle='none')
+                plt.plot(df['sat_datetime'],df['Z09: CV_865p5'],c=color_dict[f'{float(865.5):.2f}'],linestyle='-',marker='o',fillstyle='none')
+                plt.ylim([-0.2,0.2])
+                legend_items =['BW06: rhow_412.5','BW06: rhow_442.5','BW06: rhow_490.0','BW06: rhow_560.0','BW06: rhow_665.0','BW06: aot_865.5',\
+                            'BW06: MedianCV','Z09: Lwn_560.0','Z09: aot_865.5']
+                plt.legend(legend_items)
+                plt.title(f'{station_list_main[station_idx]}; Dataset: {dataset_name}')
+                plt.xlabel('time')
+                plt.ylabel('CV')
+                if savefig_flag:
+                    plt.savefig(os.path.join(path_out,f'CVs_ba_zi_timeseriet_{station_list_main[station_idx]}_{dataset_name}.png'))
+                    plt.close()
+            
+            # BW06: MedianCV, Z09: Lwn_560.0, Z09: aot_865.5
+            fig, ax1=plt.subplots(1,1,sharey=True, facecolor='w',figsize=(8,6))
+            counts, bins2 = np.histogram(df['BW06: MedianCV'],bins=bins)
+            ax1.hist(bins2[:-1], bins2, weights=100*counts/counts.sum(),color='red', **kwargs2)
+            str1 = f'BW06: MedianCV (N={counts.sum()})'
+            counts, bins2 = np.histogram(df['Z09: CV_560'],bins=bins)
+            ax1.hist(bins2[:-1], bins2, weights=100*counts/counts.sum(),color='green', **kwargs2)
+            counts, bins2 = np.histogram(df['Z09: CV_865p5'],bins=bins)
+            str2 = f'Z09: Lwn_560.0 (N={counts.sum()})'
+            ax1.hist(bins2[:-1], bins2, weights=100*counts/counts.sum(),color='blue', **kwargs2)
+            str3 = f'Z09: aot_865.5 (N={counts.sum()})'
+            plt.title(f'{station_list_main[station_idx]}; Dataset: {dataset_name}')
+            plt.legend([str1,str2,str3])
+            # plt.xlim([0,0.2])
+            plt.xlabel('CV')
+            plt.ylabel('Frequency (%)',fontsize=12)
+            if savefig_flag:
+                plt.savefig(os.path.join(path_out,f'CVs_ba_zi_hist_{station_list_main[station_idx]}_{dataset_name}.png'))
+                plt.close()
+            
+            # BW06: rhow_560.0, Z09: Lwn_560.0,
+            fig, ax1=plt.subplots(1,1,sharey=True, facecolor='w',figsize=(8,6))
+            counts, bins2 = np.histogram(df['BW06: CV_rhow_560.0'],bins=bins)
+            ax1.hist(bins2[:-1], bins2, weights=100*counts/counts.sum(),color='red', **kwargs2)
+            str1 = f'BW06: rhow_560.0 (N={counts.sum()})'
+            counts, bins2 = np.histogram(df['Z09: CV_560'],bins=bins)
+            ax1.hist(bins2[:-1], bins2, weights=100*counts/counts.sum(),color='green', **kwargs2)
+            str2 = f'Z09: Lwn_560.0 (N={counts.sum()})'
+            plt.title(f'{station_list_main[station_idx]}; Dataset: {dataset_name}')
+            plt.legend([str1,str2])  
+            # plt.xlim([0,0.2])
+            plt.xlabel('CV')
+            plt.ylabel('Frequency (%)',fontsize=12)
+            if savefig_flag:
+                plt.savefig(os.path.join(path_out,f'CVs_ba_zi_560_hist_{station_list_main[station_idx]}_{dataset_name}.png'))           
+                plt.close()
+             
+            if not dataset_name == 'all_MUs':
+                df_CV = df_CV.append({'station':station,
+                    'dataset':dataset_name,
+                    'BW06: MedianCV':100*df['BW06: MedianCV'].median(),
+                    'BW06: rhow_560.0':100*df['BW06: CV_rhow_560.0'].median(),
+                    'Z09: Lwn_560.0':100*df['Z09: CV_560'].median(),
+                    'Z09: aot_865.5':100*df['Z09: CV_865p5'].median()},ignore_index=True)
+            else:
+                df_CV = df_CV.append({'station':station,
+                    'dataset':dataset_name,
+                    'BW06: MedianCV':100*df_ba['BW06: MedianCV'].median(),
+                    'BW06: rhow_560.0':100*df_ba['BW06: CV_rhow_560.0'].median(),
+                    'Z09: Lwn_560.0':100*df_zi['Z09: CV_560'].median(),
+                    'Z09: aot_865.5':100*df_zi['Z09: CV_865p5'].median()},ignore_index=True)
+                    
+            
+            
+    df_CV.to_latex(os.path.join(path_out,'source','MedianCV_table.tex'),index=False,float_format="{:0.1f}".format)
 #%% plot matchups
 # df_matchups = df_matchups.append({'station':station_list_main[station_idx],'sat_datetime':sat_stop_time,'insitu_datetime':ins_time[idx_min],'vza':vza,'sza':sza,\
 #          'BW06_MU':BW06_MU,'BW06_l2_mask':flags_mask_ba,\
@@ -3519,7 +3552,7 @@ def percentile_plot(x, y, percentiles, color='r', plot_mean=True, plot_median=Fa
     
     return plt.gca()
 
-if True or plot_flag:
+if plot_flag:
     fs = 24
     # plt.style.use('ggplot') # this was just used for the examples
     plt.rc('xtick',labelsize=fs)
@@ -3678,6 +3711,64 @@ df_BW06_notZ09['sza'] = df['sza']>70
 
 
 df_BW06_notZ09.astype(float).transpose().to_csv(os.path.join(path_out,'BW06_notZ09.csv'))
+#%% For those few match-ups where BW06 excluded the data, but Z09 did not, what were the most common causes?
+# True = rejection
+df = df_matchups.loc[((df_matchups['BW06_MU']==False) & (df_matchups['Z09_MU']==True))]
+count_cv_higher = (df['BW06: MedianCV']>0.15) & ~(df['BW06: MedianCV'].isnull())
+print('-------\nBW06: MedianCV > 0.15:')
+print(count_cv_higher.value_counts())
+
+count_gdt = np.abs(df['BW06: dt'])>3.0# greater delta time
+print('-------\nBW06: Dt > 3 hours')
+print(count_gdt.value_counts())
+
+df_box_ba = df['BW06: rhow_560_box']
+print('-------\nBW06: box NaN:')
+print(df_box_ba.isnull().value_counts())
+
+# NGP<=NTP/2+1
+count_valid = df['BW06: NGP']<=(df['BW06: NTP']/2+1)
+print('-------\nBW06: less than NGP<=NTP/2+1:')
+print(count_valid.sum())
+
+print('-------\nBW06: sza>70:')
+print((df['sza']>75).sum())
+
+print('-------\nBW06: vza>56:')
+print((df['vza']>60).sum())
+    
+print('-------\nAll rejections:')
+print((count_cv_higher|count_gdt|df_box_ba.isnull()|count_valid|df['sza']>70).value_counts())
+
+columns = ['CV','Dt','NGP>NTP/2+1','sza']
+df_notBW06_Z09 = pd.DataFrame(columns=columns)
+df_notBW06_Z09['CV'] = count_cv_higher
+df_notBW06_Z09['Dt'] = count_gdt
+df_notBW06_Z09['NGP>NTP/2+1'] = np.array(count_valid)
+df_notBW06_Z09['sza'] = df['sza']>75
+
+
+df_notBW06_Z09.astype(float).transpose().to_csv(os.path.join(path_out,'notBW06_Z09.csv'))
+#%% Relative rate of Potential versus Match-up
+#BW06
+a =100*np.array(\
+[209/378,\
+211/374,\
+180/403,\
+23/93,\
+26/66])  
+
+#Z09
+b=100*np.array(\
+[137/313,\
+184/340,\
+150/384,\
+36/76,\
+30/47])
+    
+print(f' BW06  Z09 \n {a[0]:0.2f} {b[0]:0.2f} \n {a[1]:0.2f} {b[1]:0.2f} \n {a[2]:0.2f} {b[2]:0.2f} \n {a[3]:0.2f} {b[3]:0.2f} \n {a[4]:0.2f} {b[4]:0.2f}')    
+
+#%% Relative rate of successful matches (R1-20)
 #%%
 # if __name__ == '__main__':
 #     main()   
