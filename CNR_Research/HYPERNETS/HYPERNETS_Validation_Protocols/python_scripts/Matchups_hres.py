@@ -51,7 +51,7 @@ import pandas as pd
 
 import common_functions
 
-sys.path.insert(0,'/Users/javier.concha/Desktop/Javier/2019_ROMA/CNR_Research/HYPERNETS_Validation_Protocols/python_scripts')
+sys.path.insert(0,'/Users/javier.concha/Desktop/Javier/2019_ROMA/CNR_Research/HYPERNETS/HYPERNETS_Validation_Protocols/python_scripts')
 
 station_list_main = ['Galata_Platform','Gustav_Dalen_Tower','Helsinki_Lighthouse','Lake_Erie',\
                 'LISCO','Palgrunden','Thornton_C-power','USC_SEAPRISM','USC_SEAPRISM_2',\
@@ -887,9 +887,9 @@ def plot_all_methods(vl_str,notation_flag,path_out,min_val,max_val):
 
 #%% Main Function
 #def main():
-path_main = '/Users/javier.concha/Desktop/Javier/2019_ROMA/CNR_Research/HYPERNETS_Validation_Protocols/python_scripts/'
+path_main = '/Users/javier.concha/Desktop/Javier/2019_ROMA/CNR_Research/HYPERNETS/HYPERNETS_Validation_Protocols/python_scripts/'
 path_out = os.path.join(path_main,'Figures')
-path_data = '/Users/javier.concha/Desktop/Javier/2019_ROMA/CNR_Research/HYPERNETS_Validation_Protocols/python_scripts/Quinten_data/'
+path_data = '/Users/javier.concha/Desktop/Javier/2019_ROMA/CNR_Research/HYPERNETS/HYPERNETS_Validation_Protocols/python_scripts/Quinten_data/'
 sensor_name = 'S2A'
 path_to_list = os.path.join(path_data,sensor_name,'aeronet_list.txt') 
 
