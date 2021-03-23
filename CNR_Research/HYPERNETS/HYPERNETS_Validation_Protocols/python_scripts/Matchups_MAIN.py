@@ -38,7 +38,7 @@ import pandas as pd
 from tabulate import tabulate
 
 # to import apply_flags_OLCI.py
-path_main = '/Users/javier.concha/Desktop/Javier/2019_ROMA/CNR_Research/HYPERNETS_Validation_Protocols/python_scripts/'
+path_main = '/Users/javier.concha/Desktop/Javier/2019_ROMA/CNR_Research/HYPERNETS/HYPERNETS_Validation_Protocols/python_scripts/'
 sys.path.insert(0,path_main)
 import apply_flags_OLCI as OLCI_flags
 
@@ -130,10 +130,11 @@ def open_insitu(station):
     Julian_day = nc_f0.variables['Julian_day'][:]
     Exact_wavelengths = nc_f0.variables['Exact_wavelengths'][:]
     Lwn_fonQ = nc_f0.variables['Lwn_fonQ'][:]
+    in_situ_wind = nc_f0.variables['Wind_speed'][:]
 
     nc_f0.close()
     
-    return Time, Level, Julian_day, Exact_wavelengths, Lwn_fonQ
+    return Time, Level, Julian_day, Exact_wavelengths, Lwn_fonQ,in_situ_wind
 
 
 def create_OLCI_list(path_main,Time,year_vec,month_vec,doy_vec,day_vec):
@@ -1266,7 +1267,7 @@ for station_idx in range(len(station_list_main)):
 
     station_name = station_list_main[station_idx]
 
-    Time, Level, Julian_day, Exact_wavelengths, Lwn_fonQ = \
+    Time, Level, Julian_day, Exact_wavelengths, Lwn_fonQ, in_situ_wind = \
         open_insitu(station_name)
     
     day_vec    = np.array([float(Time[i].replace(' ',':').split(':')[0]) for i in range(0,len(Time))])
@@ -3559,7 +3560,7 @@ if plot_flag:
     plt.rc('ytick',labelsize=fs)
     for station_idx in range(len(station_list_ALL)):
         station = station_list_ALL[station_idx]
-        Time, Level, Julian_day, Exact_wavelengths, Lwn_fonQ = \
+        Time, Level, Julian_day, Exact_wavelengths, Lwn_fonQ, in_situ_wind = \
                 open_insitu(station)
 
         Exact_wavelengths[Exact_wavelengths==-999.0] = np.nan
@@ -3767,7 +3768,33 @@ b=100*np.array(\
 30/47])
     
 print(f' BW06  Z09 \n {a[0]:0.2f} {b[0]:0.2f} \n {a[1]:0.2f} {b[1]:0.2f} \n {a[2]:0.2f} {b[2]:0.2f} \n {a[3]:0.2f} {b[3]:0.2f} \n {a[4]:0.2f} {b[4]:0.2f}')    
+#%% in situ wind speed
+fig = plt.figure(figsize = (8,20))
+idx = 1
+for station in station_list_ALL:
+    Time, Level, Julian_day, Exact_wavelengths, Lwn_fonQ, in_situ_wind = \
+            open_insitu(station)
+            
+    kwargs = dict(color='black',histtype='step')            
+    counts, bins = np.histogram(in_situ_wind)
+    plt.subplot(4,3,idx)
+    plt.hist(bins[:-1], bins, weights=100*counts/counts.sum(), **kwargs)
+    plt.title(station.replace('_',' '),fontsize=12, x=0.5, y=0.8)
+    # plt.xlabel('Wind Speed Magnitude (m/s)')
+    # plt.ylabel('Frequency (%)')
+    plt.ylim([0,40])
+    plt.xlim([0,15])
+    idx += 1
 
+    w_mean = np.mean(in_situ_wind)
+    w_median = np.median(in_situ_wind)
+    w_min = np.min(in_situ_wind)
+    w_max = np.max(in_situ_wind)
+    str0 = f'mean={w_mean:.1f}\nmedian={w_median:.1f}\nmin={w_min:.1f}\nmax={w_max:.1f}'
+    
+    plt.text(0.50, 0.3, str0,horizontalalignment='left', fontsize=10,transform=plt.gca().transAxes)
+fig.text(0.5, 0.04, 'Wind Speed (m/s)', va='center', ha='center', fontsize=12)
+fig.text(0.04, 0.5, 'Frequency (%)', va='center', ha='center', rotation='vertical', fontsize=12)    
 #%% Relative rate of successful matches (R1-20)
 #%%
 # if __name__ == '__main__':

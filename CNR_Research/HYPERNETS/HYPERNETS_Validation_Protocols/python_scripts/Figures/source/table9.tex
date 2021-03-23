@@ -1,0 +1,59 @@
+\documentclass[preview]{standalone}
+
+\standaloneenv{my}
+
+%%% MY PACKAGES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{graphicx}
+% \usepackage[outdir=./]{epstopdf}
+\usepackage{epstopdf}
+\epstopdfsetup{update} % only regenerate pdf files when eps file is newer
+\usepackage{amsmath,epsfig}
+
+\usepackage{tikz} % for flow charts
+  \usetikzlibrary{shapes,arrows,positioning,shadows,calc}
+  % \usetikzlibrary{external}
+  % \tikzexternalize[prefix=Figures/]
+
+% \usepackage[nostamp]{draftwatermark}
+% \SetWatermarkLightness{0.8}
+% \SetWatermarkScale{4}
+
+\usepackage[percent]{overpic}
+\usepackage{morefloats} % for the error "Too many unprocessed floats"
+
+\usepackage{multirow}
+
+\usepackage{float}
+\usepackage{hyperref}
+
+\usepackage[utf8]{inputenc}
+% \usepackage[x11names]{xcolor}
+\usepackage{fourier}
+\usepackage{booktabs}
+\usepackage{threeparttable, tablefootnote}
+
+\usepackage{cellspace}
+\setlength\cellspacetoplimit{3pt}
+\setlength\cellspacebottomlimit{0pt}
+%%% END MY PACKAGES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+\small
+
+\begin{table}
+\begin{tabular}{ccccccccc}
+
+\hline
+Protocol & $\lambda$[nm]  & N     & RMSD  &MAPD[\%]&MPD[\%]& MB     & MAD    & $r^2$ \\\hline
+
+
+BW06 vs Z09 &       412.5 &  451 &  0.05 &  35.4 &  13.9 &  0.0116 &  0.034 &  0.99 \\
+BW06 vs Z09 &       442.5 &  451 &  0.04 &  25.6 & -10.3 &  0.0089 &  0.031 &  0.99 \\
+BW06 vs Z09 &       490.0 &  451 &  0.03 &   4.1 &   1.1 &  0.0059 &  0.024 &  0.99 \\
+BW06 vs Z09 &       560.0 &  451 &  0.02 &   1.7 &   0.2 &  0.0015 &  0.014 &  0.99 \\
+BW06 vs Z09 &       665.0 &  451 &  0.01 &  32.1 &   8.1 &  0.0007 &  0.007 &  0.99 \\
+
+\end{tabular}
+\end{table}
+
+\end{document}

@@ -49,7 +49,7 @@ else:
         sys.exit("Non valid day for the end year")
 
 station_list=['Abu_Al_Bukhoosh','Blyth_NOAH','COVE_SEAPRISM', 'Gageocho_Station','Galata_Platform','Gloria', 'GOT_Seaprism',
-              'Gustav_Dalen_Tower','Helsinki_Lighthouse','Ieodo_Station','KAUST_Campus','Lake_Erie','LISCO','Lucinda',
+              'Gustav_Dalen_Tower','Helsinki_Lighthouse','Ieodo_Station','Irbe_Lighthouse','KAUST_Campus','Lake_Erie','LISCO','Lucinda',
               'MVCO', 'Palgrunden', 'Socheongcho','Thornton_C-power','USC_SEAPRISM','USC_SEAPRISM_2','Venise' ,'WaveCIS_Site_CSI_6','Zeebrugge-MOW1']
 station_upper=[]
 for s in station_list:
